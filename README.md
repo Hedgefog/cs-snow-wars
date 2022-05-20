@@ -1,5 +1,5 @@
 ### ❄ Snow Wars mod for Counter-Strike 1.6
-__Version:__ 0.9.1 (Alpha)
+__Version:__ 0.9.22 (Alpha)
 
 ### 📄 About
 
@@ -9,9 +9,9 @@ Snow Wars is a Counter-Strike mod based on snowballs fights with original Counte
 
 - Snowball - deals 50 damage on hit
 - Slightshot - allows you to shoot snowballs with extra controlled power
-- Lemon Juice - adds radius damage to your snowballs. It's yellow for a reason and enemies find it humiliating.
+- Lemon Juice - adds radius damage to your snowballs, it's yellow for a reason and enemies find it humiliating
 - Down Jacket - reduces taken damage
-- Surprise Box - SURPRISE, but in the box.
+- Surprise Box - SURPRISE, but in the box
 
 ### 🔽 Download latest:
 - [Releases](../../releases)

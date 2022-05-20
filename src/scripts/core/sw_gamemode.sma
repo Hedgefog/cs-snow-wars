@@ -29,6 +29,10 @@ public plugin_init() {
 }
 
 public client_disconnected(pPlayer) {
+    if (!is_user_connected(pPlayer)) {
+        return;
+    }
+
     @Player_DropItems(pPlayer);
     @Player_DropArtifacts(pPlayer);
 }
