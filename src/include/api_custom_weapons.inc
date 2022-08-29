@@ -63,7 +63,8 @@ enum CW_Binding {
 enum CW_Flags (<<=1) {
   CWF_None,
   CWF_NoBulletSmoke = 1,
-  CWF_NoBulletDecal
+  CWF_NoBulletDecal,
+  CWF_CustomReload
 }
 
 native CW:CW_Register(const szName[], iWeaponId, iClipSize = WEAPON_NOCLIP, iPrimaryAmmoType = -1, iPrimaryAmmoMaxAmount = -1, iSecondaryAmmoType = -1, iSecondaryAmmoMaxAmount = -1, iSlotId = 0, iPosition = 0, iWeaponFlags = 0, const szIcon[] = "", CW_Flags:iFlags = CWF_None);
