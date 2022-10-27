@@ -3,7 +3,7 @@ __Version:__ 0.9.22 (Alpha)
 
 ### 📄 About
 
-Snow Wars is a Counter-Strike mod based on snowballs fights with original Counter-Strike modes.
+__Snow Wars__ is a __Counter-Strike__ server-side modification based on snowballs fights with original Counter-Strike modes.
 
 #### Weapons and Artifacts
 
