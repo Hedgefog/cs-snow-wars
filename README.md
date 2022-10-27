@@ -1,4 +1,4 @@
-## ❄ Snow Wars mod for Counter-Strike 1.6 🇺🇦
+## ❄ Snow Wars 🇺🇦
 __Version:__ 0.9.22 (Alpha)
 
 ### 📄 About
