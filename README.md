@@ -21,7 +21,7 @@ __Snow Wars__ is a __Counter-Strike__ server-side modification based on snowball
 - RegameDLL + ReAPI
 - Metamod-R or Metamod-P (for windows)
 
-## 🔧 Deployment
+### 🔧 Deployment
 - Clone repository.
 - Install dependencies `npm i`
 
