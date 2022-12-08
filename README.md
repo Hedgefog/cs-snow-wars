@@ -22,7 +22,7 @@ __Snow Wars__ is a __Counter-Strike__ server-side modification based on snowball
 ### 🔄 Requirements
 - [Amx Mod X 1.9.0+](https://www.amxmodx.org/downloads-new.php)
 - [RegameDLL](https://github.com/s1lentq/ReGameDLL_CS) + [ReAPI](https://github.com/s1lentq/reapi)
-- [Metamod-R](https://github.com/theAsmodai/metamod-r) or [Metamod-P](https://github.com/Bots-United/metamod-p) (for windows)
+- [Metamod-R](https://github.com/theAsmodai/metamod-r) + [ReHLDS](https://github.com/dreamstalker/rehlds) or [Metamod-P](https://github.com/Bots-United/metamod-p)
 
 ### 🔧 Deployment
 - Clone repository.
