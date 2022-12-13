@@ -46,7 +46,7 @@ public plugin_init() {
     RegisterItem("Slingshot", "snowwars/v090/weapon_slingshot", 4500, ShopItem_Weapon);
     RegisterItem("Lemon Juice", "lemonjuice", 2500, ShopItem_Artifact);
     RegisterItem("Down Jacket", "downjacket", 3100, ShopItem_Artifact);
-    RegisterItem("Surprise Box", "snowwars/v090/weapon_fireworksbox", 12000, ShopItem_Weapon);
+    RegisterItem("Surprise Box", "snowwars/v090/weapon_fireworksbox", 10000, ShopItem_Weapon);
 }
 
 public plugin_destroy() {
