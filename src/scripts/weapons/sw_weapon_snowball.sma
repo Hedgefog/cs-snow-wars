@@ -38,6 +38,7 @@ public plugin_init() {
   g_iCwHandler = CW_Register("snowwars/v090/weapon_snowball", CSW_DEAGLE, 1, _, _, _, _, 1, 1, _, "skull", CWF_NoBulletSmoke);
   CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
   CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
+  CW_Bind(g_iCwHandler, CWB_SecondaryAttack, "@Weapon_SecondaryAttack");
   CW_Bind(g_iCwHandler, CWB_Deploy, "@Weapon_Deploy");
   CW_Bind(g_iCwHandler, CWB_CanDrop, "@Weapon_CanDrop");
   CW_Bind(g_iCwHandler, CWB_GetMaxSpeed, "@Weapon_GetMaxSpeed");
@@ -93,6 +94,15 @@ public @Weapon_PrimaryAttack(this) {
     }
   }
 }
+
+public @Weapon_SecondaryAttack(this) {
+  new pPlayer = CW_GetPlayer(this);
+  
+  if (~pev(pPlayer, pev_button) | IN_ATTACK) {
+    CW_Idle(this);
+  }
+}
+
 public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
   engfunc(EngFunc_SetModel, pWeaponBox, g_szMdlWSnowball);
 }

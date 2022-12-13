@@ -43,6 +43,7 @@ public plugin_init() {
   g_iCwHandler = CW_Register("snowwars/v090/weapon_slingshot", CSW_AK47, 1, _, _, _, _, 0, 1, _, "skull", CWF_NoBulletSmoke);
   CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
   CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
+  CW_Bind(g_iCwHandler, CWB_SecondaryAttack, "@Weapon_SecondaryAttack");
   CW_Bind(g_iCwHandler, CWB_Deploy, "@Weapon_Deploy");
   CW_Bind(g_iCwHandler, CWB_Holster, "@Weapon_Holster");
   // CW_Bind(g_iCwHandler, CWB_CanDrop, "@Weapon_CanDrop");
@@ -117,16 +118,7 @@ public @Weapon_PrimaryAttack(this) {
     new Float:flChargeDuration = GetChargeDuration(this);
 
     if (flChargeDuration > MISFIRE_DELAY) {
-      static Float:vecViewAngle[3];
-      pev(pPlayer, pev_v_angle, vecViewAngle);
-
-      for (new i = 0; i < 3; ++i) {
-        vecViewAngle[i] += random_float(-MISFIRE_MAX_SHAKING, MISFIRE_MAX_SHAKING);
-      }
-
-      set_pev(pPlayer, pev_angles, vecViewAngle);
-      set_pev(pPlayer, pev_v_angle, vecViewAngle);
-      set_pev(pPlayer, pev_fixangle, 1);
+      @Player_AnglesShake(pPlayer);
     } else if (flChargeDuration >= CHARGE_TIME) {
       new pPlayer = CW_GetPlayer(this);
       if (is_user_bot(pPlayer)) { // force throw for bots
@@ -134,6 +126,10 @@ public @Weapon_PrimaryAttack(this) {
       }
     }
   }
+}
+
+public @Weapon_SecondaryAttack(this) {
+  CW_Idle(this);
 }
 
 public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
@@ -144,6 +140,19 @@ public Float:@Weapon_GetMaxSpeed(this) {
   return 250.0;
 }
 
+public @Player_AnglesShake(this) {
+  static Float:vecViewAngle[3];
+  pev(this, pev_v_angle, vecViewAngle);
+
+  for (new i = 0; i < 3; ++i) {
+    vecViewAngle[i] += random_float(-MISFIRE_MAX_SHAKING, MISFIRE_MAX_SHAKING);
+  }
+
+  set_pev(this, pev_angles, vecViewAngle);
+  set_pev(this, pev_v_angle, vecViewAngle);
+  set_pev(this, pev_fixangle, 1);
+}
+
 ThrowGrenade(this, Float:flPower, bool:bMissfire = false) {
   new pPlayer = CW_GetPlayer(this);
 
@@ -152,9 +161,6 @@ ThrowGrenade(this, Float:flPower, bool:bMissfire = false) {
   
   static Float:vecThrow[3];
   pev(pPlayer, pev_velocity, vecThrow);
-
-  static Float:vecPunchangle[3];
-  pev(pPlayer, pev_punchangle, vecPunchangle);
 
   static Float:vecThrowAngle[3];
   pev(pPlayer, pev_v_angle, vecThrowAngle);
