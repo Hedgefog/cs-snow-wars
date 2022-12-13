@@ -815,6 +815,7 @@ ItemPostFrame(this) {
     new pPlayer = GetPlayer(this);
     new flInReload = get_member(this, m_Weapon_fInReload);
     new iMaxClip = GetData(iHandler, CW_Data_ClipSize);
+    new CW_Flags:iFlags = GetData(iHandler, CW_Data_Flags);
     new iWeaponFlags = GetData(iHandler, CW_Data_WeaponFlags);
     new Float:flNextAttack = get_member(pPlayer, m_flNextAttack);
     new button = pev(pPlayer, pev_button);
@@ -824,6 +825,10 @@ ItemPostFrame(this) {
     new Float:flNextSecondaryAttack = get_member(this, m_Weapon_flNextSecondaryAttack);
     new iPrimaryAmmoAmount = get_member(pPlayer, m_rgAmmo, iPrimaryAmmoIndex);
     new iSecondaryAmmoAmount = get_member(pPlayer, m_rgAmmo, iSecondaryAmmoIndex);
+
+    if (iFlags & CWF_NoSecondaryAttack) {
+        button &= ~IN_ATTACK2;
+    }
 
     new Float:flReloadEndTime = get_member(this, m_Weapon_flNextReload);
     if (flReloadEndTime && flReloadEndTime < get_gametime()) {

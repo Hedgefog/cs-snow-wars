@@ -35,7 +35,7 @@ public plugin_precache() {
 public plugin_init() {
   register_plugin(PLUGIN, VERSION, AUTHOR);
 
-  g_iCwHandler = CW_Register("snowwars/v090/weapon_snowball", CSW_DEAGLE, 1, _, _, _, _, 1, 1, _, "skull", CWF_NoBulletSmoke);
+  g_iCwHandler = CW_Register("snowwars/v090/weapon_snowball", CSW_DEAGLE, 1, _, _, _, _, 1, 1, _, "skull", CWF_NoBulletSmoke|CWF_NoSecondaryAttack);
   CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
   CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
   CW_Bind(g_iCwHandler, CWB_Deploy, "@Weapon_Deploy");
