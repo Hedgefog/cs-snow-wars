@@ -85,7 +85,7 @@ SpawnRocket(const Float:vecOrigin[3], pOwner) {
     new pRocket = CE_Create("sw_fireworkrocket", vecOrigin);
 
     static Float:vecAngles[3];
-    vecAngles[0] = random_float(0.0, 90.0);
+    vecAngles[0] = random_float(0.0, 60.0);
     vecAngles[1] = random_float(-180.0, 180.0);
     vecAngles[2] = 0.0;
     set_pev(pRocket, pev_angles, vecAngles);
