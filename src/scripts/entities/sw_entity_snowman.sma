@@ -118,7 +118,7 @@ public @Entity_Spawn(this) {
     static Float:vecOrigin[3];
     pev(this, pev_origin, vecOrigin);
 
-    set_pev(this, pev_health, 20.0);
+    set_pev(this, pev_health, 100.0);
     set_pev(this, pev_takedamage, DAMAGE_AIM);
 
     @Entity_Effect(this);
