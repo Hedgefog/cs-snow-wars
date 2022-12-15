@@ -10,9 +10,9 @@
 new g_rgiPlayerAttributes[MAX_PLAYERS + 1][SW_PlayerAttribute];
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+    register_plugin(PLUGIN, VERSION, AUTHOR);
 
-  RegisterHam(Ham_TakeDamage, "player", "Ham_Player_TakeDamage", .Post = 0);
+    RegisterHam(Ham_TakeDamage, "player", "Ham_Player_TakeDamage", .Post = 0);
 }
 
 public plugin_natives() {

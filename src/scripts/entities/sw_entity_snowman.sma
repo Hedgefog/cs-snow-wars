@@ -23,20 +23,20 @@ new g_iCeHandler;
 new g_iBloodModelIndex;
 
 public plugin_precache() {
-  g_iCeHandler = CE_Register(
-    .szName = ENTITY_NAME,
-    .vMins = Float:{-16.0, -16.0, 0.0},
-    .vMaxs = Float:{16.0, 16.0, 72.0},
-    .modelIndex = precache_model(SW_MODEL_SNOWMAN),
-    .preset = CEPreset_Prop
-  );
+    g_iCeHandler = CE_Register(
+        .szName = ENTITY_NAME,
+        .vMins = Float:{-16.0, -16.0, 0.0},
+        .vMaxs = Float:{16.0, 16.0, 72.0},
+        .modelIndex = precache_model(SW_MODEL_SNOWMAN),
+        .preset = CEPreset_Prop
+    );
 
-  CE_RegisterHook(CEFunction_Spawn, ENTITY_NAME, "@Entity_Spawn");
-  CE_RegisterHook(CEFunction_Kill, ENTITY_NAME, "@Entity_Kill");
+    CE_RegisterHook(CEFunction_Spawn, ENTITY_NAME, "@Entity_Spawn");
+    CE_RegisterHook(CEFunction_Kill, ENTITY_NAME, "@Entity_Kill");
 
-  g_iBloodModelIndex = precache_model("sprites/blood.spr");
-  precache_sound(SW_SOUND_SNOWBALL_HIT);
-  precache_sound(SW_SOUND_RETURN);
+    g_iBloodModelIndex = precache_model("sprites/blood.spr");
+    precache_sound(SW_SOUND_SNOWBALL_HIT);
+    precache_sound(SW_SOUND_RETURN);
 }
 
 public plugin_init() {

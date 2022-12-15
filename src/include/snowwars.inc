@@ -21,17 +21,17 @@
 #include <snowwars_const>
 
 enum SW_PlayerAttribute {
-  SW_PlayerAttribute_Resistance = 0,
-  SW_PlayerAttribute_Power
+    SW_PlayerAttribute_Resistance = 0,
+    SW_PlayerAttribute_Power
 }
 
 native any:SW_Player_GetAttribute(pPlayer, SW_PlayerAttribute:iAttrib);
 native SW_Player_SetAttribute(pPlayer, SW_PlayerAttribute:iAttrib, any:value);
 
 native SW_PlayerArtifact_Register(
-  const szId[],
-  const szActivateFunc[],
-  const szDeactivateFunc[]
+    const szId[],
+    const szActivateFunc[],
+    const szDeactivateFunc[]
 );
 native SW_PlayerArtifact_GetHandler(const szId[]);
 

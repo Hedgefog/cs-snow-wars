@@ -152,7 +152,7 @@ public Float:@Weapon_GetMaxSpeed(this) {
 }
 
 public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
-  engfunc(EngFunc_SetModel, pWeaponBox, SW_WEAPON_SNOWMAN_W_MODEL);
+    engfunc(EngFunc_SetModel, pWeaponBox, SW_WEAPON_SNOWMAN_W_MODEL);
 }
 
 public @Player_DeploySnowman(this) {
