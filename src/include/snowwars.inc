@@ -53,3 +53,5 @@ native SW_Player_FindArtifact(pPlayer, iOffset, szId[], iLen);
 native SW_Shop_Player_BuyItem(pPlayer, const szItem[]);
 native SW_Shop_Item_GetPrice(const szItem[]);
 native SW_Shop_Item_GetType(const szItem[]);
+
+forward SW_Shop_Fw_Buy(pPlayer, const szItem[]);

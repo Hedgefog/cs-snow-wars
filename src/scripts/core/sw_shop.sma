@@ -19,6 +19,8 @@ new Array:g_irgShopItemTypes;
 new Trie:g_iShopItemIdsMap;
 new g_iShopItemCount = 0;
 
+new g_iFwBuy;
+
 new g_iPlayerMenu[MAX_PLAYERS + 1];
 
 public plugin_precache() {
@@ -45,6 +47,8 @@ public plugin_init() {
     RegisterItem("Down Jacket", SW_ARTIFACT_DOWNJACKET, 3100, SW_ShopItemType_Artifact);
     RegisterItem("Snowman", SW_WEAPON_SNOWMAN, 5000, SW_ShopItemType_Weapon);
     RegisterItem("Surprise Box", SW_WEAPON_FIREWORKSBOX, 10000, SW_ShopItemType_Weapon);
+
+    g_iFwBuy = CreateMultiForward("SW_Shop_Fw_Buy", ET_STOP, FP_CELL, FP_STRING);
 }
 
 public plugin_destroy() {
@@ -177,6 +181,15 @@ public bool:@Player_BuyItem(this, iItem) {
     }
 
     if (!cs_get_user_buyzone(this)) {
+        return false;
+    }
+
+    static szItem[32];
+    ArrayGetString(g_irgShopItemTitles, iItem, szItem, charsmax(szItem));
+
+    static iFwReturn;
+    ExecuteForward(g_iFwBuy, iFwReturn, this, szItem);
+    if (iFwReturn != PLUGIN_CONTINUE) {
         return false;
     }
 
