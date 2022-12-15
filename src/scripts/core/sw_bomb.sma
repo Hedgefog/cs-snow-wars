@@ -17,26 +17,26 @@ public plugin_init() {
     RegisterHookChain(RG_CGrenade_ExplodeBomb, "HC_Grenade_ExplodeBomb", .post = 0);
 }
 
-public HC_Grenade_ExplodeBomb(this) {
-    set_member(this, m_Grenade_bJustBlew, true);
+public HC_Grenade_ExplodeBomb(pGrenade) {
+    set_member(pGrenade, m_Grenade_bJustBlew, true);
     set_member_game(m_bTargetBombed, true);
     rg_check_win_conditions();
 
-    pev(this, pev_origin, g_vecSpawnRocketOrigin);
+    pev(pGrenade, pev_origin, g_vecSpawnRocketOrigin);
 
     CE_Kill(SpawnRocket(g_vecSpawnRocketOrigin));
 
     for (new i = 0; i < 8; ++i) {
-        set_task(0.125 * i, "Task_SpawnRocket", 0);
+        set_task(0.125 * i, "Task_SpawnRocket");
     }
 
-    set_pev(this, pev_flags, pev(this, pev_flags) | FL_KILLME);
-    // dllfunc(DLLFunc_Think, this);
+    set_pev(pGrenade, pev_flags, pev(pGrenade, pev_flags) | FL_KILLME);
+    // dllfunc(DLLFunc_Think, pGrenade);
 
     return HC_SUPERCEDE;
 }
 
-public Task_SpawnRocket(iTaskId) {
+public Task_SpawnRocket() {
     SpawnRocket(g_vecSpawnRocketOrigin);
 }
 

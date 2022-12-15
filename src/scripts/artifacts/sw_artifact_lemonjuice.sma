@@ -8,19 +8,18 @@
 #include <api_custom_entities>
 #include <screenfade_util>
 
-#define ARTIFACT_ID "lemonjuice"
-#define SPLASH_DAMAGE 15.0
-
-new const g_szSndSnowballHit[] = "debris/bustflesh1.wav";
-new const g_szMdlWSnowball[] = "models/snowwars/v090/weapons/w_snowball_lemon.mdl";
-new const g_szMdlWArtifact[] = "models/snowwars/v090/artifacts/w_lemonsnow.mdl";
+#define ARTIFACT_ID SW_ARTIFACT_LEMONJUICE
+#define SPLASH_DAMAGE 22.0
 
 new g_iSnowballCeHandler;
+new g_iBloodModelIndex;
 
 public plugin_precache() {
-    precache_model(g_szMdlWArtifact);
-    precache_sound(g_szSndSnowballHit);
-    precache_model(g_szMdlWSnowball);
+    precache_model(SW_ARTIFACT_LEMONJUICE_W_MODEL);
+    precache_sound(SW_SOUND_SNOWBALL_LEMON_HIT);
+    precache_model(SW_WEAPON_SNOWBALL_LEMON_W_MODEL);
+
+    g_iBloodModelIndex = precache_model("sprites/blood.spr");
 
     SW_PlayerArtifact_Register(ARTIFACT_ID, "@Artifact_Activated", "@Artifact_Deactivated");
 }
@@ -43,16 +42,16 @@ public Event_ResetHUD(pPlayer) {
     @Player_UpdateStatusIcon(pPlayer);
 }
 
-public @Artifact_Activated(this) {
-    // new Float:flPower = SW_Player_GetAttribute(this, SW_PlayerAttribute_Power);
-    // SW_Player_SetAttribute(this, SW_PlayerAttribute_Power, flPower + 1.0);
-    @Player_UpdateStatusIcon(this);
+public @Artifact_Activated(pPlayer) {
+    // new Float:flPower = SW_Player_GetAttribute(pPlayer, SW_PlayerAttribute_Power);
+    // SW_Player_SetAttribute(pPlayer, SW_PlayerAttribute_Power, flPower + 1.0);
+    @Player_UpdateStatusIcon(pPlayer);
 }
 
-public @Artifact_Deactivated(this) {
-    // new Float:flPower = SW_Player_GetAttribute(this, SW_PlayerAttribute_Power);
-    // SW_Player_SetAttribute(this, SW_PlayerAttribute_Power, flPower - 1.0);
-    @Player_UpdateStatusIcon(this);
+public @Artifact_Deactivated(pPlayer) {
+    // new Float:flPower = SW_Player_GetAttribute(pPlayer, SW_PlayerAttribute_Power);
+    // SW_Player_SetAttribute(pPlayer, SW_PlayerAttribute_Power, flPower - 1.0);
+    @Player_UpdateStatusIcon(pPlayer);
 }
 
 public @ArtifactItem_Spawn(this) {
@@ -62,7 +61,7 @@ public @ArtifactItem_Spawn(this) {
         return;
     }
 
-    engfunc(EngFunc_SetModel, this, g_szMdlWArtifact);
+    engfunc(EngFunc_SetModel, this, SW_ARTIFACT_LEMONJUICE_W_MODEL);
 }
 
 public @Snowball_Spawn(this) {
@@ -71,7 +70,7 @@ public @Snowball_Spawn(this) {
         return;
     }
 
-    engfunc(EngFunc_SetModel, this, g_szMdlWSnowball);
+    engfunc(EngFunc_SetModel, this, SW_WEAPON_SNOWBALL_LEMON_W_MODEL);
     set_pev(this, pev_iuser4, 1);
 
     new Float:flDamage = 0.0;
@@ -92,18 +91,13 @@ public @Snowball_ExplosionEffect(this) {
     static Float:vecOrigin[3];
     pev(this, pev_origin, vecOrigin);
 
-    static s_iBloodModelIndex = 0;
-    if (!s_iBloodModelIndex) {
-        s_iBloodModelIndex = engfunc(EngFunc_ModelIndex, "sprites/blood.spr");
-    }
-
     engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, vecOrigin, 0);
     write_byte(TE_BLOODSPRITE);
     engfunc(EngFunc_WriteCoord, vecOrigin[0]);
     engfunc(EngFunc_WriteCoord, vecOrigin[1]);
     engfunc(EngFunc_WriteCoord, vecOrigin[2]);
-    write_short(s_iBloodModelIndex);
-    write_short(s_iBloodModelIndex);
+    write_short(g_iBloodModelIndex);
+    write_short(g_iBloodModelIndex);
     write_byte(241);
     write_byte(8);
     message_end();
@@ -134,7 +128,7 @@ public @Snowball_ExplosionEffect(this) {
     write_coord(12);
     message_end();
 
-    emit_sound(this, CHAN_BODY, g_szSndSnowballHit, 0.5, ATTN_NORM, 0, PITCH_NORM);
+    emit_sound(this, CHAN_BODY, SW_SOUND_SNOWBALL_LEMON_HIT, 0.5, ATTN_NORM, 0, PITCH_NORM);
 }
 
 public @Snowball_SplashDamage(this) {

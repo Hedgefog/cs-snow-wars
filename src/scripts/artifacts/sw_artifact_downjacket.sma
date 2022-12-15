@@ -5,18 +5,14 @@
 #include <snowwars>
 #include <api_custom_entities>
 
-#define ARTIFACT_ID "downjacket"
-
-new const g_szMdlPArtifact[] = "models/snowwars/v090/artifacts/p_downjacket.mdl";
-new const g_szMdlWArtifact[] = "models/snowwars/v090/artifacts/w_downjacket.mdl";
-new const g_szEquipArtifactSound[] = "snowwars/v090/pw_shield.wav";
+#define ARTIFACT_ID SW_ARTIFACT_DOWNJACKET
 
 new g_pPlayerJacket[MAX_PLAYERS + 1];
 
 public plugin_precache() {
-    precache_model(g_szMdlPArtifact);
-    precache_model(g_szMdlWArtifact);
-    precache_sound(g_szEquipArtifactSound);
+    precache_model(SW_ARTIFACT_DOWNJACKET_P_MODEL);
+    precache_model(SW_ARTIFACT_DOWNJACKET_W_MODEL);
+    precache_sound(SW_SOUND_DOWNJACKET);
 
     SW_PlayerArtifact_Register(ARTIFACT_ID, "@Artifact_Activated", "@Artifact_Deactivated");
 }
@@ -39,7 +35,7 @@ public @Artifact_Activated(pPlayer) {
 
     g_pPlayerJacket[pPlayer] = @Jacket_Create(pPlayer);
     @Player_UpdateStatusIcon(pPlayer);
-    emit_sound(pPlayer, CHAN_ITEM, g_szEquipArtifactSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+    emit_sound(pPlayer, CHAN_ITEM, SW_SOUND_DOWNJACKET, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 }
 
 public @Artifact_Deactivated(pPlayer) {
@@ -61,17 +57,17 @@ public @ArtifactItem_Spawn(this) {
         return;
     }
 
-    engfunc(EngFunc_SetModel, this, g_szMdlWArtifact);
+    engfunc(EngFunc_SetModel, this, SW_ARTIFACT_DOWNJACKET_W_MODEL);
 }
 
-public @Player_UpdateStatusIcon(pPlayer) {
+public @Player_UpdateStatusIcon(this) {
     static gmsgStatusIcon = 0;
     if (!gmsgStatusIcon) {
         gmsgStatusIcon = get_user_msgid("StatusIcon");
     }
 
-    if (SW_Player_HasArtifact(pPlayer, ARTIFACT_ID)) {
-        message_begin(MSG_ONE, gmsgStatusIcon, {0,0,0}, pPlayer);
+    if (SW_Player_HasArtifact(this, ARTIFACT_ID)) {
+        message_begin(MSG_ONE, gmsgStatusIcon, {0,0,0}, this);
         write_byte(1);
         write_string("suit_full");
         write_byte(255);
@@ -79,7 +75,7 @@ public @Player_UpdateStatusIcon(pPlayer) {
         write_byte(255);
         message_end();
     } else {
-        message_begin(MSG_ONE, gmsgStatusIcon, {0,0,0}, pPlayer);
+        message_begin(MSG_ONE, gmsgStatusIcon, {0,0,0}, this);
         write_byte(0);
         write_string("suit_full");
         message_end();
@@ -96,7 +92,7 @@ public @Jacket_Create(pPlayer) {
     dllfunc(DLLFunc_Spawn, pEntity);
 
     set_pev(pEntity, pev_classname, "player_downjacket");
-    engfunc(EngFunc_SetModel, pEntity, g_szMdlPArtifact);
+    engfunc(EngFunc_SetModel, pEntity, SW_ARTIFACT_DOWNJACKET_P_MODEL);
     set_pev(pEntity, pev_owner, pPlayer);
     set_pev(pEntity, pev_aiment, pPlayer);
     set_pev(pEntity, pev_movetype, MOVETYPE_FOLLOW);

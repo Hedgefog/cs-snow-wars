@@ -37,26 +37,26 @@ public client_disconnected(pPlayer) {
     @Player_DropArtifacts(pPlayer);
 }
 
-public Ham_Player_Killed(this) {
-    @Player_DropItems(this);
+public Ham_Player_Killed(pPlayer) {
+    @Player_DropItems(pPlayer);
 }
 
-public Ham_Player_Killed_Post(this) {
-    @Player_DropArtifacts(this);
+public Ham_Player_Killed_Post(pPlayer) {
+    @Player_DropArtifacts(pPlayer);
 }
 
-public Ham_ArmouryEntity_Spawn_Post(this, pToucher) {
-    set_pev(this, pev_flags, pev(this, pev_flags) | FL_KILLME);
-    dllfunc(DLLFunc_Think, this);
+public Ham_ArmouryEntity_Spawn_Post(pArmouryEntity, pToucher) {
+    set_pev(pArmouryEntity, pev_flags, pev(pArmouryEntity, pev_flags) | FL_KILLME);
+    dllfunc(DLLFunc_Think, pArmouryEntity);
 }
 
-public Ham_WeaponBox_Touch(this, pTarget) {
+public Ham_WeaponBox_Touch(pWeaponBox, pTarget) {
     if (!is_user_connected(pTarget)) {
         return HAM_IGNORED;
     }
 
     for (new iSlot = 0; iSlot < 6; ++iSlot) {
-            new pItem = get_member(this, m_WeaponBox_rgpPlayerItems, iSlot);
+            new pItem = get_member(pWeaponBox, m_WeaponBox_rgpPlayerItems, iSlot);
             new pPlayerItem = get_member(pTarget, m_rgpPlayerItems, iSlot);
             
             if (pItem != -1 && pPlayerItem != -1) {
@@ -67,8 +67,8 @@ public Ham_WeaponBox_Touch(this, pTarget) {
     return HAM_HANDLED;
 }
 
-public HC_Player_SpawnEquip(this) {
-    CW_GiveWeapon(this, "snowwars/v090/weapon_snowball");
+public HC_Player_SpawnEquip(pPlayer) {
+    CW_GiveWeapon(pPlayer, SW_WEAPON_SNOWBALL);
     return HC_SUPERCEDE;
 }
 

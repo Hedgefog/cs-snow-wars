@@ -20,27 +20,22 @@
 #define MISFIRE_MAX_SHAKING 0.25
 #define MISFIRE_MAX_ERROR 0.125
 
-new const g_szMdlVSnowball[] = "models/snowwars/v090/weapons/v_slingshot.mdl";
-new const g_szMdlPSnowball[] = "models/snowwars/v090/weapons/p_slingshot.mdl";
-new const g_szMdlWSnowball[] = "models/snowwars/v090/weapons/w_slingshot.mdl";
-new const g_szSndThrow[] = "snowwars/v090/snowthrow1.wav";
-
 new g_bPlayerRedeploy[MAX_PLAYERS + 1];
 
 new CW:g_iCwHandler;
 
 public plugin_precache() {
-  precache_generic("sprites/snowwars/v090/weapon_slingshot.txt");
-  precache_model(g_szMdlVSnowball);
-  precache_model(g_szMdlPSnowball);
-  precache_model(g_szMdlWSnowball);
-  precache_sound(g_szSndThrow);
+  precache_generic(SW_WEAPON_SLINGSHOT_HUD_TXT);
+  precache_model(SW_WEAPON_SLINGSHOT_V_MODEL);
+  precache_model(SW_WEAPON_SLINGSHOT_P_MODEL);
+  precache_model(SW_WEAPON_SLINGSHOT_W_MODEL);
+  precache_sound(SW_SOUND_SNOWBALL_THROW);
 }
 
 public plugin_init() {
   register_plugin(PLUGIN, VERSION, AUTHOR);
 
-  g_iCwHandler = CW_Register("snowwars/v090/weapon_slingshot", CSW_AK47, 1, _, _, _, _, 0, 1, _, "skull", CWF_NoBulletSmoke);
+  g_iCwHandler = CW_Register(SW_WEAPON_SLINGSHOT, CSW_AK47, 1, _, _, _, _, 0, 1, _, "skull", CWF_NoBulletSmoke);
   CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
   CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
   CW_Bind(g_iCwHandler, CWB_SecondaryAttack, "@Weapon_SecondaryAttack");
@@ -67,7 +62,7 @@ public @Weapon_Idle(this) {
 
     if (flPower > 0.2) {
       ThrowGrenade(this, flPower, bMissfire);
-      emit_sound(pPlayer, CHAN_BODY, g_szSndThrow, 1.0, ATTN_NORM, 0, PITCH_NORM);
+      emit_sound(pPlayer, CHAN_BODY, SW_SOUND_SNOWBALL_THROW, 1.0, ATTN_NORM, 0, PITCH_NORM);
     } else {
       set_member(this, m_flReleaseThrow, 0.0);
       set_member(this, m_flStartThrow, 0.0);
@@ -88,7 +83,7 @@ public @Weapon_Idle(this) {
 
 public @Weapon_Deploy(this) {
     new pPlayer = CW_GetPlayer(this);
-    CW_DefaultDeploy(this, g_szMdlVSnowball, g_szMdlPSnowball, 3, "shieldgun");
+    CW_DefaultDeploy(this, SW_WEAPON_SLINGSHOT_V_MODEL, SW_WEAPON_SLINGSHOT_P_MODEL, 3, "shieldgun");
     g_bPlayerRedeploy[pPlayer] = false;
 }
 
@@ -133,7 +128,7 @@ public @Weapon_SecondaryAttack(this) {
 }
 
 public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
-  engfunc(EngFunc_SetModel, pWeaponBox, g_szMdlWSnowball);
+  engfunc(EngFunc_SetModel, pWeaponBox, SW_WEAPON_SLINGSHOT_W_MODEL);
 }
 
 public Float:@Weapon_GetMaxSpeed(this) {

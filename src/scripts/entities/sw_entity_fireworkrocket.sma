@@ -46,8 +46,6 @@ new const g_rgszSprTrail[][] = {
   "sprites/muz8.spr"
 };
 
-new const g_szSndRocket[] = "snowwars/v090/rocket1.wav";
-
 new g_iCeHandler;
 
 public plugin_precache() {
@@ -68,7 +66,7 @@ public plugin_precache() {
     precache_model(g_rgszSprTrail[i]);
   }
 
-  precache_sound(g_szSndRocket);
+  precache_sound(SW_SOUND_FIREWORK_ROCKET);
 
   CE_RegisterHook(CEFunction_Spawn, ENTITY_NAME, "@Entity_Spawn");
   CE_RegisterHook(CEFunction_Kill, ENTITY_NAME, "@Entity_Kill");
@@ -114,7 +112,7 @@ public @Entity_Spawn(this) {
 
   set_pev(this, pev_rendercolor, flColor);
   dllfunc(DLLFunc_Think, this);
-  emit_sound(this, CHAN_BODY, g_szSndRocket, 0.5, ATTN_NORM, 0, PITCH_NORM);
+  emit_sound(this, CHAN_BODY, SW_SOUND_FIREWORK_ROCKET, 0.5, ATTN_NORM, 0, PITCH_NORM);
 }
 
 public @Entity_Kill(this) {
@@ -229,50 +227,50 @@ public @Entity_Kill(this) {
   }
 }
 
-public Ham_Base_Touch_Post(this, pTarget) {
-  if (CE_GetHandlerByEntity(this) != g_iCeHandler) {
+public Ham_Base_Touch_Post(pEntity, pTarget) {
+  if (CE_GetHandlerByEntity(pEntity) != g_iCeHandler) {
     return HAM_IGNORED;
   }
 
-  new iTouchCount = pev(this, pev_iuser4);
+  new iTouchCount = pev(pEntity, pev_iuser4);
 
   if (iTouchCount < ROCKET_HEALTH) {
     static Float:vecOrigin[3];
-    pev(this, pev_origin, vecOrigin);
+    pev(pEntity, pev_origin, vecOrigin);
 
     new iContent = engfunc(EngFunc_PointContents, vecOrigin);
 
     if (iContent == CONTENTS_SKY) {
       vecOrigin[2] -= 128.0;
-      set_pev(this, pev_origin, vecOrigin);
-      CE_Kill(this);
+      set_pev(pEntity, pev_origin, vecOrigin);
+      CE_Kill(pEntity);
     } else {
-      set_pev(this, pev_iuser4, iTouchCount + 1);
+      set_pev(pEntity, pev_iuser4, iTouchCount + 1);
     }
   } else {
-    CE_Kill(this);
+    CE_Kill(pEntity);
   }
 
   return HAM_HANDLED;
 }
 
-public Ham_Base_Think_Post(this) {
-  if (CE_GetHandlerByEntity(this) != g_iCeHandler) {
+public Ham_Base_Think_Post(pEntity) {
+  if (CE_GetHandlerByEntity(pEntity) != g_iCeHandler) {
     return HAM_IGNORED;
   }
 
   static Float:vecVelocity[3];
-  pev(this, pev_velocity, vecVelocity);
+  pev(pEntity, pev_velocity, vecVelocity);
   xs_vec_normalize(vecVelocity, vecVelocity);
   xs_vec_mul_scalar(vecVelocity, ROCKET_SPEED, vecVelocity);
-  set_pev(this, pev_velocity, vecVelocity);
+  set_pev(pEntity, pev_velocity, vecVelocity);
 
   static Float:vecAngles[3];
   vector_to_angle(vecVelocity, vecAngles);
   // vecAngles[0] -= 90.0;
-  set_pev(this, pev_angles, vecAngles);
+  set_pev(pEntity, pev_angles, vecAngles);
 
-  set_pev(this, pev_nextthink, get_gametime() + 0.1);
+  set_pev(pEntity, pev_nextthink, get_gametime() + 0.1);
 
   return HAM_HANDLED;
 }

@@ -15,27 +15,22 @@
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
-new const g_szMdlVSnowball[] = "models/snowwars/v090/weapons/v_snowball.mdl";
-new const g_szMdlPSnowball[] = "models/snowwars/v090/weapons/p_snowball.mdl";
-new const g_szMdlWSnowball[] = "models/snowwars/v090/weapons/w_snowball.mdl";
-new const g_szSndThrow[] = "snowwars/v090/snowthrow1.wav";
-
 new g_bPlayerRedeploy[MAX_PLAYERS + 1];
 
 new CW:g_iCwHandler;
 
 public plugin_precache() {
-  precache_generic("sprites/snowwars/v090/weapon_snowball.txt");
-  precache_model(g_szMdlVSnowball);
-  precache_model(g_szMdlPSnowball);
-  precache_model(g_szMdlWSnowball);
-  precache_sound(g_szSndThrow);
+  precache_generic(SW_WEAPON_SNOWBALL_HUD_TXT);
+  precache_model(SW_WEAPON_SNOWBALL_V_MODEL);
+  precache_model(SW_WEAPON_SNOWBALL_P_MODEL);
+  precache_model(SW_WEAPON_SNOWBALL_W_MODEL);
+  precache_sound(SW_SOUND_SNOWBALL_THROW);
 }
 
 public plugin_init() {
   register_plugin(PLUGIN, VERSION, AUTHOR);
 
-  g_iCwHandler = CW_Register("snowwars/v090/weapon_snowball", CSW_DEAGLE, 1, _, _, _, _, 1, 1, _, "skull", CWF_NoBulletSmoke);
+  g_iCwHandler = CW_Register(SW_WEAPON_SNOWBALL, CSW_DEAGLE, 1, _, _, _, _, 1, 1, _, "skull", CWF_NoBulletSmoke);
   CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
   CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
   CW_Bind(g_iCwHandler, CWB_SecondaryAttack, "@Weapon_SecondaryAttack");
@@ -54,7 +49,7 @@ public @Weapon_Idle(this) {
 
   if (get_member(this, m_flStartThrow)) {
     ThrowGrenade(this);
-    emit_sound(pPlayer, CHAN_BODY, g_szSndThrow, 1.0, ATTN_NORM, 0, PITCH_NORM);
+    emit_sound(pPlayer, CHAN_BODY, SW_SOUND_SNOWBALL_THROW, 1.0, ATTN_NORM, 0, PITCH_NORM);
     return;
   }
   
@@ -74,7 +69,7 @@ public @Weapon_Idle(this) {
 
 public @Weapon_Deploy(this) {
     new pPlayer = CW_GetPlayer(this);
-    CW_DefaultDeploy(this, g_szMdlVSnowball, g_szMdlPSnowball, 3, "grenade");
+    CW_DefaultDeploy(this, SW_WEAPON_SNOWBALL_V_MODEL, SW_WEAPON_SNOWBALL_P_MODEL, 3, "grenade");
     g_bPlayerRedeploy[pPlayer] = false;
 }
 
@@ -104,7 +99,7 @@ public @Weapon_SecondaryAttack(this) {
 }
 
 public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
-  engfunc(EngFunc_SetModel, pWeaponBox, g_szMdlWSnowball);
+  engfunc(EngFunc_SetModel, pWeaponBox, SW_WEAPON_SNOWBALL_W_MODEL);
 }
 
 public Float:@Weapon_GetMaxSpeed(this) {

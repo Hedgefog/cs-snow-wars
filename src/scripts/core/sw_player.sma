@@ -12,21 +12,13 @@
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
-new const g_szPlayerHitSounds[][] = {
-    "snowwars/v090/snowhit_human1.wav",
-    "snowwars/v090/snowhit_human2.wav"
-};
-
-new const g_szPlayerSpawnSound[] = "snowwars/v090/push.wav";
-new const g_szMdlWSnowball[] = "models/snowwars/v090/weapons/w_snowball.mdl";
-
 public plugin_precache() {
-    for (new i = 0; i < sizeof(g_szPlayerHitSounds); ++i) {
-        precache_sound(g_szPlayerHitSounds[i]);
+    for (new i = 0; i < sizeof(SW_SOUND_PLAYER_HIT); ++i) {
+        precache_sound(SW_SOUND_PLAYER_HIT[i]);
     }
 
-    precache_sound(g_szPlayerSpawnSound);
-    precache_model(g_szMdlWSnowball);
+    precache_sound(SW_SOUND_PLAYER_SPAWN);
+    precache_model(SW_WEAPON_SNOWBALL_W_MODEL);
 }
 
 public plugin_init() {
@@ -39,23 +31,23 @@ public plugin_init() {
     RegisterHookChain(RG_CBasePlayer_OnSpawnEquip, "HC_Player_SpawnEquip_Post", .post = 1);
 }
 
-public Ham_Player_Spawn_Post(this) {
-    if (!is_user_alive(this)) {
+public Ham_Player_Spawn_Post(pPlayer) {
+    if (!is_user_alive(pPlayer)) {
         return HAM_IGNORED;
     }
 
-    emit_sound(this, CHAN_BODY, g_szPlayerSpawnSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+    emit_sound(pPlayer, CHAN_BODY, SW_SOUND_PLAYER_SPAWN, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 
     return HAM_HANDLED;
 }
 
-public Ham_Player_Killed_Post(this) {
+public Ham_Player_Killed_Post(pPlayer) {
     static Float:vecOrigin[3];
-    pev(this, pev_origin, vecOrigin);
+    pev(pPlayer, pev_origin, vecOrigin);
 
     static s_iMdlSnowball = 0;
     if (!s_iMdlSnowball) {
-        s_iMdlSnowball = engfunc(EngFunc_ModelIndex, g_szMdlWSnowball);
+        s_iMdlSnowball = engfunc(EngFunc_ModelIndex, SW_WEAPON_SNOWBALL_W_MODEL);
     }
 
     message_begin(MSG_ALL, SVC_TEMPENTITY);
@@ -74,15 +66,15 @@ public Ham_Player_Killed_Post(this) {
     write_byte(1);
     message_end();
 
-    emit_sound(this, CHAN_VOICE, g_szPlayerHitSounds[random(sizeof(g_szPlayerHitSounds))], VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+    emit_sound(pPlayer, CHAN_VOICE, SW_SOUND_PLAYER_HIT[random(sizeof(SW_SOUND_PLAYER_HIT))], VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 }
 
-public Ham_Player_TakeDamage_Post(this, iInflictor, pAttacker, Float:flDamage, iDamageBits) {
-    emit_sound(this, CHAN_VOICE, g_szPlayerHitSounds[random(sizeof(g_szPlayerHitSounds))], VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+public Ham_Player_TakeDamage_Post(pPlayer, iInflictor, pAttacker, Float:flDamage, iDamageBits) {
+    emit_sound(pPlayer, CHAN_VOICE, SW_SOUND_PLAYER_HIT[random(sizeof(SW_SOUND_PLAYER_HIT))], VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 
     return HAM_HANDLED;
 }
 
-public HC_Player_SpawnEquip_Post(this) {
-    emit_sound(this, CHAN_ITEM, "common/null.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+public HC_Player_SpawnEquip_Post(pPlayer) {
+    emit_sound(pPlayer, CHAN_ITEM, "common/null.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 }

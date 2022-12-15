@@ -39,8 +39,8 @@ public Native_SetAttribute(iPluginId, iArgc) {
     @Player_SetAttribute(pPlayer, iAttrib, value);
 }
 
-public Ham_Player_TakeDamage(this, pWeapon, pAttacker, Float:flDamage, iDamageBits) {
-    new Float:flRatio = CalculateDamageRatio(pAttacker, this);
+public Ham_Player_TakeDamage(pPlayer, pInflictor, pAttacker, Float:flDamage, iDamageBits) {
+    new Float:flRatio = CalculateDamageRatio(pAttacker, pPlayer);
     SetHamParamFloat(4, flDamage * flRatio);
     return HAM_HANDLED;
 }

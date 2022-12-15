@@ -43,10 +43,10 @@ public plugin_init() {
     RegisterHam(Ham_Spawn, "player", "Ham_Player_Spawn_Post", .Post = 1);
     RegisterHam(Ham_Killed, "player", "Ham_Player_Killed_Post", .Post = 1);
 
-    RegisterItem("Slingshot", "snowwars/v090/weapon_slingshot", 4500, ShopItem_Weapon);
-    RegisterItem("Lemon Juice", "lemonjuice", 2500, ShopItem_Artifact);
-    RegisterItem("Down Jacket", "downjacket", 3100, ShopItem_Artifact);
-    RegisterItem("Surprise Box", "snowwars/v090/weapon_fireworksbox", 10000, ShopItem_Weapon);
+    RegisterItem("Slingshot", SW_WEAPON_SLINGSHOT, 4500, ShopItem_Weapon);
+    RegisterItem("Lemon Juice", SW_ARTIFACT_LEMONJUICE, 2500, ShopItem_Artifact);
+    RegisterItem("Down Jacket", SW_ARTIFACT_DOWNJACKET, 3100, ShopItem_Artifact);
+    RegisterItem("Surprise Box", SW_WEAPON_FIREWORKSBOX, 10000, ShopItem_Weapon);
 }
 
 public plugin_destroy() {
@@ -83,12 +83,12 @@ public Command_ClientBuyOpen(pPlayer) {
     return PLUGIN_HANDLED;
 }
 
-public Ham_Player_Spawn_Post(this) {
-    @Player_CloseBuyMenu(this);
+public Ham_Player_Spawn_Post(pPlayer) {
+    @Player_CloseBuyMenu(pPlayer);
 }
 
-public Ham_Player_Killed_Post(this) {
-    @Player_CloseBuyMenu(this);
+public Ham_Player_Killed_Post(pPlayer) {
+    @Player_CloseBuyMenu(pPlayer);
 }
 
 public @Player_OpenBuyMenu(this) {

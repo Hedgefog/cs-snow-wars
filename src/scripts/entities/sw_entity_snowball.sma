@@ -16,10 +16,6 @@
 
 #define ENTITY_NAME "sw_snowball"
 
-new const g_szSprBlood[] = "sprites/blood.spr";
-new const g_szMdlWSnowball[] = "models/snowwars/v090/weapons/w_snowball.mdl";
-new const g_szSndSnowballHit[] = "snowwars/v090/sbhit.wav";
-
 new g_iCeHandler;
 new g_iBloodModelIndex;
 
@@ -30,15 +26,15 @@ public plugin_precache() {
     .szName = ENTITY_NAME,
     .vMins = Float:{-4.0, -4.0, -4.0},
     .vMaxs = Float:{4.0, 4.0, 4.0},
-    .modelIndex = precache_model(g_szMdlWSnowball),
+    .modelIndex = precache_model(SW_WEAPON_SNOWBALL_W_MODEL),
     .fLifeTime = 10.0
   );
 
   CE_RegisterHook(CEFunction_Spawn, ENTITY_NAME, "@Entity_Spawn");
   CE_RegisterHook(CEFunction_Kill, ENTITY_NAME, "@Entity_Kill");
 
-  g_iBloodModelIndex = precache_model(g_szSprBlood);
-  precache_sound(g_szSndSnowballHit);
+  g_iBloodModelIndex = precache_model("sprites/blood.spr");
+  precache_sound(SW_SOUND_SNOWBALL_HIT);
 }
 
 public plugin_init() {
@@ -78,7 +74,7 @@ public @Entity_Kill(this) {
   write_byte(8);
   message_end();
 
-  emit_sound(this, CHAN_BODY, g_szSndSnowballHit, 0.5, ATTN_NORM, 0, PITCH_NORM);
+  emit_sound(this, CHAN_BODY, SW_SOUND_SNOWBALL_HIT, 0.5, ATTN_NORM, 0, PITCH_NORM);
 }
 
 public @Player_SnowballHitEffect(this, Float:flRatio) {
@@ -91,8 +87,8 @@ public @Player_SnowballHitEffect(this, Float:flRatio) {
   set_pev(this, pev_punchangle, vecPunchangle);
 }
 
-public Ham_Base_Touch_Post(this, pTarget) {
-  if (CE_GetHandlerByEntity(this) != g_iCeHandler) {
+public Ham_Base_Touch_Post(pEntity, pTarget) {
+  if (CE_GetHandlerByEntity(pEntity) != g_iCeHandler) {
     return HAM_IGNORED;
   }
 
@@ -100,12 +96,12 @@ public Ham_Base_Touch_Post(this, pTarget) {
     return HAM_IGNORED;
   }
 
-  new pOwner = pev(this, pev_owner);
+  new pOwner = pev(pEntity, pev_owner);
 
   static Float:vecOrigin[3];
-  pev(this, pev_origin, vecOrigin);
+  pev(pEntity, pev_origin, vecOrigin);
 
-  set_pev(this, pev_enemy, pTarget);
+  set_pev(pEntity, pev_enemy, pTarget);
 
   // static Float:vecTarget[3];
   // global_get(glb_v_forward, vecTarget);
@@ -113,7 +109,7 @@ public Ham_Base_Touch_Post(this, pTarget) {
   // xs_vec_add(vecOrigin, vecTarget, vecTarget);
 
   // static Float:vecTarget[3];
-  // pev(this, pev_velocity, vecTarget);
+  // pev(pEntity, pev_velocity, vecTarget);
   // xs_vec_sub(vecTarget, vecOrigin, vecTarget);
   // xs_vec_normalize(vecTarget, vecTarget);
   // xs_vec_add(vecOrigin, vecTarget, vecTarget);
@@ -123,7 +119,7 @@ public Ham_Base_Touch_Post(this, pTarget) {
     pev(pTarget, pev_origin, vecTarget);
 
     // static Float:vecStart[3];
-    // pev(this, pev_origin, vecStart);
+    // pev(pEntity, pev_origin, vecStart);
     // pev(pTarget, pev_origin, vecStart);
 
     // static Float:vecEnd[3];
@@ -133,49 +129,49 @@ public Ham_Base_Touch_Post(this, pTarget) {
     // vecEnd[2] = vecOrigin[2];
 
     // new pTr = create_tr2();
-    // engfunc(EngFunc_TraceLine, vecStart, vecEnd, DONT_IGNORE_MONSTERS, this, pTr);
+    // engfunc(EngFunc_TraceLine, vecStart, vecEnd, DONT_IGNORE_MONSTERS, pEntity, pTr);
     // new iHitgroup = get_tr2(pTr, TR_iHitgroup);
     // free_tr2(pTr);
 
     new iHitgroup = vecOrigin[2] - vecTarget[2] >= 18.0 ? HIT_HEAD : 0;
 
     static Float:flDamage = 0.0;
-    pev(this, pev_dmg, flDamage);
+    pev(pEntity, pev_dmg, flDamage);
 
     if (rg_is_player_can_takedamage(pTarget, pOwner)) {
-      ExecuteHamB(Ham_TakeDamage, pTarget, this, pOwner, flDamage, iHitgroup == HIT_HEAD ? DMG_DROWN : DMG_GENERIC);
+      ExecuteHamB(Ham_TakeDamage, pTarget, pEntity, pOwner, flDamage, iHitgroup == HIT_HEAD ? DMG_DROWN : DMG_GENERIC);
     }
 
   } else if (pev(pTarget, pev_takedamage) != DAMAGE_NO) {
-    ExecuteHamB(Ham_TakeDamage, pTarget, this, pOwner, 5.0, DMG_GENERIC);
+    ExecuteHamB(Ham_TakeDamage, pTarget, pEntity, pOwner, 5.0, DMG_GENERIC);
   } else {
-    // if (pev(this, pev_iuser3) < 1) {
+    // if (pev(pEntity, pev_iuser3) < 1) {
     //   static Float:vecVelocity[3];
-    //   pev(this, pev_velocity, vecVelocity);
+    //   pev(pEntity, pev_velocity, vecVelocity);
     //   xs_vec_mul_scalar(vecVelocity, 0.25, vecVelocity);
-    //   set_pev(this, pev_velocity, vecVelocity);
-    //   set_pev(this, pev_iuser3, pev(this, pev_iuser3) + 1);
+    //   set_pev(pEntity, pev_velocity, vecVelocity);
+    //   set_pev(pEntity, pev_iuser3, pev(pEntity, pev_iuser3) + 1);
     //   return HAM_IGNORED;
     // }
   }
 
-  ExecuteHamB(Ham_TakeDamage, this, pTarget, pTarget, 1.0, DMG_GENERIC);
+  ExecuteHamB(Ham_TakeDamage, pEntity, pTarget, pTarget, 1.0, DMG_GENERIC);
 
   return HAM_HANDLED;
 }
 
-public Ham_Base_Think(this) {
-  if (CE_GetHandlerByEntity(this) != g_iCeHandler) {
+public Ham_Base_Think(pEntity) {
+  if (CE_GetHandlerByEntity(pEntity) != g_iCeHandler) {
     return HAM_IGNORED;
   }
 
   new Float:flAimAssistRange = get_pcvar_float(g_pCvarAimAssistRange);
 
   if (flAimAssistRange > 0.0) {
-    new pOwner = pev(this, pev_owner);
+    new pOwner = pev(pEntity, pev_owner);
 
     static Float:vecOrigin[3];
-    pev(this, pev_origin, vecOrigin);
+    pev(pEntity, pev_origin, vecOrigin);
 
     new pNearestPlayer = -1;
     new Float:flNearestPlayerDistance = 0.0;
@@ -207,28 +203,28 @@ public Ham_Base_Think(this) {
     }
 
     if (pNearestPlayer != -1) {
-      DoAimAssist(this, pNearestPlayer, flAimAssistRange);
+      DoAimAssist(pEntity, pNearestPlayer, flAimAssistRange);
     }
   }
 
-  set_pev(this, pev_nextthink, get_gametime() + 0.1);
+  set_pev(pEntity, pev_nextthink, get_gametime() + 0.1);
 
   return HAM_HANDLED;
 }
 
-public Ham_Player_TakeDamage_Post(this, pWeapon, pAttacker, Float:flDamage, iDamageBits) {
+public Ham_Player_TakeDamage_Post(pPlayer, pWeapon, pAttacker, Float:flDamage, iDamageBits) {
   if (CE_GetHandlerByEntity(pWeapon) != g_iCeHandler) {
     return HAM_IGNORED;
   }
 
   new Float:flRatio = flDamage / 100.0;
 
-  new iHitgroup = get_member(this, m_LastHitGroup);
+  new iHitgroup = get_member(pPlayer, m_LastHitGroup);
   if (iHitgroup == HIT_HEAD) {
     flRatio *= 2.0;
   }
 
-  @Player_SnowballHitEffect(this, flRatio);
+  @Player_SnowballHitEffect(pPlayer, flRatio);
 
   return HAM_HANDLED;
 }
