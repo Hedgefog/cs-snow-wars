@@ -71,7 +71,7 @@ public HC_Player_SpawnEquip(pPlayer) {
     CW_GiveWeapon(pPlayer, SW_WEAPON_SNOWBALL);
 
     if (get_member(pPlayer, m_iTeam) == 2) {
-        rg_give_defusekit(pPlayer);
+        set_member(pPlayer, m_bHasDefuser, true);
     }
 
     return HC_SUPERCEDE;
