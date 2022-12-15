@@ -2,6 +2,8 @@
   1.0.0
     Additions and improvements:
       Added snowman
+      Increased Lemon Juice splash damage
+      CTs team now has a defuse kit by default
       Reduced the max firing pitch for fireworks box rocket
       Reduced surprise box price
 
