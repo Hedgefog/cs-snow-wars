@@ -46,6 +46,7 @@ public plugin_init() {
     RegisterItem("Slingshot", SW_WEAPON_SLINGSHOT, 4500, ShopItem_Weapon);
     RegisterItem("Lemon Juice", SW_ARTIFACT_LEMONJUICE, 2500, ShopItem_Artifact);
     RegisterItem("Down Jacket", SW_ARTIFACT_DOWNJACKET, 3100, ShopItem_Artifact);
+    RegisterItem("Snowman", SW_WEAPON_SNOWMAN, 5000, ShopItem_Weapon);
     RegisterItem("Surprise Box", SW_WEAPON_FIREWORKSBOX, 10000, ShopItem_Weapon);
 }
 
