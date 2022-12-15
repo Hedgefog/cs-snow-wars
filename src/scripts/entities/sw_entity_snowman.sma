@@ -266,5 +266,7 @@ public bool:@Player_TryRespawn(this) {
 public Task_PlayerRespawn(iTaskId) {
     new pPlayer = iTaskId;
 
-    @Player_TryRespawn(pPlayer);
+    if (!is_user_alive(pPlayer)) {
+        @Player_TryRespawn(pPlayer);
+    }
 }
