@@ -1,5 +1,5 @@
 #define SW_TITLE "Snow Wars"
-#define SW_VERSION "0.9.2"
+#define SW_VERSION "1.0.0"
 
 stock const SW_WEAPON_SNOWBALL[] = "snowwars/v090/weapon_snowball";
 stock const SW_WEAPON_SLINGSHOT[] = "snowwars/v090/weapon_slingshot";

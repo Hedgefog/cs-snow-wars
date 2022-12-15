@@ -1,4 +1,13 @@
-/**/
+/*
+  1.0.0
+    Additions and improvements:
+      Added snowman
+      Reduced the max firing pitch for fireworks box rocket
+      Reduced surprise box price
+
+    Fixes:
+      Fixed weapons secondary attack behavior
+*/
 
 #if defined _snowwars_included
   #endinput
