@@ -69,6 +69,11 @@ public Ham_WeaponBox_Touch(pWeaponBox, pTarget) {
 
 public HC_Player_SpawnEquip(pPlayer) {
     CW_GiveWeapon(pPlayer, SW_WEAPON_SNOWBALL);
+
+    if (get_member(pPlayer, m_iTeam) == 2) {
+        rg_give_defusekit(pPlayer);
+    }
+
     return HC_SUPERCEDE;
 }
 
