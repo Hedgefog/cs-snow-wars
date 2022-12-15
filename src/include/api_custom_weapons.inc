@@ -100,5 +100,6 @@ native CW_GetPlayer(pItem);
 native CW_RemovePlayerItem(pItem);
 
 native CW_GiveWeapon(pPlayer, const szWeapon[]);
+native bool:CW_HasWeapon(pPlayer, const szWeapon[]);
 native CW_SpawnWeapon(CW:iHandler);
 native CW_SpawnWeaponBox(CW:iHandler);

@@ -139,6 +139,7 @@ public plugin_natives() {
     register_native("CW_GetWeaponData", "Native_GetWeaponData");
     register_native("CW_GetWeaponStringData", "Native_GetWeaponStringData");
     register_native("CW_GiveWeapon", "Native_GiveWeapon");
+    register_native("CW_HasWeapon", "Native_HasWeapon");
     register_native("CW_SpawnWeapon", "Native_SpawnWeapon");
     register_native("CW_SpawnWeaponBox", "Native_SpawnWeaponBox");
 
@@ -248,6 +249,21 @@ public Native_GiveWeapon(iPluginId, iArgc) {
     if (TrieGetCell(g_rgWeaponsMap, szWeapon, iHandler)) {
         GiveWeapon(pPlayer, iHandler);
     }
+}
+
+
+public bool:Native_HasWeapon(iPluginId, iArgc) {
+    new pPlayer = get_param(1);
+
+    static szWeapon[64];
+    get_string(2, szWeapon, charsmax(szWeapon));
+
+    new CW:iHandler;
+    if (TrieGetCell(g_rgWeaponsMap, szWeapon, iHandler)) {
+        return HasWeapon(pPlayer, iHandler);
+    }
+
+    return false;
 }
 
 public Native_SpawnWeapon(iPluginId, iArgc) {
@@ -1630,6 +1646,23 @@ GiveWeapon(pPlayer, CW:iHandler) {
     if (iClipSize == WEAPON_NOCLIP && iPrimaryAmmoIndex != -1) {
         set_member(pPlayer, m_rgAmmo, get_member(pPlayer, m_rgAmmo, iPrimaryAmmoIndex) + 1, iPrimaryAmmoIndex);
     }
+}
+
+bool:HasWeapon(pPlayer, CW:iHandler) {
+    new iSlot = GetData(iHandler, CW_Data_SlotId);
+    
+    new pItem = get_member(pPlayer, m_rgpPlayerItems, iSlot);
+    while (pItem != -1) {
+        new pNextItem = get_member(pItem, m_pNext);
+
+        if (CW_GetHandlerByEntity(pItem) == iHandler) {
+            return true;
+        }
+
+        pItem = pNextItem;
+    }
+
+    return false;
 }
 
 UpdateWeaponList(pPlayer, CW:iHandler) {

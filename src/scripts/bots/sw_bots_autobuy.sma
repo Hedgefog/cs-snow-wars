@@ -50,7 +50,7 @@ public @Player_AutoBuy(this) {
 
     if (
         random(100) < 50 &&
-        !@Player_HasWeapon(this, SW_WEAPON_SLINGSHOT) &&
+        !CW_HasWeapon(this, SW_WEAPON_SLINGSHOT) &&
         cs_get_user_money(this) >= SW_Shop_Item_GetPrice("Slingshot")
     ) {
         SW_Shop_Player_BuyItem(this, "Slingshot");
@@ -63,27 +63,4 @@ public @Player_AutoBuy(this) {
     ) {
         SW_Shop_Player_BuyItem(this, "Lemon Juice");
     }
-}
-
-public bool:@Player_HasWeapon(this, const szWeapon[]) {
-    new CW:iCwHandler = CW_GetHandler(szWeapon);
-    if (iCwHandler == CW_INVALID_HANDLER) {
-        return false;
-    }
-
-    for (new iSlot = 0; iSlot < 6; ++iSlot) {
-        new pItem = get_member(this, m_rgpPlayerItems, iSlot);
-
-        while (pItem != -1) {
-            new pNextItem = get_member(pItem, m_pNext);
-
-            if (CW_GetHandlerByEntity(pItem) == iCwHandler) {
-                return true;
-            }
-
-            pItem = pNextItem;
-        }
-    }
-
-    return false;
 }
