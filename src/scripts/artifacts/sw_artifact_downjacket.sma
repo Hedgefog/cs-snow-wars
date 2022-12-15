@@ -1,4 +1,5 @@
 #include <amxmodx>
+#include <hamsandwich>
 #include <fakemeta>
 #include <reapi>
 
@@ -21,8 +22,15 @@ public plugin_init() {
     register_plugin("[Snow Wars] Down Jacket Artifact", SW_VERSION, "Hedgehog Fog");
 
     register_event("ResetHUD", "Event_ResetHUD", "b");
+    RegisterHam(Ham_Spawn, "player", "Ham_Player_Spawn", .Post = 1);
 
     CE_RegisterHook(CEFunction_Spawn, "sw_item_artifact", "@ArtifactItem_Spawn");
+}
+
+public Ham_Player_Spawn(pPlayer) {
+    if (g_pPlayerJacket[pPlayer]) {
+        set_pev(g_pPlayerJacket[pPlayer], pev_skin, get_member(pPlayer, m_iTeam));
+    }
 }
 
 public Event_ResetHUD(pPlayer) {

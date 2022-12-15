@@ -6,6 +6,7 @@
       Reduced surprise box price
 
     Fixes:
+      Fixed a bug where the down jacket had the wrong skin after auto team change
       Fixed weapons secondary attack behavior
       Fixed snowball view model (by Psycrow)
       Fixed fireworks box player model (by Psycrow)
