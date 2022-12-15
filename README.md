@@ -11,7 +11,7 @@ __Snow Wars__ is a __Counter-Strike__ server-side modification based on snowball
 #### Weapons and Artifacts
 
 - Snowball - deals 50 damage on hit
-- Slightshot - allows you to shoot snowballs with extra controlled power
+- Slingshot - allows you to shoot snowballs with extra controlled power
 - Lemon Juice - adds radius damage to your snowballs, it's yellow for a reason and enemies find it humiliating
 - Down Jacket - reduces taken damage
 - Surprise Box - SURPRISE, but in the box
