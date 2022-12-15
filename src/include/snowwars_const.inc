@@ -1,17 +1,17 @@
 #define SW_TITLE "Snow Wars"
 #define SW_VERSION "1.0.0"
 
-stock const SW_WEAPON_SNOWBALL[] = "snowwars/v090/weapon_snowball";
-stock const SW_WEAPON_SLINGSHOT[] = "snowwars/v090/weapon_slingshot";
-stock const SW_WEAPON_FIREWORKSBOX[] = "snowwars/v090/weapon_fireworksbox";
+stock const SW_WEAPON_SNOWBALL[] = "snowwars/v100/weapon_snowball";
+stock const SW_WEAPON_SLINGSHOT[] = "snowwars/v100/weapon_slingshot";
+stock const SW_WEAPON_FIREWORKSBOX[] = "snowwars/v100/weapon_fireworksbox";
 stock const SW_WEAPON_SNOWMAN[] = "snowwars/v100/weapon_snowman";
 
 stock const SW_ARTIFACT_DOWNJACKET[] = "downjacket";
 stock const SW_ARTIFACT_LEMONJUICE[] = "lemonjuice";
 
-stock const SW_WEAPON_SNOWBALL_HUD_TXT[] = "sprites/snowwars/v090/weapon_snowball.txt";
-stock const SW_WEAPON_SLINGSHOT_HUD_TXT[] = "sprites/snowwars/v090/weapon_slingshot.txt";
-stock const SW_WEAPON_FIREWORKSBOX_HUD_TXT[] = "sprites/snowwars/v090/weapon_fireworksbox.txt";
+stock const SW_WEAPON_SNOWBALL_HUD_TXT[] = "sprites/snowwars/v100/weapon_snowball.txt";
+stock const SW_WEAPON_SLINGSHOT_HUD_TXT[] = "sprites/snowwars/v100/weapon_slingshot.txt";
+stock const SW_WEAPON_FIREWORKSBOX_HUD_TXT[] = "sprites/snowwars/v100/weapon_fireworksbox.txt";
 stock const SW_WEAPON_SNOWMAN_HUD_TXT[] = "sprites/snowwars/v100/weapon_snowman.txt";
 
 stock const SW_WEAPON_SNOWBALL_V_MODEL[] = "models/snowwars/v100/weapons/v_snowball.mdl";
@@ -47,3 +47,9 @@ stock const SW_SOUND_RETURN[] = "snowwars/v100/return.wav";
 stock const SW_SOUND_PLAYER_HIT[][] = { "snowwars/v090/snowhit_human1.wav", "snowwars/v090/snowhit_human2.wav" };
 
 stock const SW_MODEL_SNOWMAN[] = "models/snowwars/v100/snowman.mdl";
+
+stock const SW_SPRITE_HUD[][] = {
+    "sprites/snowwars/v100/640hud1.spr",
+    "sprites/snowwars/v100/640hud2.spr",
+    "sprites/snowwars/v100/640hud3.spr"
+};

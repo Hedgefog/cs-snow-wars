@@ -10,6 +10,12 @@
 
 new g_pCvarVersion;
 
+public plugin_precache() {
+    for (new i = 0; i < sizeof(SW_SPRITE_HUD); ++i) {
+        precache_model(SW_SPRITE_HUD[i]);
+    }
+}
+
 public plugin_init() {
     register_plugin(PLUGIN, VERSION, AUTHOR);
 
