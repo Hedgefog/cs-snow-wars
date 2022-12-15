@@ -7,6 +7,8 @@
 
     Fixes:
       Fixed weapons secondary attack behavior
+      Fixed snowball view model (by Psycrow)
+      Fixed fireworks box player model (by Psycrow)
 */
 
 #if defined _snowwars_included

@@ -14,7 +14,7 @@ stock const SW_WEAPON_SLINGSHOT_HUD_TXT[] = "sprites/snowwars/v090/weapon_slings
 stock const SW_WEAPON_FIREWORKSBOX_HUD_TXT[] = "sprites/snowwars/v090/weapon_fireworksbox.txt";
 stock const SW_WEAPON_SNOWMAN_HUD_TXT[] = "sprites/snowwars/v100/weapon_snowman.txt";
 
-stock const SW_WEAPON_SNOWBALL_V_MODEL[] = "models/snowwars/v090/weapons/v_snowball.mdl";
+stock const SW_WEAPON_SNOWBALL_V_MODEL[] = "models/snowwars/v100/weapons/v_snowball.mdl";
 stock const SW_WEAPON_SNOWBALL_P_MODEL[] = "models/snowwars/v090/weapons/p_snowball.mdl";
 stock const SW_WEAPON_SNOWBALL_W_MODEL[] = "models/snowwars/v090/weapons/w_snowball.mdl";
 stock const SW_WEAPON_SNOWBALL_LEMON_W_MODEL[] = "models/snowwars/v090/weapons/w_snowball_lemon.mdl";
@@ -24,7 +24,7 @@ stock const SW_WEAPON_SLINGSHOT_P_MODEL[] = "models/snowwars/v090/weapons/p_slin
 stock const SW_WEAPON_SLINGSHOT_W_MODEL[] = "models/snowwars/v090/weapons/w_slingshot.mdl";
 
 stock const SW_WEAPON_FIREWORKSBOX_V_MODEL[] = "models/snowwars/v090/weapons/v_fireworksbox.mdl";
-stock const SW_WEAPON_FIREWORKSBOX_P_MODEL[] = "models/snowwars/v090/weapons/p_fireworksbox.mdl";
+stock const SW_WEAPON_FIREWORKSBOX_P_MODEL[] = "models/snowwars/v100/weapons/p_fireworksbox.mdl";
 stock const SW_WEAPON_FIREWORKSBOX_W_MODEL[] = "models/snowwars/v090/weapons/w_fireworksbox.mdl";
 
 stock const SW_WEAPON_SNOWMAN_V_MODEL[] = "";
