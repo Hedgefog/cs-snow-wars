@@ -15,6 +15,7 @@
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
+#define AMMO_INDEX 4
 #define DEPLOY_HEIGHT_STEP 32.0
 #define DEPLOY_DISTANCE 64.0
 
@@ -24,6 +25,7 @@ new g_pInstallationPreview = -1;
 new Float:g_vecPlayerDeployOrigin[MAX_PLAYERS + 1][3];
 new Float:g_vecPlayerDeployAngles[MAX_PLAYERS + 1][3];
 new bool:g_bPlayerCanDeploy[MAX_PLAYERS + 1];
+new bool:g_bPlayerShowDeployPreview[MAX_PLAYERS + 1];
 
 public plugin_precache() {
     precache_generic(SW_WEAPON_SNOWMAN_HUD_TXT);
@@ -35,7 +37,7 @@ public plugin_precache() {
 public plugin_init() {
     register_plugin(PLUGIN, VERSION, AUTHOR);
 
-    g_iCwHandler = CW_Register(SW_WEAPON_SNOWMAN, CSW_M249, 1, _, _, _, _, 3, 2, _, "skull", CWF_NoBulletSmoke);
+    g_iCwHandler = CW_Register(SW_WEAPON_SNOWMAN, CSW_M249, _, AMMO_INDEX, _, _, _, 3, 2, _, "skull", CWF_NoBulletSmoke);
     CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
     CW_Bind(g_iCwHandler, CWB_Deploy, "@Weapon_Deploy");
     CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
@@ -60,6 +62,10 @@ public FMForward_AddToFullPack(es, e, pEntity, pHost, pHostFlags, pPlayer, pSet)
 
     new pActiveItem = get_member(pHost, m_pActiveItem);
     if (pActiveItem == -1 || CW_GetHandlerByEntity(pActiveItem) != g_iCwHandler) {
+        return FMRES_SUPERCEDE;
+    }
+
+    if (!g_bPlayerShowDeployPreview[pHost]) {
         return FMRES_SUPERCEDE;
     }
 
@@ -115,6 +121,7 @@ public @Weapon_Idle(this) {
     vecAngles[1] -= 180.0;
     vecAngles[2] = 0.0;
 
+    g_bPlayerShowDeployPreview[pPlayer] = true;
     g_bPlayerCanDeploy[pPlayer] = @Player_FindDeploymentPos(pPlayer, g_vecPlayerDeployOrigin[pPlayer]);
     xs_vec_copy(vecAngles, g_vecPlayerDeployAngles[pPlayer]);
 
@@ -126,29 +133,40 @@ public @Weapon_Deploy(this) {
     CW_DefaultDeploy(this, SW_WEAPON_SNOWMAN_V_MODEL, SW_WEAPON_SNOWMAN_P_MODEL, 0, "c4");
     set_member(this, m_Weapon_flTimeWeaponIdle, 0.1);
     g_bPlayerCanDeploy[pPlayer] = false;
+    g_bPlayerShowDeployPreview[pPlayer] = false;
 }
 
 public @Weapon_PrimaryAttack(this) {
-    new iClip = get_member(this, m_Weapon_iClip);
-    if (iClip <= 0) {
-        return;
-    }
-
     new pPlayer = CW_GetPlayer(this);
     if (!g_bPlayerCanDeploy[pPlayer]) {
         return;
     }
 
-    set_member(this, m_Weapon_iClip, --iClip);
+    new iShotsFired = get_member(this, m_Weapon_iShotsFired);
+    if (iShotsFired > 0) {
+        return;
+    }
+
+    new iAmmo = get_member(pPlayer, m_rgAmmo, AMMO_INDEX);
+    if (iAmmo <= 0) {
+        return;
+    }
 
     @Player_DeploySnowman(pPlayer);
 
-    g_bPlayerCanDeploy[pPlayer] = false;
-
-    if (iClip <= 0) {
+    set_member(pPlayer, m_rgAmmo, --iAmmo, AMMO_INDEX);
+    set_member(this, m_Weapon_iShotsFired, ++iShotsFired);
+    
+    if (iAmmo <= 0) {
         SetThink(this, "RemovePlayerItem");
         set_pev(this, pev_nextthink, get_gametime() + 0.1);
     }
+
+    set_member(this, m_Weapon_flNextPrimaryAttack, 0.5);
+    set_member(this, m_Weapon_flNextSecondaryAttack, 0.5);
+
+    g_bPlayerCanDeploy[pPlayer] = false;
+    g_bPlayerShowDeployPreview[pPlayer] = false;
 }
 
 public Float:@Weapon_GetMaxSpeed(this) {
