@@ -116,6 +116,9 @@ public Ham_Base_Touch_Post(pEntity, pTarget) {
     // xs_vec_normalize(vecTarget, vecTarget);
     // xs_vec_add(vecOrigin, vecTarget, vecTarget);
 
+    static Float:flDamage = 0.0;
+    pev(pEntity, pev_dmg, flDamage);
+
     if (IS_PLAYER(pTarget)) {
         static Float:vecTarget[3];
         pev(pTarget, pev_origin, vecTarget);
@@ -137,15 +140,12 @@ public Ham_Base_Touch_Post(pEntity, pTarget) {
 
         new iHitgroup = vecOrigin[2] - vecTarget[2] >= 18.0 ? HIT_HEAD : 0;
 
-        static Float:flDamage = 0.0;
-        pev(pEntity, pev_dmg, flDamage);
-
         if (rg_is_player_can_takedamage(pTarget, pOwner)) {
             ExecuteHamB(Ham_TakeDamage, pTarget, pEntity, pOwner, flDamage, iHitgroup == HIT_HEAD ? DMG_DROWN : DMG_GENERIC);
         }
 
     } else if (pev(pTarget, pev_takedamage) != DAMAGE_NO) {
-        ExecuteHamB(Ham_TakeDamage, pTarget, pEntity, pOwner, 5.0, DMG_GENERIC);
+        ExecuteHamB(Ham_TakeDamage, pTarget, pEntity, pOwner, flDamage, DMG_GENERIC);
     } else {
         // if (pev(pEntity, pev_iuser3) < 1) {
         //     static Float:vecVelocity[3];
