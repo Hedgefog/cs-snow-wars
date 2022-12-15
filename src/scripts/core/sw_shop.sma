@@ -195,7 +195,13 @@ public bool:@Player_BuyItem(this, iItem) {
     switch (iType) {
         case SW_ShopItemType_Weapon: {
             new iSlotId = CW_GetWeaponData(CW_GetHandler(szId), CW_Data_SlotId);
-            rg_drop_items_by_slot(this, InventorySlotType:(iSlotId + 1));
+            new iClipSize = CW_GetWeaponData(CW_GetHandler(szId), CW_Data_ClipSize);
+            new iPrimaryAmmoIndex = CW_GetWeaponData(CW_GetHandler(szId), CW_Data_PrimaryAmmoType);
+
+            if (iClipSize != WEAPON_NOCLIP || iPrimaryAmmoIndex == -1) {
+                rg_drop_items_by_slot(this, InventorySlotType:(iSlotId + 1));
+            }
+
             CW_GiveWeapon(this, szId);
         }
         case SW_ShopItemType_Artifact: {
