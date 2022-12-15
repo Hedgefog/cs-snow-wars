@@ -50,6 +50,10 @@ public plugin_init() {
     RegisterHookChain(RG_CSGameRules_CheckWinConditions, "HC_CheckWinConditions_Post", .post = 1);
 }
 
+public client_disconnected(pPlayer) {
+    @Player_UnassignSnowmans(pPlayer);
+}
+
 public HC_CheckWinConditions() {
     for (new pPlayer = 1; pPlayer <= MaxClients; ++pPlayer) {
         if (!is_user_connected(pPlayer)) {
@@ -196,6 +200,16 @@ public @Entity_RespawnPlayer(this, pPlayer) {
     emit_sound(pPlayer, CHAN_STATIC, SW_SOUND_RETURN, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 
     CE_Kill(this);
+}
+
+public @Player_UnassignSnowmans(this) {
+    new pPlayerSnowman = 0;
+    while ((pPlayerSnowman = engfunc(EngFunc_FindEntityByString, pPlayerSnowman, "classname", ENTITY_NAME)) != 0) {
+        new pSnowmanOwner = pev(pPlayerSnowman, pev_owner);
+        if (pSnowmanOwner == this) {
+            set_pev(pPlayerSnowman, pev_owner, 0);
+        }
+    }
 }
 
 public @Player_FindSnowman(this) {
