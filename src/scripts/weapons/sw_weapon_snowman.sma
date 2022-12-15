@@ -19,7 +19,6 @@
 #define DEPLOY_DISTANCE 64.0
 
 new CW:g_iCwHandler;
-new g_iBloodModelIndex;
 new g_pInstallationPreview = -1;
 
 new Float:g_vecPlayerDeployOrigin[MAX_PLAYERS + 1][3];
@@ -173,7 +172,7 @@ InitInstallationPreview() {
     set_pev(g_pInstallationPreview, pev_mins, vecMins);
     set_pev(g_pInstallationPreview, pev_maxs, vecMaxs);
     set_pev(g_pInstallationPreview, pev_solid, SOLID_BBOX);
-    set_pev(g_pInstallationPreview, pev_modelindex, engfunc(EngFunc_ModelIndex, SW_MODEL_SNOWMAN));
+    set_pev(g_pInstallationPreview, pev_modelindex, CE_GetModelIndex("sw_snowman"));
     set_pev(g_pInstallationPreview, pev_flags, EF_NODRAW);
     dllfunc(DLLFunc_Spawn, g_pInstallationPreview);
 }
