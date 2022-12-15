@@ -139,12 +139,16 @@ public @Weapon_PrimaryAttack(this) {
         return;
     }
 
-    set_member(this, m_Weapon_iClip, iClip - 1);
+    set_member(this, m_Weapon_iClip, --iClip);
 
     @Player_DeploySnowman(pPlayer);
 
-    SetThink(this, "RemovePlayerItem");
-    set_pev(this, pev_nextthink, get_gametime() + 0.1);
+    g_bPlayerCanDeploy[pPlayer] = false;
+
+    if (iClip <= 0) {
+        SetThink(this, "RemovePlayerItem");
+        set_pev(this, pev_nextthink, get_gametime() + 0.1);
+    }
 }
 
 public Float:@Weapon_GetMaxSpeed(this) {
