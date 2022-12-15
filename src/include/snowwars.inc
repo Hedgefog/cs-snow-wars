@@ -26,6 +26,12 @@ enum SW_PlayerAttribute {
     SW_PlayerAttribute_Power
 }
 
+enum SW_ShopItemType {
+    SW_ShopItemType_Invalid = -1,
+    SW_ShopItemType_Weapon = 0,
+    SW_ShopItemType_Artifact
+}
+
 native any:SW_Player_GetAttribute(pPlayer, SW_PlayerAttribute:iAttrib);
 native SW_Player_SetAttribute(pPlayer, SW_PlayerAttribute:iAttrib, any:value);
 
@@ -41,3 +47,7 @@ native bool:SW_Player_TakeArtifact(pPlayer, const szId[]);
 native bool:SW_Player_TakeArtifactBySlot(pPlayer, iSlot);
 native bool:SW_Player_HasArtifact(pPlayer, const szId[]);
 native SW_Player_FindArtifact(pPlayer, iOffset, szId[], iLen);
+
+native SW_Shop_Player_BuyItem(pPlayer, const szItem[]);
+native SW_Shop_Item_GetPrice(const szItem[]);
+native SW_Shop_Item_GetType(const szItem[]);
