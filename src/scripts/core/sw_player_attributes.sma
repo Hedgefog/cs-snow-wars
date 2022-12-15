@@ -7,6 +7,8 @@
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
+#define IS_PLAYER(%1) (%1 > 0 && %1 <= MaxClients)
+
 new g_rgiPlayerAttributes[MAX_PLAYERS + 1][SW_PlayerAttribute];
 
 public plugin_init() {
@@ -60,7 +62,7 @@ public @Player_ResetAttributes(this) {
 }
 
 Float:CalculateDamageRatio(pAttacker, pVictim) {
-    new Float:flPower = ExecuteHamB(Ham_IsPlayer, pAttacker) ? SW_Player_GetAttribute(pAttacker, SW_PlayerAttribute_Power) : 0.0;
+    new Float:flPower = IS_PLAYER(pAttacker) ? SW_Player_GetAttribute(pAttacker, SW_PlayerAttribute_Power) : 0.0;
     new Float:flResistence = SW_Player_GetAttribute(pVictim, SW_PlayerAttribute_Resistance);
 
     return  (1.0 + flPower) * (1.0 - floatmin(flResistence, 1.0));

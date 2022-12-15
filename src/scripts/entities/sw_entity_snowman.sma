@@ -13,6 +13,8 @@
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
+#define IS_PLAYER(%1) (%1 > 0 && %1 <= MaxClients)
+
 #define ENTITY_NAME "sw_snowman"
 
 #define RESPAWN_DELAY 5.0
@@ -133,7 +135,7 @@ public @Entity_Think(this) {
     new iTeam = 0;
     new iSkin = 0;
 
-    if (pOwner && ExecuteHamB(Ham_IsPlayer, pOwner)) {
+    if (pOwner && IS_PLAYER(pOwner)) {
         iTeam = get_member(pOwner, m_iTeam);
         iSkin = iTeam == 1 || iTeam == 2 ? iTeam : 0;
     }
@@ -165,7 +167,7 @@ public @Entity_Effect(this) {
 public bool:@Entity_CanTakeDamage(this, pInflictor, pAttacker) {
     new pOwner = pev(this, pev_owner);
 
-    if (!pOwner || !ExecuteHamB(Ham_IsPlayer, pOwner)) {
+    if (!pOwner || !IS_PLAYER(pOwner)) {
         return false;
     }
 

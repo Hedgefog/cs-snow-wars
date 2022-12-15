@@ -14,6 +14,8 @@
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
+#define IS_PLAYER(%1) (%1 > 0 && %1 <= MaxClients)
+
 #define ENTITY_NAME "sw_snowball"
 
 new g_iCeHandler;
@@ -259,8 +261,4 @@ DoAimAssist(pSnowball, pTarget, Float:flRange) {
     }
 
     free_tr2(pTr);
-}
-
-public IS_PLAYER(pEntity) {
-    return pEntity > 0 && pEntity <= MaxClients;
 }
