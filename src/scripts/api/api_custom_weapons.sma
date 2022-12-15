@@ -10,7 +10,7 @@
 #include <api_custom_weapons>
 
 #define PLUGIN "[API] Custom Weapons"
-#define VERSION "0.7.3"
+#define VERSION "0.7.4"
 #define AUTHOR "Hedgehog Fog"
 
 #define WALL_PUFF_SPRITE "sprites/wall_puff1.spr"
@@ -1623,6 +1623,12 @@ GiveWeapon(pPlayer, CW:iHandler) {
     if (ExecuteHamB(Ham_AddPlayerItem, pPlayer, pWeapon)) {
         ExecuteHamB(Ham_Item_AttachToPlayer, pWeapon, pPlayer);
         emit_sound(pPlayer, CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+    }
+
+    new iClipSize = GetData(iHandler, CW_Data_ClipSize);
+    new iPrimaryAmmoIndex = GetData(iHandler, CW_Data_PrimaryAmmoType);
+    if (iClipSize == WEAPON_NOCLIP && iPrimaryAmmoIndex != -1) {
+        set_member(pPlayer, m_rgAmmo, get_member(pPlayer, m_rgAmmo, iPrimaryAmmoIndex) + 1, iPrimaryAmmoIndex);
     }
 }
 
