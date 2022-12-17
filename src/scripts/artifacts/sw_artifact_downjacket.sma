@@ -6,6 +6,10 @@
 #include <snowwars>
 #include <api_custom_entities>
 
+#define PLUGIN "[Snow Wars] Down Jacket Artifact"
+#define VERSION SW_VERSION
+#define AUTHOR "Hedgehog Fog"
+
 #define ARTIFACT_ID SW_ARTIFACT_DOWNJACKET
 
 new g_pPlayerJacket[MAX_PLAYERS + 1];
@@ -19,7 +23,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-    register_plugin("[Snow Wars] Down Jacket Artifact", SW_VERSION, "Hedgehog Fog");
+    register_plugin(PLUGIN, VERSION, AUTHOR);
 
     register_event("ResetHUD", "Event_ResetHUD", "b");
     RegisterHam(Ham_Spawn, "player", "Ham_Player_Spawn", .Post = 1);

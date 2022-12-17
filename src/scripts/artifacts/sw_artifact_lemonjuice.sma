@@ -8,6 +8,10 @@
 #include <api_custom_entities>
 #include <screenfade_util>
 
+#define PLUGIN "[Snow Wars] Lemon Juice Artifact"
+#define VERSION SW_VERSION
+#define AUTHOR "Hedgehog Fog"
+
 #define ARTIFACT_ID SW_ARTIFACT_LEMONJUICE
 #define SPLASH_DAMAGE 22.0
 
@@ -25,7 +29,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-    register_plugin("[Snow Wars] Lemon Juice Artifact", SW_VERSION, "Hedgehog Fog");
+    register_plugin(PLUGIN, VERSION, AUTHOR);
 
     RegisterHam(Ham_TakeDamage, "player", "Ham_Player_TakeDamage_Post", .Post = 1);
 
