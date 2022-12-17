@@ -1,6 +1,6 @@
 ## ❄ Snow Wars 🇺🇦
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/hedgefog/cs-snow-wars)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/hedgefog/cs-snow-wars/CI)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/hedgefog/cs-snow-wars/build.yml?branch=release)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/hedgefog/cs-snow-wars)
 ![GitHub all releases](https://img.shields.io/github/downloads/hedgefog/cs-snow-wars/total)
 
