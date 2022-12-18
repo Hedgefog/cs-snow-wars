@@ -26,9 +26,9 @@ new CW:g_iCwHandler;
 
 public plugin_precache() {
     precache_generic(SW_WEAPON_SLINGSHOT_HUD_TXT);
-    precache_model(SW_WEAPON_SLINGSHOT_V_MODEL);
-    precache_model(SW_WEAPON_SLINGSHOT_P_MODEL);
-    precache_model(SW_WEAPON_SLINGSHOT_W_MODEL);
+    precache_model(SW_MODEL_WEAPON_SLINGSHOT_V);
+    precache_model(SW_MODEL_WEAPON_SLINGSHOT_P);
+    precache_model(SW_MODEL_WEAPON_SLINGSHOT_W);
     precache_sound(SW_SOUND_SNOWBALL_THROW);
 }
 
@@ -83,7 +83,7 @@ public @Weapon_Idle(this) {
 
 public @Weapon_Deploy(this) {
         new pPlayer = CW_GetPlayer(this);
-        CW_DefaultDeploy(this, SW_WEAPON_SLINGSHOT_V_MODEL, SW_WEAPON_SLINGSHOT_P_MODEL, 3, "shieldgun");
+        CW_DefaultDeploy(this, SW_MODEL_WEAPON_SLINGSHOT_V, SW_MODEL_WEAPON_SLINGSHOT_P, 3, "shieldgun");
         g_bPlayerRedeploy[pPlayer] = false;
 }
 
@@ -128,7 +128,7 @@ public @Weapon_SecondaryAttack(this) {
 }
 
 public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
-    engfunc(EngFunc_SetModel, pWeaponBox, SW_WEAPON_SLINGSHOT_W_MODEL);
+    engfunc(EngFunc_SetModel, pWeaponBox, SW_MODEL_WEAPON_SLINGSHOT_W);
 }
 
 public Float:@Weapon_GetMaxSpeed(this) {

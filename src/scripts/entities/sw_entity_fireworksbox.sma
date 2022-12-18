@@ -25,7 +25,7 @@ public plugin_precache() {
         .szName = ENTITY_NAME,
         .vMins = Float:{-16.0, -16.0, 0.0},
         .vMaxs = Float:{16.0, 16.0, 32.0},
-        .modelIndex = precache_model(SW_WEAPON_FIREWORKSBOX_W_MODEL),
+        .modelIndex = precache_model(SW_MODEL_WEAPON_FIREWORKSBOX_W),
         .preset = CEPreset_Prop
     );
 

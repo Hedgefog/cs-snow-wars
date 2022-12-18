@@ -29,9 +29,9 @@ new bool:g_bPlayerShowDeployPreview[MAX_PLAYERS + 1];
 
 public plugin_precache() {
     precache_generic(SW_WEAPON_SNOWMAN_HUD_TXT);
-    // precache_model(SW_WEAPON_SNOWMAN_V_MODEL);
-    // precache_model(SW_WEAPON_SNOWMAN_P_MODEL);
-    precache_model(SW_WEAPON_SNOWMAN_W_MODEL);
+    // precache_model(SW_MODEL_WEAPON_SNOWMAN_V);
+    // precache_model(SW_MODEL_WEAPON_SNOWMAN_P);
+    precache_model(SW_MODEL_WEAPON_SNOWMAN_W);
 }
 
 public plugin_init() {
@@ -130,7 +130,7 @@ public @Weapon_Idle(this) {
 
 public @Weapon_Deploy(this) {
     new pPlayer = CW_GetPlayer(this);
-    CW_DefaultDeploy(this, SW_WEAPON_SNOWMAN_V_MODEL, SW_WEAPON_SNOWMAN_P_MODEL, 0, "c4");
+    CW_DefaultDeploy(this, SW_MODEL_WEAPON_SNOWMAN_V, SW_MODEL_WEAPON_SNOWMAN_P, 0, "c4");
     set_member(this, m_Weapon_flTimeWeaponIdle, 0.1);
     g_bPlayerCanDeploy[pPlayer] = false;
     g_bPlayerShowDeployPreview[pPlayer] = false;
@@ -174,7 +174,7 @@ public Float:@Weapon_GetMaxSpeed(this) {
 }
 
 public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
-    engfunc(EngFunc_SetModel, pWeaponBox, SW_WEAPON_SNOWMAN_W_MODEL);
+    engfunc(EngFunc_SetModel, pWeaponBox, SW_MODEL_WEAPON_SNOWMAN_W);
 }
 
 public @Player_DeploySnowman(this) {

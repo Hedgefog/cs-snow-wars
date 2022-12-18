@@ -18,7 +18,7 @@ public plugin_precache() {
     }
 
     precache_sound(SW_SOUND_PLAYER_SPAWN);
-    precache_model(SW_WEAPON_SNOWBALL_W_MODEL);
+    precache_model(SW_MODEL_WEAPON_SNOWBALL_W);
 }
 
 public plugin_init() {
@@ -47,7 +47,7 @@ public Ham_Player_Killed_Post(pPlayer) {
 
     static s_iMdlSnowball = 0;
     if (!s_iMdlSnowball) {
-        s_iMdlSnowball = engfunc(EngFunc_ModelIndex, SW_WEAPON_SNOWBALL_W_MODEL);
+        s_iMdlSnowball = engfunc(EngFunc_ModelIndex, SW_MODEL_WEAPON_SNOWBALL_W);
     }
 
     message_begin(MSG_ALL, SVC_TEMPENTITY);

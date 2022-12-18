@@ -15,8 +15,8 @@
 new g_pPlayerJacket[MAX_PLAYERS + 1];
 
 public plugin_precache() {
-    precache_model(SW_ARTIFACT_DOWNJACKET_P_MODEL);
-    precache_model(SW_ARTIFACT_DOWNJACKET_W_MODEL);
+    precache_model(SW_MODEL_ARTIFACT_DOWNJACKET_P);
+    precache_model(SW_MODEL_ARTIFACT_DOWNJACKET_W);
     precache_sound(SW_SOUND_DOWNJACKET);
 
     SW_PlayerArtifact_Register(ARTIFACT_ID, "@Artifact_Activated", "@Artifact_Deactivated");
@@ -69,7 +69,7 @@ public @ArtifactItem_Spawn(this) {
         return;
     }
 
-    engfunc(EngFunc_SetModel, this, SW_ARTIFACT_DOWNJACKET_W_MODEL);
+    engfunc(EngFunc_SetModel, this, SW_MODEL_ARTIFACT_DOWNJACKET_W);
 }
 
 public @Player_UpdateStatusIcon(this) {
@@ -104,7 +104,7 @@ public @Jacket_Create(pPlayer) {
     dllfunc(DLLFunc_Spawn, pEntity);
 
     set_pev(pEntity, pev_classname, "player_downjacket");
-    engfunc(EngFunc_SetModel, pEntity, SW_ARTIFACT_DOWNJACKET_P_MODEL);
+    engfunc(EngFunc_SetModel, pEntity, SW_MODEL_ARTIFACT_DOWNJACKET_P);
     set_pev(pEntity, pev_owner, pPlayer);
     set_pev(pEntity, pev_aiment, pPlayer);
     set_pev(pEntity, pev_movetype, MOVETYPE_FOLLOW);

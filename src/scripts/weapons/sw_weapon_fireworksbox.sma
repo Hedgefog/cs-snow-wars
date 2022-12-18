@@ -19,9 +19,9 @@ new CW:g_iCwHandler;
 
 public plugin_precache() {
     precache_generic(SW_WEAPON_FIREWORKSBOX_HUD_TXT);
-    precache_model(SW_WEAPON_FIREWORKSBOX_V_MODEL);
-    precache_model(SW_WEAPON_FIREWORKSBOX_P_MODEL);
-    precache_model(SW_WEAPON_FIREWORKSBOX_W_MODEL);
+    precache_model(SW_MODEL_WEAPON_FIREWORKSBOX_V);
+    precache_model(SW_MODEL_WEAPON_FIREWORKSBOX_P);
+    precache_model(SW_MODEL_WEAPON_FIREWORKSBOX_W);
 }
 
 public plugin_init() {
@@ -44,7 +44,7 @@ public @Weapon_Idle(this) {
 
 public @Weapon_Deploy(this) {
     // new pPlayer = CW_GetPlayer(this);
-    CW_DefaultDeploy(this, SW_WEAPON_FIREWORKSBOX_V_MODEL, SW_WEAPON_FIREWORKSBOX_P_MODEL, 0, "c4");
+    CW_DefaultDeploy(this, SW_MODEL_WEAPON_FIREWORKSBOX_V, SW_MODEL_WEAPON_FIREWORKSBOX_P, 0, "c4");
 }
 
 public @Weapon_PrimaryAttack(this) {
@@ -67,7 +67,7 @@ public @Weapon_PrimaryAttack(this) {
 }
 
 public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
-    engfunc(EngFunc_SetModel, pWeaponBox, SW_WEAPON_FIREWORKSBOX_W_MODEL);
+    engfunc(EngFunc_SetModel, pWeaponBox, SW_MODEL_WEAPON_FIREWORKSBOX_W);
 }
 
 public Float:@Weapon_GetMaxSpeed(this) {

@@ -19,9 +19,9 @@ new g_iSnowballCeHandler;
 new g_iBloodModelIndex;
 
 public plugin_precache() {
-    precache_model(SW_ARTIFACT_LEMONJUICE_W_MODEL);
+    precache_model(SW_MODEL_ARTIFACT_LEMONJUICE_W);
     precache_sound(SW_SOUND_SNOWBALL_LEMON_HIT);
-    precache_model(SW_WEAPON_SNOWBALL_LEMON_W_MODEL);
+    precache_model(SW_MODEL_WEAPON_SNOWBALL_LEMON_W);
 
     g_iBloodModelIndex = precache_model("sprites/blood.spr");
 
@@ -65,7 +65,7 @@ public @ArtifactItem_Spawn(this) {
         return;
     }
 
-    engfunc(EngFunc_SetModel, this, SW_ARTIFACT_LEMONJUICE_W_MODEL);
+    engfunc(EngFunc_SetModel, this, SW_MODEL_ARTIFACT_LEMONJUICE_W);
 }
 
 public @Snowball_Spawn(this) {
@@ -74,7 +74,7 @@ public @Snowball_Spawn(this) {
         return;
     }
 
-    engfunc(EngFunc_SetModel, this, SW_WEAPON_SNOWBALL_LEMON_W_MODEL);
+    engfunc(EngFunc_SetModel, this, SW_MODEL_WEAPON_SNOWBALL_LEMON_W);
     set_pev(this, pev_iuser4, 1);
 
     new Float:flDamage = 0.0;

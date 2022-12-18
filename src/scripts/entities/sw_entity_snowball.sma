@@ -28,7 +28,7 @@ public plugin_precache() {
         .szName = ENTITY_NAME,
         .vMins = Float:{-4.0, -4.0, -4.0},
         .vMaxs = Float:{4.0, 4.0, 4.0},
-        .modelIndex = precache_model(SW_WEAPON_SNOWBALL_W_MODEL),
+        .modelIndex = precache_model(SW_MODEL_WEAPON_SNOWBALL_W),
         .fLifeTime = 10.0
     );
 

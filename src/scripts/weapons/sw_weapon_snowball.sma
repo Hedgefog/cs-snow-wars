@@ -21,9 +21,9 @@ new CW:g_iCwHandler;
 
 public plugin_precache() {
     precache_generic(SW_WEAPON_SNOWBALL_HUD_TXT);
-    precache_model(SW_WEAPON_SNOWBALL_V_MODEL);
-    precache_model(SW_WEAPON_SNOWBALL_P_MODEL);
-    precache_model(SW_WEAPON_SNOWBALL_W_MODEL);
+    precache_model(SW_MODEL_WEAPON_SNOWBALL_V);
+    precache_model(SW_MODEL_WEAPON_SNOWBALL_P);
+    precache_model(SW_MODEL_WEAPON_SNOWBALL_W);
     precache_sound(SW_SOUND_SNOWBALL_THROW);
 }
 
@@ -69,7 +69,7 @@ public @Weapon_Idle(this) {
 
 public @Weapon_Deploy(this) {
     new pPlayer = CW_GetPlayer(this);
-    CW_DefaultDeploy(this, SW_WEAPON_SNOWBALL_V_MODEL, SW_WEAPON_SNOWBALL_P_MODEL, 3, "grenade");
+    CW_DefaultDeploy(this, SW_MODEL_WEAPON_SNOWBALL_V, SW_MODEL_WEAPON_SNOWBALL_P, 3, "grenade");
     g_bPlayerRedeploy[pPlayer] = false;
 }
 
@@ -99,7 +99,7 @@ public @Weapon_SecondaryAttack(this) {
 }
 
 public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
-    engfunc(EngFunc_SetModel, pWeaponBox, SW_WEAPON_SNOWBALL_W_MODEL);
+    engfunc(EngFunc_SetModel, pWeaponBox, SW_MODEL_WEAPON_SNOWBALL_W);
 }
 
 public Float:@Weapon_GetMaxSpeed(this) {
