@@ -7,12 +7,14 @@
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
+#define IS_PLAYER(%1) (%1 > 0 && %1 <= MaxClients)
+
 new g_rgiPlayerAttributes[MAX_PLAYERS + 1][SW_PlayerAttribute];
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+    register_plugin(PLUGIN, VERSION, AUTHOR);
 
-  RegisterHam(Ham_TakeDamage, "player", "Ham_Player_TakeDamage", .Post = 0);
+    RegisterHam(Ham_TakeDamage, "player", "Ham_Player_TakeDamage", .Post = 0);
 }
 
 public plugin_natives() {
@@ -39,8 +41,8 @@ public Native_SetAttribute(iPluginId, iArgc) {
     @Player_SetAttribute(pPlayer, iAttrib, value);
 }
 
-public Ham_Player_TakeDamage(this, pWeapon, pAttacker, Float:flDamage, iDamageBits) {
-    new Float:flRatio = CalculateDamageRatio(pAttacker, this);
+public Ham_Player_TakeDamage(pPlayer, pInflictor, pAttacker, Float:flDamage, iDamageBits) {
+    new Float:flRatio = CalculateDamageRatio(pAttacker, pPlayer);
     SetHamParamFloat(4, flDamage * flRatio);
     return HAM_HANDLED;
 }
@@ -60,7 +62,7 @@ public @Player_ResetAttributes(this) {
 }
 
 Float:CalculateDamageRatio(pAttacker, pVictim) {
-    new Float:flPower = ExecuteHamB(Ham_IsPlayer, pAttacker) ? SW_Player_GetAttribute(pAttacker, SW_PlayerAttribute_Power) : 0.0;
+    new Float:flPower = IS_PLAYER(pAttacker) ? SW_Player_GetAttribute(pAttacker, SW_PlayerAttribute_Power) : 0.0;
     new Float:flResistence = SW_Player_GetAttribute(pVictim, SW_PlayerAttribute_Resistance);
 
     return  (1.0 + flPower) * (1.0 - floatmin(flResistence, 1.0));
