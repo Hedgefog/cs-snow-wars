@@ -15,7 +15,6 @@
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
-#define AMMO_INDEX 4
 #define DEPLOY_HEIGHT_STEP 32.0
 #define DEPLOY_DISTANCE 64.0
 
@@ -37,7 +36,7 @@ public plugin_precache() {
 public plugin_init() {
     register_plugin(PLUGIN, VERSION, AUTHOR);
 
-    g_iCwHandler = CW_Register(SW_WEAPON_SNOWMAN, CSW_M249, _, AMMO_INDEX, _, _, _, 3, 2, _, "skull", CWF_NoBulletSmoke);
+    g_iCwHandler = CW_Register(SW_WEAPON_SNOWMAN, CSW_M249, 1, _, _, _, _, 3, 2, _, "skull", CWF_NoBulletSmoke);
     CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
     CW_Bind(g_iCwHandler, CWB_Deploy, "@Weapon_Deploy");
     CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
@@ -147,14 +146,14 @@ public @Weapon_PrimaryAttack(this) {
         return;
     }
 
-    new iAmmo = get_member(pPlayer, m_rgAmmo, AMMO_INDEX);
+    new iAmmo = get_member(this, m_Weapon_iClip);
     if (iAmmo <= 0) {
         return;
     }
 
     @Player_DeploySnowman(pPlayer);
 
-    set_member(pPlayer, m_rgAmmo, --iAmmo, AMMO_INDEX);
+    set_member(this, m_Weapon_iClip, --iAmmo);
     set_member(this, m_Weapon_iShotsFired, ++iShotsFired);
     
     if (iAmmo <= 0) {
