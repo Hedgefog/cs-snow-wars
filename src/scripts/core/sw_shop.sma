@@ -12,16 +12,14 @@
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
-enum ShopItemType {
-    ShopItem_Weapon,
-    ShopItem_Artifact
-}
-
 new Array:g_irgShopItemTitles;
 new Array:g_irgShopItemIds;
 new Array:g_irgShopItemPrices;
 new Array:g_irgShopItemTypes;
+new Trie:g_iShopItemIdsMap;
 new g_iShopItemCount = 0;
+
+new g_iFwBuy;
 
 new g_iPlayerMenu[MAX_PLAYERS + 1];
 
@@ -30,6 +28,7 @@ public plugin_precache() {
     g_irgShopItemIds = ArrayCreate(64);
     g_irgShopItemPrices = ArrayCreate();
     g_irgShopItemTypes = ArrayCreate();
+    g_iShopItemIdsMap = TrieCreate();
 }
 
 public plugin_init() {
@@ -43,10 +42,13 @@ public plugin_init() {
     RegisterHam(Ham_Spawn, "player", "Ham_Player_Spawn_Post", .Post = 1);
     RegisterHam(Ham_Killed, "player", "Ham_Player_Killed_Post", .Post = 1);
 
-    RegisterItem("Slingshot", "snowwars/v090/weapon_slingshot", 4500, ShopItem_Weapon);
-    RegisterItem("Lemon Juice", "lemonjuice", 2500, ShopItem_Artifact);
-    RegisterItem("Down Jacket", "downjacket", 3100, ShopItem_Artifact);
-    RegisterItem("Surprise Box", "snowwars/v090/weapon_fireworksbox", 12000, ShopItem_Weapon);
+    RegisterItem("Slingshot", SW_WEAPON_SLINGSHOT, 4500, SW_ShopItemType_Weapon);
+    RegisterItem("Lemon Juice", SW_ARTIFACT_LEMONJUICE, 2500, SW_ShopItemType_Artifact);
+    RegisterItem("Down Jacket", SW_ARTIFACT_DOWNJACKET, 3100, SW_ShopItemType_Artifact);
+    RegisterItem("Snowman", SW_WEAPON_SNOWMAN, 5000, SW_ShopItemType_Weapon);
+    RegisterItem("Surprise Box", SW_WEAPON_FIREWORKSBOX, 10000, SW_ShopItemType_Weapon);
+
+    g_iFwBuy = CreateMultiForward("SW_Shop_Fw_Buy", ET_STOP, FP_CELL, FP_STRING);
 }
 
 public plugin_destroy() {
@@ -54,6 +56,13 @@ public plugin_destroy() {
     ArrayDestroy(g_irgShopItemIds);
     ArrayDestroy(g_irgShopItemPrices);
     ArrayDestroy(g_irgShopItemTypes);
+    TrieDestroy(g_iShopItemIdsMap);
+}
+
+public plugin_natives() {
+    register_native("SW_Shop_Player_BuyItem", "Native_BuyItem");
+    register_native("SW_Shop_Item_GetPrice", "Native_GetItemPrice");
+    register_native("SW_Shop_Item_GetType", "Native_GetItemType");
 }
 
 public client_connect(pPlayer) {
@@ -62,6 +71,48 @@ public client_connect(pPlayer) {
 
 public client_disconnected(pPlayer) {
     @Player_CloseBuyMenu(pPlayer);
+}
+
+public bool:Native_BuyItem(iPluginId, iArgc) {
+    new pPlayer = get_param(1);
+
+    static szItemName[32];
+    get_string(2, szItemName, charsmax(szItemName));
+
+    new iItem = GetItemId(szItemName);
+    if (iItem == -1) {
+        return false;
+    }
+
+    return @Player_BuyItem(pPlayer, iItem);
+}
+
+public Native_GetItemPrice(iPluginId, iArgc) {
+    static szItemName[32];
+    get_string(1, szItemName, charsmax(szItemName));
+
+    new iItem = GetItemId(szItemName);
+    if (iItem == -1) {
+        return 0;
+    }
+
+    new iPrice = ArrayGetCell(g_irgShopItemPrices, iItem);
+
+    return iPrice;
+}
+
+public SW_ShopItemType:Native_GetItemType(iPluginId, iArgc) {
+    static szItemName[32];
+    get_string(1, szItemName, charsmax(szItemName));
+
+    new iItem = GetItemId(szItemName);
+    if (iItem == -1) {
+        return SW_ShopItemType_Invalid;
+    }
+
+    new SW_ShopItemType:iType = ArrayGetCell(g_irgShopItemTypes, iItem);
+
+    return iType;
 }
 
 public CS_OnBuyAttempt(pPlayer) {
@@ -83,12 +134,12 @@ public Command_ClientBuyOpen(pPlayer) {
     return PLUGIN_HANDLED;
 }
 
-public Ham_Player_Spawn_Post(this) {
-    @Player_CloseBuyMenu(this);
+public Ham_Player_Spawn_Post(pPlayer) {
+    @Player_CloseBuyMenu(pPlayer);
 }
 
-public Ham_Player_Killed_Post(this) {
-    @Player_CloseBuyMenu(this);
+public Ham_Player_Killed_Post(pPlayer) {
+    @Player_CloseBuyMenu(pPlayer);
 }
 
 public @Player_OpenBuyMenu(this) {
@@ -124,12 +175,21 @@ public @Player_CloseBuyMenu(this) {
     show_menu(this, 0, "^n", 1);
 }
 
-public @Player_BuyItem(this, iItem) {
+public bool:@Player_BuyItem(this, iItem) {
     if (!is_user_alive(this)) {
         return false;
     }
 
     if (!cs_get_user_buyzone(this)) {
+        return false;
+    }
+
+    static szItem[32];
+    ArrayGetString(g_irgShopItemTitles, iItem, szItem, charsmax(szItem));
+
+    static iFwReturn;
+    ExecuteForward(g_iFwBuy, iFwReturn, this, szItem);
+    if (iFwReturn != PLUGIN_CONTINUE) {
         return false;
     }
 
@@ -143,15 +203,21 @@ public @Player_BuyItem(this, iItem) {
     static szId[64];
     ArrayGetString(g_irgShopItemIds, iItem, szId, charsmax(szId));
 
-    new ShopItemType:iType = ArrayGetCell(g_irgShopItemTypes, iItem);
+    new SW_ShopItemType:iType = ArrayGetCell(g_irgShopItemTypes, iItem);
 
     switch (iType) {
-        case ShopItem_Weapon: {
+        case SW_ShopItemType_Weapon: {
             new iSlotId = CW_GetWeaponData(CW_GetHandler(szId), CW_Data_SlotId);
-            rg_drop_items_by_slot(this, InventorySlotType:(iSlotId + 1));
+            new iClipSize = CW_GetWeaponData(CW_GetHandler(szId), CW_Data_ClipSize);
+            new iPrimaryAmmoIndex = CW_GetWeaponData(CW_GetHandler(szId), CW_Data_PrimaryAmmoType);
+
+            if (iClipSize != WEAPON_NOCLIP || iPrimaryAmmoIndex == -1) {
+                rg_drop_items_by_slot(this, InventorySlotType:(iSlotId + 1));
+            }
+
             CW_GiveWeapon(this, szId);
         }
-        case ShopItem_Artifact: {
+        case SW_ShopItemType_Artifact: {
             if (SW_Player_HasArtifact(this, szId)) {
                 return false;
             }
@@ -178,22 +244,32 @@ public ShopMenuHandler(pPlayer, iMenu, iItem) {
 public ShopMenuCallback(pPlayer, iMenu, iItem) {
     new iMoney = cs_get_user_money(pPlayer);
     new iPrice = ArrayGetCell(g_irgShopItemPrices, iItem);
-    new ShopItemType:iType = ArrayGetCell(g_irgShopItemTypes, iItem);
+    new SW_ShopItemType:iType = ArrayGetCell(g_irgShopItemTypes, iItem);
 
     static szId[64];
     ArrayGetString(g_irgShopItemIds, iItem, szId, charsmax(szId));
 
-    if (iType == ShopItem_Artifact && SW_Player_HasArtifact(pPlayer, szId)) {
+    if (iType == SW_ShopItemType_Artifact && SW_Player_HasArtifact(pPlayer, szId)) {
         return ITEM_DISABLED;
     }
 
     return iPrice <= iMoney ? ITEM_ENABLED : ITEM_DISABLED;
 }
 
-RegisterItem(const szTitle[], const szId[], iPrice, ShopItemType:iType) {
+RegisterItem(const szTitle[], const szId[], iPrice, SW_ShopItemType:iType) {
     ArrayPushString(g_irgShopItemTitles, szTitle);
     ArrayPushString(g_irgShopItemIds, szId);
     ArrayPushCell(g_irgShopItemPrices, iPrice);
     ArrayPushCell(g_irgShopItemTypes, iType);
+    TrieSetCell(g_iShopItemIdsMap, szTitle, g_iShopItemCount);
     g_iShopItemCount++;
+}
+
+GetItemId(const szTitle[]) {
+    static iItem;
+    if (!TrieGetCell(g_iShopItemIdsMap, szTitle, iItem)) {
+        return -1;
+    }
+
+    return iItem;
 }

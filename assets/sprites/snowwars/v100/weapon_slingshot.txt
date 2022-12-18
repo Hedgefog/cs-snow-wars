@@ -1,0 +1,6 @@
+5
+weapon			640 snowwars/v100/640hud2	0	45	170	45
+weapon_s		640 snowwars/v100/640hud3	0	45	170	45
+ammo			640 640hud7	168	232	24	24
+crosshair		640 crosshairs	24	0	24	24
+autoaim			640 crosshairs	0	72	24	24

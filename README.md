@@ -1,14 +1,17 @@
-### ❄ Snow Wars mod for Counter-Strike 1.6
-__Version:__ 0.9.22 (Alpha)
+## ❄ Snow Wars 🇺🇦
+![GitHub package.json version](https://img.shields.io/github/package-json/v/hedgefog/cs-snow-wars)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/hedgefog/cs-snow-wars/build.yml?branch=release)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/hedgefog/cs-snow-wars)
+![GitHub all releases](https://img.shields.io/github/downloads/hedgefog/cs-snow-wars/total)
 
 ### 📄 About
 
-Snow Wars is a Counter-Strike mod based on snowballs fights with original Counter-Strike modes.
+__Snow Wars__ is a __Counter-Strike__ server-side modification based on snowballs fights with original Counter-Strike modes.
 
 #### Weapons and Artifacts
 
 - Snowball - deals 50 damage on hit
-- Slightshot - allows you to shoot snowballs with extra controlled power
+- Slingshot - allows you to shoot snowballs with extra controlled power
 - Lemon Juice - adds radius damage to your snowballs, it's yellow for a reason and enemies find it humiliating
 - Down Jacket - reduces taken damage
 - Surprise Box - SURPRISE, but in the box
@@ -17,11 +20,12 @@ Snow Wars is a Counter-Strike mod based on snowballs fights with original Counte
 - [Releases](../../releases)
 
 ### 🔄 Requirements
-- Amx Mod X 1.9.0+
-- RegameDLL + ReAPI
-- Metamod-R or Metamod-P (for windows)
+- [Metamod-R](https://github.com/theAsmodai/metamod-r) + [ReHLDS](https://github.com/dreamstalker/rehlds) or [Metamod-P](https://github.com/Bots-United/metamod-p)
+- [RegameDLL](https://github.com/s1lentq/ReGameDLL_CS)
+- [Amx Mod X 1.9.0+](https://www.amxmodx.org/downloads-new.php)
+- [ReAPI](https://github.com/s1lentq/reapi)
 
-## 🔧 Deployment
+### 🔧 Deployment
 - Clone repository.
 - Install dependencies `npm i`
 

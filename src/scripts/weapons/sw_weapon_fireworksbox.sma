@@ -15,62 +15,65 @@
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
-new const g_szMdlVFireworkbox[] = "models/snowwars/v090/weapons/v_fireworksbox.mdl";
-new const g_szMdlPFireworkbox[] = "models/snowwars/v090/weapons/p_fireworksbox.mdl";
-new const g_szMdlWFireworkbox[] = "models/snowwars/v090/weapons/w_fireworksbox.mdl";
-
 new CW:g_iCwHandler;
 
 public plugin_precache() {
-  precache_generic("sprites/snowwars/v090/weapon_fireworksbox.txt");
-  precache_model(g_szMdlVFireworkbox);
-  precache_model(g_szMdlPFireworkbox);
-  precache_model(g_szMdlWFireworkbox);
+    precache_generic(SW_WEAPON_FIREWORKSBOX_HUD_TXT);
+    precache_model(SW_MODEL_WEAPON_FIREWORKSBOX_V);
+    precache_model(SW_MODEL_WEAPON_FIREWORKSBOX_P);
+    precache_model(SW_MODEL_WEAPON_FIREWORKSBOX_W);
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+    register_plugin(PLUGIN, VERSION, AUTHOR);
 
-  g_iCwHandler = CW_Register("snowwars/v090/weapon_fireworksbox", CSW_FAMAS, _, _, _, _, _, 4, 1, _, "skull", CWF_NoBulletSmoke);
-  CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
-  CW_Bind(g_iCwHandler, CWB_Deploy, "@Weapon_Deploy");
-  CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
-  CW_Bind(g_iCwHandler, CWB_WeaponBoxModelUpdate, "@Weapon_WeaponBoxSpawn");
-  CW_Bind(g_iCwHandler, CWB_GetMaxSpeed, "@Weapon_GetMaxSpeed");
+    g_iCwHandler = CW_Register(SW_WEAPON_FIREWORKSBOX, CSW_FAMAS, _, _, _, _, _, 4, 1, _, "skull", CWF_NoBulletSmoke);
+    CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
+    CW_Bind(g_iCwHandler, CWB_Deploy, "@Weapon_Deploy");
+    CW_Bind(g_iCwHandler, CWB_Holster, "@Weapon_Holster");
+    CW_Bind(g_iCwHandler, CWB_CanDrop, "@Weapon_CanDrop");
+    CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
+    CW_Bind(g_iCwHandler, CWB_SecondaryAttack, "@Weapon_SecondaryAttack");
+    CW_Bind(g_iCwHandler, CWB_WeaponBoxModelUpdate, "@Weapon_WeaponBoxSpawn");
+    CW_Bind(g_iCwHandler, CWB_GetMaxSpeed, "@Weapon_GetMaxSpeed");
 }
 
 public @Weapon_Idle(this) {
-  // new pPlayer = CW_GetPlayer(this);
+    set_member(this, m_Weapon_flTimeWeaponIdle, 0.5);
 }
 
 public @Weapon_Deploy(this) {
     // new pPlayer = CW_GetPlayer(this);
-    CW_DefaultDeploy(this, g_szMdlVFireworkbox, g_szMdlPFireworkbox, 0, "c4");
+    CW_DefaultDeploy(this, SW_MODEL_WEAPON_FIREWORKSBOX_V, SW_MODEL_WEAPON_FIREWORKSBOX_P, 0, "c4");
 }
 
 public @Weapon_PrimaryAttack(this) {
-  new pPlayer = CW_GetPlayer(this);
+    new pPlayer = CW_GetPlayer(this);
 
-  static Float:vecOrigin[3];
-  ExecuteHam(Ham_Player_GetGunPosition, pPlayer, vecOrigin);
+    static Float:vecOrigin[3];
+    ExecuteHam(Ham_Player_GetGunPosition, pPlayer, vecOrigin);
 
-  static Float:vecAngles[3];
-  pev(pPlayer, pev_v_angle, vecAngles);
-  vecAngles[0] = 0.0;
-  vecAngles[2] = 0.0;
+    static Float:vecAngles[3];
+    pev(pPlayer, pev_v_angle, vecAngles);
+    vecAngles[0] = 0.0;
+    vecAngles[2] = 0.0;
 
-  new pInstallation = CE_Create("sw_fireworksbox", vecOrigin);
-  set_pev(pInstallation, pev_owner, pPlayer);
-  set_pev(pInstallation, pev_angles, vecAngles);
-  dllfunc(DLLFunc_Spawn, pInstallation);
+    new pInstallation = CE_Create("sw_fireworksbox", vecOrigin);
+    set_pev(pInstallation, pev_owner, pPlayer);
+    set_pev(pInstallation, pev_angles, vecAngles);
+    dllfunc(DLLFunc_Spawn, pInstallation);
 
-  CW_RemovePlayerItem(this);
+    CW_RemovePlayerItem(this);
 }
 
 public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
-  engfunc(EngFunc_SetModel, pWeaponBox, g_szMdlWFireworkbox);
+    engfunc(EngFunc_SetModel, pWeaponBox, SW_MODEL_WEAPON_FIREWORKSBOX_W);
 }
 
 public Float:@Weapon_GetMaxSpeed(this) {
-  return 250.0;
+    return 250.0;
+}
+
+public RemovePlayerItem(this) {
+    CW_RemovePlayerItem(this);
 }
