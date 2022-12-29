@@ -10,7 +10,7 @@
 #include <api_custom_weapons>
 
 #define PLUGIN "[API] Custom Weapons"
-#define VERSION "0.7.4"
+#define VERSION "0.7.6"
 #define AUTHOR "Hedgehog Fog"
 
 #define WALL_PUFF_SPRITE "sprites/wall_puff1.spr"
@@ -738,9 +738,11 @@ public OnSetModel_Post(this, const szModel[]) {
     ExecuteBindedFunction(CWB_WeaponBoxModelUpdate, pItem, this);
     g_pNewWeaponboxEnt = 0;
 
-    if (!ExecuteHamB(Ham_CS_Item_CanDrop, pItem)) {
-        set_pev(this, pev_flags, pev(this, pev_flags) | FL_KILLME);
-        dllfunc(DLLFunc_Think, this);
+    if (!g_bPrecache) {
+        if (!ExecuteHamB(Ham_CS_Item_CanDrop, pItem)) {
+            set_pev(this, pev_flags, pev(this, pev_flags) | FL_KILLME);
+            dllfunc(DLLFunc_Think, this);
+        }
     }
 
     return FMRES_HANDLED;
@@ -1641,10 +1643,14 @@ GiveWeapon(pPlayer, CW:iHandler) {
         emit_sound(pPlayer, CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
     }
 
-    new iClipSize = GetData(iHandler, CW_Data_ClipSize);
-    new iPrimaryAmmoIndex = GetData(iHandler, CW_Data_PrimaryAmmoType);
-    if (iClipSize == WEAPON_NOCLIP && iPrimaryAmmoIndex != -1) {
-        set_member(pPlayer, m_rgAmmo, get_member(pPlayer, m_rgAmmo, iPrimaryAmmoIndex) + 1, iPrimaryAmmoIndex);
+    new CW_Flags:iFlags = GetData(iHandler, CW_Data_Flags);
+
+    if (~iFlags & CWF_NotRefillable) {
+        new iClipSize = GetData(iHandler, CW_Data_ClipSize);
+        new iPrimaryAmmoIndex = GetData(iHandler, CW_Data_PrimaryAmmoType);
+        if (iClipSize == WEAPON_NOCLIP && iPrimaryAmmoIndex != -1) {
+            set_member(pPlayer, m_rgAmmo, get_member(pPlayer, m_rgAmmo, iPrimaryAmmoIndex) + 1, iPrimaryAmmoIndex);
+        }
     }
 }
 

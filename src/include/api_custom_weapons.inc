@@ -64,7 +64,8 @@ enum CW_Flags (<<=1) {
   CWF_None,
   CWF_NoBulletSmoke = 1,
   CWF_NoBulletDecal,
-  CWF_CustomReload
+  CWF_CustomReload,
+  CWF_NotRefillable
 }
 
 native CW:CW_Register(const szName[], iWeaponId, iClipSize = WEAPON_NOCLIP, iPrimaryAmmoType = -1, iPrimaryAmmoMaxAmount = -1, iSecondaryAmmoType = -1, iSecondaryAmmoMaxAmount = -1, iSlotId = 0, iPosition = 0, iWeaponFlags = 0, const szIcon[] = "", CW_Flags:iFlags = CWF_None);
@@ -100,6 +101,5 @@ native CW_GetPlayer(pItem);
 native CW_RemovePlayerItem(pItem);
 
 native CW_GiveWeapon(pPlayer, const szWeapon[]);
-native bool:CW_HasWeapon(pPlayer, const szWeapon[]);
 native CW_SpawnWeapon(CW:iHandler);
 native CW_SpawnWeaponBox(CW:iHandler);
