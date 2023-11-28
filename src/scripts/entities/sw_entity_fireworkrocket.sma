@@ -17,6 +17,8 @@
 #define ROCKET_SPEED 1024.0
 #define ROCKET_HEALTH 3
 
+new const g_szSmokeModel[] = "sprites/smoke.spr";
+
 new const g_rgszSprBeam[][] = {
     "sprites/laserbeam.spr",
     "sprites/shockwave.spr",
@@ -49,6 +51,8 @@ new const g_rgszSprTrail[][] = {
 new g_iCeHandler;
 
 public plugin_precache() {
+    precache_model(g_szSmokeModel);
+
     g_iCeHandler = CE_Register(
         .szName = ENTITY_NAME,
         .vMins = Float:{-4.0, -4.0, -4.0},
@@ -80,7 +84,7 @@ public plugin_init() {
 }
 
 public @Entity_Spawn(this) {
-    new iSprite = engfunc(EngFunc_ModelIndex, "sprites/smoke.spr");
+    new iSprite = engfunc(EngFunc_ModelIndex, g_szSmokeModel);
 
     set_pev(this, pev_solid, SOLID_TRIGGER);
     set_pev(this, pev_movetype, MOVETYPE_BOUNCE);
