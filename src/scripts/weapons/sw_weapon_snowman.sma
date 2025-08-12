@@ -118,7 +118,7 @@ public FMForward_AddToFullPack_Post(const es, const e, const pEntity, const pHos
 
   CW_SetMember(this, CW_Member_iFlags, ITEM_FLAG_LIMITINWORLD | ITEM_FLAG_EXHAUSTIBLE);
   CW_SetMember(this, CW_Member_iId, 5);
-  CW_SetMember(this, CW_Member_iSlot, 4);
+  CW_SetMember(this, CW_Member_iSlot, 3);
   CW_SetMember(this, CW_Member_iPosition, 2);
   CW_SetMember(this, CW_Member_iDefaultAmmo, 1);
   CW_SetMember(this, CW_Member_iPrimaryAmmoType, 1);
