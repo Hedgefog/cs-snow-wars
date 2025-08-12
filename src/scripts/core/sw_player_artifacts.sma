@@ -187,11 +187,11 @@ public bool:@Player_HasArtifact(this, const szId[]) {
     return @Player_FindArtifactById(this, iId, 0) != -1;
 }
 
-public @Player_GetFreeArtifactSlot(this) {
+@Player_GetFreeArtifactSlot(this) {
     return @Player_FindArtifactById(this, -1, 0);
 }
 
-public @Player_FindArtifact(this, iOffset, szId[], iLen) {
+@Player_FindArtifact(this, iOffset, szId[], iLen) {
     for (new iSlot = iOffset + 1; iSlot < MAX_ARTIFACTS; ++iSlot) {
         new iId = g_rgiPlayerArtifacts[this][iSlot];
 
@@ -204,7 +204,7 @@ public @Player_FindArtifact(this, iOffset, szId[], iLen) {
     return -1;
 }
 
-public @Player_FindArtifactById(this, iId, iOffset) {
+@Player_FindArtifactById(this, iId, iOffset) {
     for (new iSlot = iOffset; iSlot < MAX_ARTIFACTS; ++iSlot) {
         if (g_rgiPlayerArtifacts[this][iSlot] == iId) {
             return iSlot;

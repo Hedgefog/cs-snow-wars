@@ -1,174 +1,116 @@
 #pragma semicolon 1
 
 #include <amxmodx>
-#include <reapi>
 #include <hamsandwich>
 #include <fakemeta>
 #include <engine>
 #include <xs>
 
-#include <snowwars>
+#include <api_assets>
 #include <api_custom_weapons>
 #include <api_custom_entities>
+#include <weapon_base_throwable_const>
+
+#include <snowwars_const>
 
 #define PLUGIN "[Snow Wars] Weapon Snowball"
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
-new g_bPlayerRedeploy[MAX_PLAYERS + 1];
-
-new CW:g_iCwHandler;
+new g_szVModel[MAX_RESOURCE_PATH_LENGTH];
+new g_szPModel[MAX_RESOURCE_PATH_LENGTH];
+new g_szWModel[MAX_RESOURCE_PATH_LENGTH];
+new g_szThrowSound[MAX_RESOURCE_PATH_LENGTH];
 
 public plugin_precache() {
-    precache_generic(SW_WEAPON_SNOWBALL_HUD_TXT);
-    precache_model(SW_MODEL_WEAPON_SNOWBALL_V);
-    precache_model(SW_MODEL_WEAPON_SNOWBALL_P);
-    precache_model(SW_MODEL_WEAPON_SNOWBALL_W);
-    precache_sound(SW_SOUND_SNOWBALL_THROW);
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SNOWBALL_V_MODEL, g_szVModel, charsmax(g_szVModel));
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SNOWBALL_P_MODEL, g_szPModel, charsmax(g_szPModel));
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SNOWBALL_W_MODEL, g_szWModel, charsmax(g_szWModel));
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SNOWBALL_THROW_SOUND, g_szThrowSound, charsmax(g_szThrowSound));
+
+  CW_RegisterClass(SW_WEAPON_SNOWBALL, WEAPON_BASE_THROWABLE);
+
+  CW_ImplementClassMethod(SW_WEAPON_SNOWBALL, CW_Method_Allocate, "@Weapon_Allocate");
+  CW_ImplementClassMethod(SW_WEAPON_SNOWBALL, CW_Method_Idle, "@Weapon_Idle");
+  CW_ImplementClassMethod(SW_WEAPON_SNOWBALL, CW_Method_Deploy, "@Weapon_Deploy");
+  CW_ImplementClassMethod(SW_WEAPON_SNOWBALL, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
+  CW_ImplementClassMethod(SW_WEAPON_SNOWBALL, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
+
+  CW_RegisterClassMethod(SW_WEAPON_SNOWBALL, Weapon_BaseThrowable_Method_Throw, "@Weapon_Throw");
+  CW_RegisterClassMethod(SW_WEAPON_SNOWBALL, Weapon_BaseThrowable_Method_SpawnProjectile, "@Weapon_SpawnProjectile");
 }
 
 public plugin_init() {
-    register_plugin(PLUGIN, VERSION, AUTHOR);
-
-    g_iCwHandler = CW_Register(SW_WEAPON_SNOWBALL, CSW_DEAGLE, 1, _, _, _, _, 1, 1, _, "skull", CWF_NoBulletSmoke);
-    CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
-    CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
-    CW_Bind(g_iCwHandler, CWB_SecondaryAttack, "@Weapon_SecondaryAttack");
-    CW_Bind(g_iCwHandler, CWB_Deploy, "@Weapon_Deploy");
-    CW_Bind(g_iCwHandler, CWB_CanDrop, "@Weapon_CanDrop");
-    CW_Bind(g_iCwHandler, CWB_GetMaxSpeed, "@Weapon_GetMaxSpeed");
-    CW_Bind(g_iCwHandler, CWB_WeaponBoxModelUpdate, "@Weapon_WeaponBoxSpawn");
+  register_plugin(PLUGIN, VERSION, AUTHOR);
 }
 
-public @Weapon_Idle(this) {
-    new pPlayer = CW_GetPlayer(this);
+@Weapon_Allocate(const this) {
+  CW_CallBaseMethod();
 
-    if (!get_member(this, m_flReleaseThrow) && get_member(this, m_flStartThrow)) {
-        set_member(this, m_flReleaseThrow, get_gametime());
-    }
-
-    if (get_member(this, m_flStartThrow)) {
-        ThrowGrenade(this);
-        emit_sound(pPlayer, CHAN_BODY, SW_SOUND_SNOWBALL_THROW, 1.0, ATTN_NORM, 0, PITCH_NORM);
-        return;
-    }
-    
-    if (get_member(this, m_flReleaseThrow) > 0.0) {
-        // we've finished the throw, restart.
-        set_member(this, m_flStartThrow, 0.0);
-        set_member(this, m_flReleaseThrow, -1.0);
-        return;
-    }
-
-    if (g_bPlayerRedeploy[pPlayer]) {
-        ExecuteHamB(Ham_Item_Deploy, this);
-    } else {
-        CW_PlayAnimation(this, 0, 31.0 / 30.0);
-    }
+  CW_SetMember(this, CW_Member_iId, 1);
+  CW_SetMember(this, CW_Member_iSlot, 1);
+  CW_SetMember(this, CW_Member_iPosition, 1);
 }
 
-public @Weapon_Deploy(this) {
-    new pPlayer = CW_GetPlayer(this);
-    CW_DefaultDeploy(this, SW_MODEL_WEAPON_SNOWBALL_V, SW_MODEL_WEAPON_SNOWBALL_P, 3, "grenade");
-    g_bPlayerRedeploy[pPlayer] = false;
+@Weapon_Idle(const this) {
+  static bool:bRedeploy; bRedeploy = CW_GetMember(this, Weapon_BaseThrowable_Member_bRedeploy);
+  static Float:flStartThrow; flStartThrow = CW_GetMember(this, Weapon_BaseThrowable_Member_flStartThrow);
+  static Float:flReleaseThrow; flReleaseThrow = CW_GetMember(this, Weapon_BaseThrowable_Member_flReleaseThrow);
+
+  CW_CallBaseMethod();
+
+  if (!flStartThrow && flReleaseThrow == -1.0 && !bRedeploy) {
+    CW_CallNativeMethod(this, CW_Method_PlayAnimation, 0, 31.0 / 30.0);
+  }
 }
 
-public @Weapon_CanDrop(this) {
-    return PLUGIN_HANDLED;
+@Weapon_Deploy(const this) {
+  static Float:flGameTime; flGameTime = get_gametime();
+
+  if (!CW_CallBaseMethod()) return;
+
+  CW_CallNativeMethod(this, CW_Method_DefaultDeploy, g_szVModel, g_szPModel, 3, "grenade");
+
+  CW_SetMember(this, CW_Member_flTimeIdle, flGameTime + 1.0);
 }
 
-public @Weapon_PrimaryAttack(this) {
-    if (!get_member(this, m_flStartThrow)) {
-        set_member(this, m_flStartThrow, get_gametime());
-        set_member(this, m_flReleaseThrow, 0.0);
-        CW_PlayAnimation(this, 1, 31.0 / 35.0);
-    } else {
-        new pPlayer = CW_GetPlayer(this);
-        if (is_user_bot(pPlayer)) { // force throw for bots
-            CW_Idle(this);
-        }
-    }
+@Weapon_PrimaryAttack(const this) {
+  static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
+  static Float:flStartThrow; flStartThrow = CW_GetMember(this, Weapon_BaseThrowable_Member_flStartThrow);
+
+  if (flStartThrow > 0.0 && is_user_bot(pPlayer)) {
+    CW_CallNativeMethod(this, CW_Method_Idle);
+    return;
+  }
+
+  if (!CW_CallBaseMethod()) return;
+
+  CW_CallNativeMethod(this, CW_Method_PlayAnimation, 1, 31.0 / 35.0);
 }
 
-public @Weapon_SecondaryAttack(this) {
-    new pPlayer = CW_GetPlayer(this);
-    
-    if (~pev(pPlayer, pev_button) | IN_ATTACK) {
-        CW_Idle(this);
-    }
+@Weapon_Throw(const this) {
+  CW_CallBaseMethod();
+
+  new pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
+  emit_sound(pPlayer, CHAN_BODY, g_szThrowSound, 1.0, ATTN_NORM, 0, PITCH_NORM);
+  CW_CallNativeMethod(this, CW_Method_PlayAnimation, 2);
 }
 
-public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
-    engfunc(EngFunc_SetModel, pWeaponBox, SW_MODEL_WEAPON_SNOWBALL_W);
+@Weapon_SpawnProjectile(const this) {
+  static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
+  static Float:vecForward[3]; get_global_vector(GL_v_forward, vecForward);
+  static Float:vecSrc[3]; ExecuteHam(Ham_Player_GetGunPosition, pPlayer, vecSrc);
+
+  xs_vec_add_scaled(vecSrc, vecForward, 16.0, vecSrc);
+
+  new pProjectile = CE_Create(SW_ENTITY_SNOWBALL, vecSrc);
+  dllfunc(DLLFunc_Spawn, pProjectile);
+
+  set_pev(pProjectile, pev_owner, pPlayer);
+
+  return pProjectile;
 }
 
-public Float:@Weapon_GetMaxSpeed(this) {
-    return 250.0;
-}
-
-ThrowGrenade(this) {
-    new pPlayer = CW_GetPlayer(this);
-
-    static Float:vecThrowAngle[3];
-    pev(pPlayer, pev_v_angle, vecThrowAngle);
-
-    static Float:vecPunchangle[3];
-    pev(pPlayer, pev_punchangle, vecPunchangle);
-
-    xs_vec_add(vecThrowAngle, vecPunchangle, vecThrowAngle);
-
-    if (vecThrowAngle[0] < 0.0) {
-        vecThrowAngle[0] = -10.0 + vecThrowAngle[0] * ((90.0 - 10.0) / 90.0);
-    } else {
-        vecThrowAngle[0] = -10.0 + vecThrowAngle[0] * ((90.0 + 10.0) / 90.0);
-    }
-
-    new Float:flVel = (90.0 - vecThrowAngle[0]) * 6.0;
-    if (flVel > 750.0) {
-        flVel = 750.0;
-    }
-
-    engfunc(EngFunc_MakeVectors, vecThrowAngle); 
-
-    static Float:vecSrc[3];
-    ExecuteHam(Ham_Player_GetGunPosition, pPlayer, vecSrc);
-
-    static Float:vecThrow[3];
-    pev(pPlayer, pev_velocity, vecThrow);
-
-    static Float:vecForward[3];
-    get_global_vector(GL_v_forward, vecForward);
-
-    for (new i = 0; i < 3; ++i) {
-        vecSrc[i] += vecForward[i] * 16.0;
-        vecThrow[i] += vecForward[i] * flVel;
-    }
-
-    new pSnowball = ShootTimed(pPlayer, vecSrc, vecThrow);
-    set_pev(pSnowball, pev_angles, vecThrowAngle);
-
-    CW_PlayAnimation(this, 2, 11.0 / 30.0);
-    rg_set_animation(pPlayer, PLAYER_ATTACK1);
-
-    set_member(this, m_flReleaseThrow, 0.0);
-    set_member(this, m_flStartThrow, 0.0);
-    set_member(this, m_Weapon_flTimeWeaponIdle, 0.5);
-    set_member(this, m_Weapon_flNextPrimaryAttack, 0.5);
-    set_member(this, m_Weapon_flNextSecondaryAttack, 0.5);
-
-    g_bPlayerRedeploy[pPlayer] = true;
-}
-
-ShootTimed(pOwner, const Float:vecStart[3], const Float:vecVelocity[3]) {
-    new pSnowball = CE_Create("sw_snowball", vecStart);
-    set_pev(pSnowball, pev_owner, pOwner);
-    dllfunc(DLLFunc_Spawn, pSnowball);
-    engfunc(EngFunc_SetOrigin, pSnowball, vecStart);
-    set_pev(pSnowball, pev_velocity, vecVelocity);
-
-    static Float:vecAngles[3];
-    vector_to_angle(vecVelocity, vecAngles);
-    set_pev(pSnowball, pev_angles, vecAngles);
-
-    return pSnowball;
+@Weapon_UpdateWeaponBoxModel(const this, const pWeaponBox) {
+  engfunc(EngFunc_SetModel, pWeaponBox, g_szWModel);
 }

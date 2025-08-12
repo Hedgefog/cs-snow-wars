@@ -1,4 +1,21 @@
 /*
+  1.1.0
+    General:
+      Reworked mod using AMXX Modding Kit
+
+    Additions and improvements:
+      Reduced snowball attack rate 
+      Players can now have multiple snowmans and surprise boxes
+      Firework rockets are now explode randomly based on impact angle
+      Increased snowman health
+      Auto-guidance for snowballs is now ignoring Z axis
+
+    Fixes:
+      Fix attack rate for all weapons
+      Fix exploit when player can respawn using snowman after changing team
+      Fix win conditions check for snowman entity
+      Players are no longer drop defuser kit on death
+
   1.0.0
     Additions and improvements:
       Added snowman
@@ -23,17 +40,6 @@
 
 #include <snowwars_const>
 
-enum SW_PlayerAttribute {
-    SW_PlayerAttribute_Resistance = 0,
-    SW_PlayerAttribute_Power
-}
-
-enum SW_ShopItemType {
-    SW_ShopItemType_Invalid = -1,
-    SW_ShopItemType_Weapon = 0,
-    SW_ShopItemType_Artifact
-}
-
 native any:SW_Player_GetAttribute(pPlayer, SW_PlayerAttribute:iAttrib);
 native SW_Player_SetAttribute(pPlayer, SW_PlayerAttribute:iAttrib, any:value);
 
@@ -49,9 +55,3 @@ native bool:SW_Player_TakeArtifact(pPlayer, const szId[]);
 native bool:SW_Player_TakeArtifactBySlot(pPlayer, iSlot);
 native bool:SW_Player_HasArtifact(pPlayer, const szId[]);
 native SW_Player_FindArtifact(pPlayer, iOffset, szId[], iLen);
-
-native SW_Shop_Player_BuyItem(pPlayer, const szItem[]);
-native SW_Shop_Item_GetPrice(const szItem[]);
-native SW_Shop_Item_GetType(const szItem[]);
-
-forward SW_Shop_Fw_Buy(pPlayer, const szItem[]);

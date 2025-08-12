@@ -1,12 +1,13 @@
 #include <amxmodx>
 #include <hamsandwich>
 #include <fakemeta>
-#include <reapi>
-#include <xs>
 
-#include <snowwars>
+#include <api_assets>
 #include <api_custom_entities>
 #include <screenfade_util>
+#include <combat_util>
+
+#include <snowwars>
 
 #define PLUGIN "[Snow Wars] Lemon Juice Artifact"
 #define VERSION SW_VERSION
@@ -14,213 +15,187 @@
 
 #define ARTIFACT_ID SW_ARTIFACT_LEMONJUICE
 #define SPLASH_DAMAGE 22.0
+#define SPLASH_RANGE 80.0
+#define ARTIFACT_STATUS_ICON "d_skull"
 
-new g_iSnowballCeHandler;
-new g_iBloodModelIndex;
+new const m_bLemonJuice[] = "bLemonJuice";
+
+new g_szSnowballModel[MAX_RESOURCE_PATH_LENGTH];
+new g_szItemModel[MAX_RESOURCE_PATH_LENGTH];
+new g_szHitSound[MAX_RESOURCE_PATH_LENGTH];
+new g_szShowSplashSprite[MAX_RESOURCE_PATH_LENGTH];
+
+new g_pTrace;
 
 public plugin_precache() {
-    precache_model(SW_MODEL_ARTIFACT_LEMONJUICE_W);
-    precache_sound(SW_SOUND_SNOWBALL_LEMON_HIT);
-    precache_model(SW_MODEL_WEAPON_SNOWBALL_LEMON_W);
+  g_pTrace = create_tr2();
 
-    g_iBloodModelIndex = precache_model("sprites/blood.spr");
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SNOWBALL_LEMON_W_MODEL, g_szSnowballModel, charsmax(g_szSnowballModel));
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_LEMONJUICE_W_MODEL, g_szItemModel, charsmax(g_szItemModel));
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SNOWBALL_LEMON_HIT_SOUND, g_szHitSound, charsmax(g_szHitSound));
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SNOW_SPLASH_SPRITE, g_szShowSplashSprite, charsmax(g_szShowSplashSprite));
 
-    SW_PlayerArtifact_Register(ARTIFACT_ID, "@Artifact_Activated", "@Artifact_Deactivated");
+  SW_PlayerArtifact_Register(ARTIFACT_ID, "Callback_Artifact_Activated", "Callback_Artifact_Deactivated");
 }
 
 public plugin_init() {
-    register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(PLUGIN, VERSION, AUTHOR);
 
-    RegisterHam(Ham_TakeDamage, "player", "Ham_Player_TakeDamage_Post", .Post = 1);
+  RegisterHamPlayer(Ham_TakeDamage, "HamHook_Player_TakeDamage_Post", .Post = 1);
 
-    CE_RegisterHook(CEFunction_Spawn, "sw_item_artifact", "@ArtifactItem_Spawn");
-    CE_RegisterHook(CEFunction_Spawn, "sw_snowball", "@Snowball_Spawn");
-    CE_RegisterHook(CEFunction_Kill, "sw_snowball", "@Snowball_Kill");
+  CE_RegisterClassMethodHook(SW_ENTITY_ARTIFACT_ITEM, CE_Method_Spawn, "CEHook_ArtifactItem_Spawn");
+  CE_RegisterClassMethodHook(SW_ENTITY_SNOWBALL, CE_Method_Spawn, "CEHook_Snowball_Spawn");
+  CE_RegisterClassMethodHook(SW_ENTITY_SNOWBALL, CE_Method_Killed, "CEHook_Snowball_Killed");
 
-    register_event("ResetHUD", "Event_ResetHUD", "b");
-
-    g_iSnowballCeHandler = CE_GetHandler("sw_snowball");
+  register_event("ResetHUD", "Event_ResetHUD", "b");
 }
 
-public Event_ResetHUD(pPlayer) {
-    @Player_UpdateStatusIcon(pPlayer);
+public plugin_end() {
+  free_tr2(g_pTrace);
 }
 
-public @Artifact_Activated(pPlayer) {
-    // new Float:flPower = SW_Player_GetAttribute(pPlayer, SW_PlayerAttribute_Power);
-    // SW_Player_SetAttribute(pPlayer, SW_PlayerAttribute_Power, flPower + 1.0);
-    @Player_UpdateStatusIcon(pPlayer);
+public Event_ResetHUD(const pPlayer) {
+  @Player_UpdateStatusIcon(pPlayer);
 }
 
-public @Artifact_Deactivated(pPlayer) {
-    // new Float:flPower = SW_Player_GetAttribute(pPlayer, SW_PlayerAttribute_Power);
-    // SW_Player_SetAttribute(pPlayer, SW_PlayerAttribute_Power, flPower - 1.0);
-    @Player_UpdateStatusIcon(pPlayer);
+public HamHook_Player_TakeDamage_Post(const pPlayer, const pInflictor, const pAttacker, Float:flDamage, iDamageBits) {
+  if (!CE_IsInstanceOf(pInflictor, SW_ENTITY_SNOWBALL)) return HAM_IGNORED;
+  if (!CE_GetMember(pInflictor, m_bLemonJuice)) return HAM_IGNORED;
+
+  new Float:flRatio = flDamage / 100.0;
+
+  new iHitgroup = get_member(pPlayer, m_LastHitGroup);
+  if (iHitgroup == HIT_HEAD) {
+    flRatio *= 2.0;
+  }
+
+  UTIL_ScreenFade(pPlayer, { 150, 150, 0 }, 3.0 * flRatio, 1.0, floatround(100 * flRatio));
+
+  return HAM_HANDLED;
 }
 
-public @ArtifactItem_Spawn(this) {
-    static szId[16];
-    pev(this, pev_target, szId, charsmax(szId));
-    if (!equal(szId, ARTIFACT_ID)) {
-        return;
-    }
+public CEHook_ArtifactItem_Spawn(const pEntity) {
+  static szId[16]; CE_GetMemberString(pEntity, "szArtifactId", szId, charsmax(szId));
+  if (!equal(szId, ARTIFACT_ID)) return;
 
-    engfunc(EngFunc_SetModel, this, SW_MODEL_ARTIFACT_LEMONJUICE_W);
+  engfunc(EngFunc_SetModel, pEntity, g_szItemModel);
 }
 
-public @Snowball_Spawn(this) {
-    new pOwner = pev(this, pev_owner);
-    if (!SW_Player_HasArtifact(pOwner, ARTIFACT_ID)) {
-        return;
-    }
-
-    engfunc(EngFunc_SetModel, this, SW_MODEL_WEAPON_SNOWBALL_LEMON_W);
-    set_pev(this, pev_iuser4, 1);
-
-    new Float:flDamage = 0.0;
-    pev(this, pev_dmg, flDamage);
-    set_pev(this, pev_dmg, flDamage + SPLASH_DAMAGE);
+public Callback_Artifact_Activated(const pPlayer) {
+  // new Float:flPower = SW_Player_GetAttribute(pPlayer, SW_PlayerAttribute_Power);
+  // SW_Player_SetAttribute(pPlayer, SW_PlayerAttribute_Power, flPower + 1.0);
+  @Player_UpdateStatusIcon(pPlayer);
 }
 
-public @Snowball_Kill(this) {
-    if (pev(this, pev_iuser4) != 1) {
-        return;
-    }
-
-    @Snowball_ExplosionEffect(this);
-    @Snowball_SplashDamage(this);
+public Callback_Artifact_Deactivated(const pPlayer) {
+  // new Float:flPower = SW_Player_GetAttribute(pPlayer, SW_PlayerAttribute_Power);
+  // SW_Player_SetAttribute(pPlayer, SW_PlayerAttribute_Power, flPower - 1.0);
+  @Player_UpdateStatusIcon(pPlayer);
 }
 
-public @Snowball_ExplosionEffect(this) {
-    static Float:vecOrigin[3];
-    pev(this, pev_origin, vecOrigin);
+public CEHook_Snowball_Spawn(const this) {
+  new pOwner = pev(this, pev_owner);
+  if (!SW_Player_HasArtifact(pOwner, ARTIFACT_ID)) return;
 
-    engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, vecOrigin, 0);
-    write_byte(TE_BLOODSPRITE);
-    engfunc(EngFunc_WriteCoord, vecOrigin[0]);
-    engfunc(EngFunc_WriteCoord, vecOrigin[1]);
-    engfunc(EngFunc_WriteCoord, vecOrigin[2]);
-    write_short(g_iBloodModelIndex);
-    write_short(g_iBloodModelIndex);
-    write_byte(241);
-    write_byte(8);
+  engfunc(EngFunc_SetModel, this, g_szSnowballModel);
+  CE_SetMember(this, m_bLemonJuice, true);
+
+  CE_SetMember(this, "flDamage", Float:CE_GetMember(this, "flDamage") + SPLASH_DAMAGE);
+}
+
+public CEHook_Snowball_Killed(const this) {
+  if (!CE_GetMember(this, m_bLemonJuice)) return;
+
+  @Snowball_ExplosionEffect(this);
+  @Snowball_SplashDamage(this);
+}
+
+@Snowball_ExplosionEffect(const &this) {
+  static iSplashSpriteModelIndex = 0;
+  if (!iSplashSpriteModelIndex) {
+    iSplashSpriteModelIndex = engfunc(EngFunc_ModelIndex, g_szShowSplashSprite);
+  }
+
+  static Float:vecOrigin[3]; pev(this, pev_origin, vecOrigin);
+
+  engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, vecOrigin, 0);
+  write_byte(TE_BLOODSPRITE);
+  engfunc(EngFunc_WriteCoord, vecOrigin[0]);
+  engfunc(EngFunc_WriteCoord, vecOrigin[1]);
+  engfunc(EngFunc_WriteCoord, vecOrigin[2]);
+  write_short(iSplashSpriteModelIndex);
+  write_short(iSplashSpriteModelIndex);
+  write_byte(241);
+  write_byte(8);
+  message_end();
+
+  engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, vecOrigin, 0);
+  write_byte(TE_BLOODSTREAM);
+  engfunc(EngFunc_WriteCoord, vecOrigin[0]);
+  engfunc(EngFunc_WriteCoord, vecOrigin[1]);
+  engfunc(EngFunc_WriteCoord, vecOrigin[2]);
+  engfunc(EngFunc_WriteCoord, vecOrigin[0]);
+  engfunc(EngFunc_WriteCoord, vecOrigin[1]);
+  engfunc(EngFunc_WriteCoord, vecOrigin[2]);
+  write_byte(197);
+  write_byte(8);
+  message_end();
+  
+  engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, vecOrigin, 0);
+  write_byte(TE_ELIGHT);
+  write_short(0);
+  engfunc(EngFunc_WriteCoord, vecOrigin[0]);
+  engfunc(EngFunc_WriteCoord, vecOrigin[1]);
+  engfunc(EngFunc_WriteCoord, vecOrigin[2]);
+  write_coord(64);
+  write_byte(100);
+  write_byte(100);
+  write_byte(0);
+  write_byte(2);
+  write_coord(12);
+  message_end();
+
+  emit_sound(this, CHAN_BODY, g_szHitSound, 0.5, ATTN_NORM, 0, PITCH_NORM);
+}
+
+@Snowball_SplashDamage(const &this) {
+  static Float:vecOrigin[3]; pev(this, pev_origin, vecOrigin);
+  static pOwner; pOwner = pev(this, pev_owner);
+
+  for (new pPlayer = 1; pPlayer <= MaxClients; ++pPlayer) {
+    if (!is_user_alive(pPlayer)) continue;
+    if (!rg_is_player_can_takedamage(pPlayer, pOwner)) continue;
+    if (pev(this, pev_enemy) == pPlayer) continue;
+    if (entity_range(this, pPlayer) > SPLASH_RANGE) continue;
+
+    static Float:vecTarget[3]; pev(pPlayer, pev_origin, vecTarget);
+    engfunc(EngFunc_TraceLine, vecOrigin, vecTarget, DONT_IGNORE_MONSTERS, this, g_pTrace);
+
+    static Float:flFraction; get_tr2(g_pTrace, TR_flFraction, flFraction);
+    if (flFraction < 1.0 && get_tr2(g_pTrace, TR_pHit) != pPlayer) continue;
+
+    ExecuteHamB(Ham_TakeDamage, pPlayer, this, pOwner, SPLASH_DAMAGE, DMG_GENERIC);
+  }
+}
+
+@Player_UpdateStatusIcon(const this) {
+  static gmsgStatusIcon = 0;
+  if (!gmsgStatusIcon) {
+    gmsgStatusIcon = get_user_msgid("StatusIcon");
+  }
+
+  if (SW_Player_HasArtifact(this, ARTIFACT_ID)) {
+    message_begin(MSG_ONE, gmsgStatusIcon, _, this);
+    write_byte(1);
+    write_string(ARTIFACT_STATUS_ICON);
+    write_byte(255);
+    write_byte(255);
+    write_byte(255);
     message_end();
-
-    engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, vecOrigin, 0);
-    write_byte(TE_BLOODSTREAM);
-    engfunc(EngFunc_WriteCoord, vecOrigin[0]);
-    engfunc(EngFunc_WriteCoord, vecOrigin[1]);
-    engfunc(EngFunc_WriteCoord, vecOrigin[2]);
-    engfunc(EngFunc_WriteCoord, vecOrigin[0]);
-    engfunc(EngFunc_WriteCoord, vecOrigin[1]);
-    engfunc(EngFunc_WriteCoord, vecOrigin[2]);
-    write_byte(197);
-    write_byte(8);
-    message_end();
-    
-    engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, vecOrigin, 0);
-    write_byte(TE_ELIGHT);
-    write_short(0);
-    engfunc(EngFunc_WriteCoord, vecOrigin[0]);
-    engfunc(EngFunc_WriteCoord, vecOrigin[1]);
-    engfunc(EngFunc_WriteCoord, vecOrigin[2]);
-    write_coord(64);
-    write_byte(100);
-    write_byte(100);
+  } else {
+    message_begin(MSG_ONE, gmsgStatusIcon, _, this);
     write_byte(0);
-    write_byte(2);
-    write_coord(12);
+    write_string(ARTIFACT_STATUS_ICON);
     message_end();
-
-    emit_sound(this, CHAN_BODY, SW_SOUND_SNOWBALL_LEMON_HIT, 0.5, ATTN_NORM, 0, PITCH_NORM);
-}
-
-public @Snowball_SplashDamage(this) {
-    new pTr = create_tr2();
-
-    new pOwner = pev(this, pev_owner);
-
-    static Float:vecOrigin[3];
-    pev(this, pev_origin, vecOrigin);
-
-    for (new pPlayer = 1; pPlayer <= MaxClients; ++pPlayer) {
-        if (!is_user_connected(pPlayer)) {
-            continue;
-        }
-
-        if (!is_user_alive(pPlayer)) {
-            continue;
-        }
-
-        if (!rg_is_player_can_takedamage(pPlayer, pOwner)) {
-            continue;
-        }
-
-        if (pev(this, pev_enemy) == pPlayer) {
-            continue;
-        }
-
-        static Float:vecTargetOrigin[3];
-        pev(pPlayer, pev_origin, vecTargetOrigin);
-
-        if (xs_vec_distance(vecOrigin, vecTargetOrigin) > 80.0) {
-            continue;
-        }
-
-        engfunc(EngFunc_TraceLine, vecOrigin, vecTargetOrigin, DONT_IGNORE_MONSTERS, this, pTr);
-
-        static Float:flFraction;
-        get_tr2(pTr, TR_flFraction, flFraction);
-
-        if (flFraction < 1.0 && get_tr2(pTr, TR_pHit) != pPlayer) {
-            continue;
-        }
-
-        ExecuteHamB(Ham_TakeDamage, pPlayer, this, pOwner, SPLASH_DAMAGE, DMG_GENERIC);
-    }
-
-    free_tr2(pTr);
-}
-
-public Ham_Player_TakeDamage_Post(this, pWeapon, pAttacker, Float:flDamage, iDamageBits) {
-    if (CE_GetHandlerByEntity(pWeapon) != g_iSnowballCeHandler) {
-        return HAM_IGNORED;
-    }
-
-    if (pev(pWeapon, pev_iuser4) != 1) {
-        return HAM_IGNORED;
-    }
-
-    new Float:flRatio = flDamage / 100.0;
-
-    new iHitgroup = get_member(this, m_LastHitGroup);
-    if (iHitgroup == HIT_HEAD) {
-        flRatio *= 2.0;
-    }
-
-    UTIL_ScreenFade(this, { 150, 150, 0 }, 3.0 * flRatio, 1.0, floatround(100 * flRatio));
-
-    return HAM_HANDLED;
-}
-
-public @Player_UpdateStatusIcon(this) {
-    static gmsgStatusIcon = 0;
-    if (!gmsgStatusIcon) {
-        gmsgStatusIcon = get_user_msgid("StatusIcon");
-    }
-
-    if (SW_Player_HasArtifact(this, ARTIFACT_ID)) {
-        message_begin(MSG_ONE, gmsgStatusIcon, _, this);
-        write_byte(1);
-        write_string("d_skull");
-        write_byte(255);
-        write_byte(255);
-        write_byte(255);
-        message_end();
-    } else {
-        message_begin(MSG_ONE, gmsgStatusIcon, _, this);
-        write_byte(0);
-        write_string("d_skull");
-        message_end();
-    }
+  }
 }

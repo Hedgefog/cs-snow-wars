@@ -1,206 +1,227 @@
 #pragma semicolon 1
 
 #include <amxmodx>
-#include <reapi>
 #include <hamsandwich>
 #include <fakemeta>
 #include <engine>
 #include <xs>
+#include <reapi>
 
-#include <snowwars>
+#include <api_assets>
 #include <api_custom_weapons>
 #include <api_custom_entities>
+#include <weapon_base_throwable_const>
+
+#include <snowwars_const>
 
 #define PLUGIN "[Snow Wars] Weapon Slingshot"
 #define VERSION SW_VERSION
 #define AUTHOR "Hedgehog Fog"
 
-#define CHARGE_TIME 1.0
 #define MISFIRE_DELAY 10.0
 #define MISFIRE_MAX_SHAKING 0.25
 #define MISFIRE_MAX_ERROR 0.125
 
-new g_bPlayerRedeploy[MAX_PLAYERS + 1];
+new const m_flChargeTime[] = "flChargeTime";
 
-new CW:g_iCwHandler;
+new const GetPower[] = "GetPower";
+new const GetChargeDuration[] = "GetChargeDuration";
+
+new g_szVModel[MAX_RESOURCE_PATH_LENGTH];
+new g_szPModel[MAX_RESOURCE_PATH_LENGTH];
+new g_szWModel[MAX_RESOURCE_PATH_LENGTH];
+new g_szThrowSound[MAX_RESOURCE_PATH_LENGTH];
 
 public plugin_precache() {
-    precache_generic(SW_WEAPON_SLINGSHOT_HUD_TXT);
-    precache_model(SW_MODEL_WEAPON_SLINGSHOT_V);
-    precache_model(SW_MODEL_WEAPON_SLINGSHOT_P);
-    precache_model(SW_MODEL_WEAPON_SLINGSHOT_W);
-    precache_sound(SW_SOUND_SNOWBALL_THROW);
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SLINGSHOT_V_MODEL, g_szVModel, charsmax(g_szVModel));
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SLINGSHOT_P_MODEL, g_szPModel, charsmax(g_szPModel));
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SLINGSHOT_W_MODEL, g_szWModel, charsmax(g_szWModel));
+  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_SNOWBALL_THROW_SOUND, g_szThrowSound, charsmax(g_szThrowSound));
+
+  CW_RegisterClass(SW_WEAPON_SLINGSHOT, WEAPON_BASE_THROWABLE);
+
+  CW_ImplementClassMethod(SW_WEAPON_SLINGSHOT, CW_Method_Allocate, "@Weapon_Allocate");
+  CW_ImplementClassMethod(SW_WEAPON_SLINGSHOT, CW_Method_Idle, "@Weapon_Idle");
+  CW_ImplementClassMethod(SW_WEAPON_SLINGSHOT, CW_Method_Deploy, "@Weapon_Deploy");
+  CW_ImplementClassMethod(SW_WEAPON_SLINGSHOT, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
+  CW_ImplementClassMethod(SW_WEAPON_SLINGSHOT, CW_Method_CanDrop, "@Weapon_CanDrop");
+  CW_ImplementClassMethod(SW_WEAPON_SLINGSHOT, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
+
+  CW_RegisterClassMethod(SW_WEAPON_SLINGSHOT, Weapon_BaseThrowable_Method_Throw, "@Weapon_Throw");
+  CW_RegisterClassMethod(SW_WEAPON_SLINGSHOT, Weapon_BaseThrowable_Method_SpawnProjectile, "@Weapon_SpawnProjectile");
+
+  CW_RegisterClassMethod(SW_WEAPON_SLINGSHOT, GetPower, "@Weapon_GetPower");
+  CW_RegisterClassMethod(SW_WEAPON_SLINGSHOT, GetChargeDuration, "@Weapon_GetChargeDuration");
 }
 
 public plugin_init() {
-    register_plugin(PLUGIN, VERSION, AUTHOR);
-
-    g_iCwHandler = CW_Register(SW_WEAPON_SLINGSHOT, CSW_AK47, 1, _, _, _, _, 0, 1, _, "skull", CWF_NoBulletSmoke);
-    CW_Bind(g_iCwHandler, CWB_Idle, "@Weapon_Idle");
-    CW_Bind(g_iCwHandler, CWB_PrimaryAttack, "@Weapon_PrimaryAttack");
-    CW_Bind(g_iCwHandler, CWB_SecondaryAttack, "@Weapon_SecondaryAttack");
-    CW_Bind(g_iCwHandler, CWB_Deploy, "@Weapon_Deploy");
-    CW_Bind(g_iCwHandler, CWB_Holster, "@Weapon_Holster");
-    // CW_Bind(g_iCwHandler, CWB_CanDrop, "@Weapon_CanDrop");
-    CW_Bind(g_iCwHandler, CWB_WeaponBoxModelUpdate, "@Weapon_WeaponBoxSpawn");
-    CW_Bind(g_iCwHandler, CWB_GetMaxSpeed, "@Weapon_GetMaxSpeed");
+  register_plugin(PLUGIN, VERSION, AUTHOR);
 }
 
-public @Weapon_Idle(this) {
-    new pPlayer = CW_GetPlayer(this);
+@Weapon_Allocate(const this) {
+  CW_CallBaseMethod();
 
-    set_member(pPlayer, m_szAnimExtention, "shieldgun");
+  CW_SetMember(this, CW_Member_iId, 4);
+  CW_SetMember(this, CW_Member_iSlot, 0);
+  CW_SetMember(this, CW_Member_iPosition, 1);
 
-    if (!get_member(this, m_flReleaseThrow) && get_member(this, m_flStartThrow)) {
-        set_member(this, m_flReleaseThrow, get_gametime());
+  CW_SetMember(this, Weapon_BaseThrowable_Member_flThrowForce, 2048.0);
+  CW_SetMember(this, m_flChargeTime, 1.0);
+}
+
+@Weapon_Idle(const this) {
+  static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
+  static bool:bRedeploy; bRedeploy = CW_GetMember(this, Weapon_BaseThrowable_Member_bRedeploy);
+  static Float:flStartThrow; flStartThrow = CW_GetMember(this, Weapon_BaseThrowable_Member_flStartThrow);
+  static Float:flReleaseThrow; flReleaseThrow = CW_GetMember(this, Weapon_BaseThrowable_Member_flReleaseThrow);
+
+  client_print(pPlayer, print_console, "Idle %.3f %.3f", flStartThrow, flReleaseThrow);
+  if (flStartThrow && !flReleaseThrow) {
+    static Float:flPower; flPower = CW_CallMethod(this, GetPower);
+    client_print(pPlayer, print_console, "POWER: %f", flPower);
+
+    if (flPower < 0.2) {
+      CW_SetMember(this, Weapon_BaseThrowable_Member_flStartThrow, 0.0);
+      CW_SetMember(this, Weapon_BaseThrowable_Member_flReleaseThrow, -1.0);
+      return;
+    }
+  }
+
+  CW_CallBaseMethod();
+
+  if (!flStartThrow && flReleaseThrow == -1.0 && !bRedeploy) {
+    CW_CallNativeMethod(this, CW_Method_PlayAnimation, 0, 31.0 / 30.0);
+  }
+}
+
+@Weapon_Deploy(const this) {
+  static Float:flGameTime; flGameTime = get_gametime();
+
+  if (!CW_CallBaseMethod()) return;
+
+  CW_CallNativeMethod(this, CW_Method_DefaultDeploy, g_szVModel, g_szPModel, 3, "shieldgun");
+
+  CW_SetMember(this, CW_Member_flTimeIdle, flGameTime + 1.0);
+  CW_SetMember(this, Weapon_BaseThrowable_Member_bRedeploy, false);
+}
+
+@Weapon_PrimaryAttack(const this) {
+  static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
+
+  static Float:flChargeTime; flChargeTime = CW_GetMember(this, m_flChargeTime);
+  static Float:flChargeDuration; flChargeDuration = CW_CallMethod(this, GetChargeDuration);
+
+  if (flChargeDuration > MISFIRE_DELAY) {
+    @Player_AnglesShake(pPlayer);
+  }
+
+  if (flChargeDuration >= flChargeTime) {
+    if (is_user_bot(pPlayer)) {
+      CW_CallNativeMethod(this, CW_Method_Idle);
+      return;
+    }
+  }
+
+  if (!CW_CallBaseMethod()) return;
+
+  CW_CallNativeMethod(this, CW_Method_PlayAnimation, 1);
+}
+
+@Weapon_CanDrop(const this) {
+  return true;
+}
+
+@Weapon_Throw(const this) {
+  new Float:flChargeDuration = CW_CallMethod(this, GetChargeDuration);
+  new bool:bMissfire = flChargeDuration > MISFIRE_DELAY;
+  new Float:flPower = CW_CallMethod(this, GetPower);
+
+  static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
+
+  static Float:vecAngles[3]; pev(pPlayer, pev_v_angle, vecAngles);
+  static Float:vecPunchAngle[3]; pev(pPlayer, pev_punchangle, vecPunchAngle);
+  static Float:vecThrowAngle[3]; xs_vec_add(vecAngles, vecPunchAngle, vecThrowAngle);
+  static Float:flThrowForce; flThrowForce = CW_GetMember(this, Weapon_BaseThrowable_Member_flThrowForce);
+
+  engfunc(EngFunc_MakeVectors, vecThrowAngle);
+
+  static pProjectile; pProjectile = CW_CallMethod(this, Weapon_BaseThrowable_Method_SpawnProjectile);
+
+  if (pProjectile != FM_NULLENT) {
+    static Float:vecForward[3]; get_global_vector(GL_v_forward, vecForward);
+
+    if (bMissfire) {
+      for (new i = 0; i < 3; ++i) {
+        vecForward[i] += random_float(-MISFIRE_MAX_ERROR, MISFIRE_MAX_ERROR);
+      }
+
+      xs_vec_normalize(vecForward, vecForward);
     }
 
-    if (get_member(this, m_flStartThrow)) {
-        new Float:flChargeDuration = GetChargeDuration(this);
-        new bool:bMissfire = flChargeDuration > MISFIRE_DELAY;
-        new Float:flPower = floatmax(floatmin(flChargeDuration / CHARGE_TIME, 1.0), 0.0);
+    static Float:vecThrow[3]; pev(pPlayer, pev_velocity, vecThrow);
 
-        if (flPower > 0.2) {
-            ThrowGrenade(this, flPower, bMissfire);
-            emit_sound(pPlayer, CHAN_BODY, SW_SOUND_SNOWBALL_THROW, 1.0, ATTN_NORM, 0, PITCH_NORM);
-        } else {
-            set_member(this, m_flReleaseThrow, 0.0);
-            set_member(this, m_flStartThrow, 0.0);
-        }
-    } else if (get_member(this, m_flReleaseThrow) > 0.0) {
-        // we've finished the throw, restart.
-        set_member(this, m_flStartThrow, 0.0);
-        set_member(this, m_flReleaseThrow, -1.0);
-        return;
-    }
+    xs_vec_add_scaled(vecThrow, vecForward, flThrowForce * flPower, vecThrow);
 
-    if (g_bPlayerRedeploy[pPlayer]) {
-        ExecuteHamB(Ham_Item_Deploy, this);
-    } else {
-        CW_PlayAnimation(this, 0, 31.0 / 30.0);
-    }
-}
-
-public @Weapon_Deploy(this) {
-        new pPlayer = CW_GetPlayer(this);
-        CW_DefaultDeploy(this, SW_MODEL_WEAPON_SLINGSHOT_V, SW_MODEL_WEAPON_SLINGSHOT_P, 3, "shieldgun");
-        g_bPlayerRedeploy[pPlayer] = false;
-}
-
-public @Weapon_Holster(this) {
-        new pPlayer = CW_GetPlayer(this);
-
-        if (!is_user_connected(pPlayer)) {
-                return;
-        }
-
-        set_member(this, m_flReleaseThrow, 0.0);
-        set_member(this, m_flStartThrow, 0.0);
-}
-
-// public @Weapon_CanDrop(this) {
-//     return PLUGIN_HANDLED;
-// }
-
-public @Weapon_PrimaryAttack(this) {
-    new pPlayer = CW_GetPlayer(this);
-
-    if (!get_member(this, m_flStartThrow)) {
-        set_member(this, m_flStartThrow, get_gametime());
-        set_member(this, m_flReleaseThrow, 0.0);
-        CW_PlayAnimation(this, 1, 0.0);
-    } else {
-        new Float:flChargeDuration = GetChargeDuration(this);
-
-        if (flChargeDuration > MISFIRE_DELAY) {
-            @Player_AnglesShake(pPlayer);
-        } else if (flChargeDuration >= CHARGE_TIME) {
-            new pPlayer = CW_GetPlayer(this);
-            if (is_user_bot(pPlayer)) { // force throw for bots
-                CW_Idle(this);
-            }
-        }
-    }
-}
-
-public @Weapon_SecondaryAttack(this) {
-    CW_Idle(this);
-}
-
-public @Weapon_WeaponBoxSpawn(this, pWeaponBox) {
-    engfunc(EngFunc_SetModel, pWeaponBox, SW_MODEL_WEAPON_SLINGSHOT_W);
-}
-
-public Float:@Weapon_GetMaxSpeed(this) {
-    return 250.0;
-}
-
-public @Player_AnglesShake(this) {
-    static Float:vecViewAngle[3];
-    pev(this, pev_v_angle, vecViewAngle);
-
-    for (new i = 0; i < 3; ++i) {
-        vecViewAngle[i] += random_float(-MISFIRE_MAX_SHAKING, MISFIRE_MAX_SHAKING);
-    }
-
-    set_pev(this, pev_angles, vecViewAngle);
-    set_pev(this, pev_v_angle, vecViewAngle);
-    set_pev(this, pev_fixangle, 1);
-}
-
-ThrowGrenade(this, Float:flPower, bool:bMissfire = false) {
-    new pPlayer = CW_GetPlayer(this);
-
-    static Float:vecSrc[3];
-    ExecuteHam(Ham_Player_GetGunPosition, pPlayer, vecSrc);
+    set_pev(pProjectile, pev_velocity, xs_vec_len(vecThrow) ? vecThrow : Float:{0.0, 0.0, 1.0});
     
-    static Float:vecThrow[3];
-    pev(pPlayer, pev_velocity, vecThrow);
+    static Float:vecAngles[3]; vector_to_angle(vecThrow, vecAngles);
 
-    static Float:vecThrowAngle[3];
-    pev(pPlayer, pev_v_angle, vecThrowAngle);
-    engfunc(EngFunc_MakeVectors, vecThrowAngle); 
+    set_pev(pProjectile, pev_angles, vecAngles);
+  }
 
-    static Float:vecForward[3];
-    get_global_vector(GL_v_forward, vecForward);
-    xs_vec_normalize(vecForward, vecForward);
+  set_ent_data_string(pPlayer, "CBasePlayer", "m_szAnimExtention", "onehanded");
+  CW_CallNativeMethod(this, CW_Method_PlayAnimation, 2, 11.0 / 30.0);
+  rg_set_animation(pPlayer, PLAYER_RELOAD);
 
-    for (new i = 0; i < 3; ++i) {
-        new Float:flError = bMissfire ? random_float(-MISFIRE_MAX_ERROR, MISFIRE_MAX_ERROR) : 0.0;
-        vecSrc[i] += vecForward[i] * 16.0;
-        vecThrow[i] += (vecForward[i] + flError) * (2048.0 * flPower);
-    }
+  emit_sound(pPlayer, CHAN_BODY, g_szThrowSound, 1.0, ATTN_NORM, 0, PITCH_NORM);
 
-    ShootTimed(pPlayer, vecSrc, vecThrow);
-
-    set_member(pPlayer, m_szAnimExtention, "onehanded");
-    CW_PlayAnimation(this, 2, 11.0 / 30.0);
-    rg_set_animation(pPlayer, PLAYER_RELOAD);
-
-    set_member(this, m_flReleaseThrow, 0.0);
-    set_member(this, m_flStartThrow, 0.0);
-    set_member(this, m_Weapon_flNextPrimaryAttack, 1.0);
-    set_member(this, m_Weapon_flNextSecondaryAttack, 1.0);
-    set_member(this, m_Weapon_flTimeWeaponIdle, 1.0);
-
-    g_bPlayerRedeploy[pPlayer] = true;
+  CW_SetMember(this, Weapon_BaseThrowable_Member_flStartThrow, 0.0);
+  CW_SetMember(this, CW_Member_flNextPrimaryAttack, 1.0);
+  CW_SetMember(this, CW_Member_flNextSecondaryAttack, 1.0);
+  CW_SetMember(this, CW_Member_flTimeIdle, 1.0);
 }
 
-ShootTimed(pOwner, const Float:vecStart[3], const Float:vecVelocity[3]) {
-        new pSnowball = CE_Create("sw_snowball", vecStart);
-        set_pev(pSnowball, pev_owner, pOwner);
-        dllfunc(DLLFunc_Spawn, pSnowball);
-        engfunc(EngFunc_SetOrigin, pSnowball, vecStart);
-        set_pev(pSnowball, pev_velocity, vecVelocity);
+@Weapon_SpawnProjectile(const this) {
+  static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
+  static Float:vecForward[3]; get_global_vector(GL_v_forward, vecForward);
+  static Float:vecSrc[3]; ExecuteHam(Ham_Player_GetGunPosition, pPlayer, vecSrc);
 
-        static Float:vecAngles[3];
-        vector_to_angle(vecVelocity, vecAngles);
-        set_pev(pSnowball, pev_angles, vecAngles);
+  xs_vec_add_scaled(vecSrc, vecForward, 16.0, vecSrc);
 
-        return pSnowball;
+  new pProjectile = CE_Create(SW_ENTITY_SNOWBALL, vecSrc);
+  dllfunc(DLLFunc_Spawn, pProjectile);
+
+  set_pev(pProjectile, pev_owner, pPlayer);
+
+  return pProjectile;
 }
 
-Float:GetChargeDuration(this) {
-    return get_gametime() - Float:get_member(this, m_flStartThrow);
+@Weapon_UpdateWeaponBoxModel(const this, const pWeaponBox) {
+  engfunc(EngFunc_SetModel, pWeaponBox, g_szWModel);
 }
 
+Float:@Weapon_GetPower(const this) {
+  static Float:flChargeTime; flChargeTime = CW_GetMember(this, m_flChargeTime);
+  static Float:flChargeDuration; flChargeDuration = CW_CallMethod(this, GetChargeDuration);
+
+  return floatclamp(flChargeDuration / flChargeTime, 0.0, 1.0);
+}
+
+Float:@Weapon_GetChargeDuration(const this) {
+  return get_gametime() - Float:CW_GetMember(this, Weapon_BaseThrowable_Member_flStartThrow);
+}
+
+@Player_AnglesShake(const &this) {
+  static Float:vecPunchAngle[3]; pev(this, pev_punchangle, vecPunchAngle);
+
+  // static Float:vecViewAngle[3]; pev(this, pev_v_angle, vecViewAngle);
+
+  for (new i = 0; i < 3; ++i) {
+    vecPunchAngle[i] += random_float(-MISFIRE_MAX_SHAKING, MISFIRE_MAX_SHAKING);
+  }
+
+  // set_pev(this, pev_angles, vecViewAngle);
+  // set_pev(this, pev_v_angle, vecViewAngle);
+  // set_pev(this, pev_fixangle, 1);
+  set_pev(this, pev_punchangle, vecPunchAngle);
+}
