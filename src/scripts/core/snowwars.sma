@@ -18,8 +18,6 @@ new g_pCvarVersion;
 public plugin_precache() {
   Asset_Library_Load(SW_ASSET_LIBRARY);
 
-  Asset_Precache(SW_ASSET_LIBRARY, SW_ASSET_HUD_SPRITES);
-
   g_pCvarVersion = register_cvar("snowwars_version", SW_VERSION, FCVAR_SERVER);
 
   hook_cvar_change(g_pCvarVersion, "CvarHook_Version");

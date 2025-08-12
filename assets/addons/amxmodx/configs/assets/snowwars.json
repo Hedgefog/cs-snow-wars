@@ -1,9 +1,4 @@
 {
-  "hud-sprites": [
-      "sprites/snowwars/v100/640hud1.spr",
-      "sprites/snowwars/v100/640hud2.spr",
-      "sprites/snowwars/v100/640hud3.spr"
-  ],
   "snowman-model": "models/snowwars/v100/snowman.mdl",
   "firework-rocket-model": "models/rpgrocket.mdl",
   "artifact-model": "models/w_isotopebox.mdl",
