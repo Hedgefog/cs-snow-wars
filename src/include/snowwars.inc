@@ -5,16 +5,17 @@
 
     Additions and improvements:
       Reduced snowball attack rate 
-      Players can now have multiple snowmans and surprise boxes
-      Firework rockets are now explode randomly based on impact angle
+      Players can now have multiple snowmen and surprise boxes
+      Firework rockets now explode randomly based on impact angle
       Increased snowman health
-      Auto-guidance for snowballs is now ignoring Z axis
+      Auto-guidance for snowballs is now ignoring the Z axis
 
     Fixes:
-      Fix attack rate for all weapons
-      Fix exploit when player can respawn using snowman after changing team
-      Fix win conditions check for snowman entity
-      Players are no longer drop defuser kit on death
+      Fixed a bug where snow particles would get stuck in walls
+      Fix the attack rate for all weapons
+      Fix the exploit when the player can respawn using a snowman after changing team
+      Fix win conditions check for the snowman entity
+      Players no longer drop the defuser kit on death
 
   1.0.0
     Additions and improvements:
