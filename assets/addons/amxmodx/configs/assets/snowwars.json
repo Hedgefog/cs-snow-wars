@@ -1,59 +1,141 @@
 {
-  "snowman-model": "models/snowwars/v100/snowman.mdl",
-  "firework-rocket-model": "models/rpgrocket.mdl",
-  "artifact-model": "models/w_isotopebox.mdl",
-  "snowball-v-model": "models/snowwars/v100/weapons/v_snowball.mdl",
-  "snowball-p-model": "models/snowwars/v090/weapons/p_snowball.mdl",
-  "snowball-w-model": "models/snowwars/v090/weapons/w_snowball.mdl",
-  "snowball-lemon-w-model": "models/snowwars/v090/weapons/w_snowball_lemon.mdl",
-  "slingshot-v-model": "models/snowwars/v090/weapons/v_slingshot.mdl",
-  "slingshot-p-model": "models/snowwars/v090/weapons/p_slingshot.mdl",
-  "slingshot-w-model": "models/snowwars/v090/weapons/w_slingshot.mdl",
-  "fireworksbox-v-model": "models/snowwars/v090/weapons/v_fireworksbox.mdl",
-  "fireworksbox-p-model": "models/snowwars/v100/weapons/p_fireworksbox.mdl",
-  "fireworksbox-w-model": "models/snowwars/v090/weapons/w_fireworksbox.mdl",
-  "snowman-v-model": "",
-  "snowman-p-model": "",
-  "snowman-w-model": "models/snowwars/v100/weapons/w_snowman.mdl",
-  "downjacket-w-model": "models/snowwars/v090/artifacts/w_downjacket.mdl",
-  "downjacket-p-model": "models/snowwars/v090/artifacts/p_downjacket.mdl",
-  "lemonjuice-w-model": "models/snowwars/v090/artifacts/w_lemonsnow.mdl",
-  "snowball-throw-sound": "snowwars/v090/snowthrow1.wav",
-  "snowball-hit-sound": "snowwars/v090/sbhit.wav",
-  "snowball-lemon-hit-sound": "debris/bustflesh1.wav",
-  "jingle-music-sound": "snowwars/v090/christmas_jingle.wav",
-  "firework-rocket-sound": "snowwars/v090/rocket1.wav",
-  "downjacket-sound": "snowwars/v090/pw_shield.wav",
-  "player-spawn-sound": "snowwars/v090/push.wav",
-  "return-sound": "snowwars/v100/return.wav",
-  "player-hit-sound": ["snowwars/v090/snowhit_human1.wav", "snowwars/v090/snowhit_human2.wav"],
-  "rocket-trail-sprite": "sprites/smoke.spr",
-  "snow-splash-sprite": "sprites/blood.spr",
-  "firework-wave-sprite": [
-      "sprites/laserbeam.spr",
-      "sprites/shockwave.spr",
-      "sprites/shellchrome.spr",
-      "sprites/zbeam1.spr",
-      "sprites/zbeam2.spr",
-      "sprites/zbeam3.spr",
-      "sprites/zbeam4.spr",
-      "sprites/zbeam5.spr",
-      "sprites/zbeam6.spr",
-      "sprites/xbeam1.spr",
-      "sprites/xbeam2.spr",
-      "sprites/xbeam3.spr",
-      "sprites/xbeam4.spr",
-      "sprites/xbeam5.spr"
-  ],
-  "firework-particle-sprite": [
-    "sprites/flare1.spr",
-    "sprites/flare3.spr",
-    "sprites/muz2.spr",
-    "sprites/muz3.spr",
-    "sprites/muz4.spr",
-    "sprites/muz5.spr",
-    "sprites/muz6.spr",
-    "sprites/muz7.spr",
-    "sprites/muz8.spr"
-  ]
+  "player": {
+    "sounds": {
+      "spawn": "snowwars/v090/push.wav",
+      "return": "snowwars/v100/return.wav",
+      "hit": ["snowwars/v090/snowhit_human1.wav", "snowwars/v090/snowhit_human2.wav"]
+    }
+  },
+  "artifacts": {
+    "downjacket": {
+      "models": {
+        "player": "models/snowwars/v090/artifacts/p_downjacket.mdl",
+        "world": "models/snowwars/v090/artifacts/w_downjacket.mdl"
+      },
+      "sounds": {
+        "equip": "snowwars/v090/pw_shield.wav"
+      }
+    },
+    "lemonjuice": {
+      "models": {
+        "world": "models/snowwars/v090/artifacts/w_lemonsnow.mdl",
+        "snowball": "models/snowwars/v090/weapons/w_snowball_lemon.mdl"
+      },
+      "sprites": {
+        "splash": "sprites/blood.spr"
+      },
+      "sounds": {
+        "hit": "debris/bustflesh1.wav"
+      }
+    }
+  },
+  "entities": {
+    "artifact": {
+      "model": "models/w_isotopebox.mdl"
+    },
+    "snowball": {
+      "model": "models/snowwars/v090/weapons/w_snowball.mdl",
+      "sprites": {
+        "splash": "sprites/blood.spr"
+      },
+      "sounds": {
+        "hit": "snowwars/v090/sbhit.wav"
+      }
+    },
+    "fireworksbox": {
+      "model": "models/snowwars/v110/weapons/w_fireworksbox.mdl",
+      "sounds": {
+        "music": "snowwars/v090/christmas_jingle.wav"
+      }
+    },
+    "snowman": {
+      "model": "models/snowwars/v100/snowman.mdl",
+      "sounds": {
+        "spawn": "snowwars/v090/sbhit.wav"
+      }
+    },
+    "firework-rocket": {
+      "model": "models/rpgrocket.mdl",
+      "sprites": {
+        "trail": "sprites/smoke.spr"
+      },
+      "sounds": {
+        "whistle": "snowwars/v110/fireworks_rocket_whistle.wav"
+      }
+    },
+    "firework-effect": {
+      "model": "sprites/snowwars/v110/firework.spr",
+      "sounds": {
+        "explosion": "snowwars/v110/fireworks_explosion.wav"
+      }
+    },
+    "fireplace": {
+      "model": "models/snowwars/v110/fireplace.mdl"
+    }
+  },
+  "weapons": {
+    "snowball": {
+      "models": {
+        "view": "models/snowwars/v110/weapons/v_snowball.mdl",
+        "player": "models/snowwars/v110/weapons/p_snowball.mdl",
+        "world": "models/snowwars/v090/weapons/w_snowball.mdl"
+      },
+      "sounds": {
+        "throw": "snowwars/v090/snowthrow1.wav"
+      }
+    },
+    "slingshot": {
+      "models": {
+        "view": "models/snowwars/v110/weapons/v_slingshot.mdl",
+        "player": "models/snowwars/v110/weapons/p_slingshot.mdl",
+        "world": "models/snowwars/v090/weapons/w_slingshot.mdl"
+      },
+      "sounds": {
+        "snap": "snowwars/v110/slingshot_snap.wav",
+        "stretch": "snowwars/v110/slingshot_stretch.wav",
+        "throw": "snowwars/v090/snowthrow1.wav"
+      }
+    },
+    "fireworksbox": {
+      "models": {
+        "view": "models/snowwars/v110/weapons/v_fireworksbox.mdl",
+        "player": "models/snowwars/v110/weapons/p_fireworksbox.mdl",
+        "world": "models/snowwars/v110/weapons/w_fireworksbox.mdl"
+      }
+    },
+    "snowman": {
+      "models": {
+        "view": "models/snowwars/v110/weapons/v_snowman.mdl",
+        "player": "models/snowwars/v110/weapons/p_snowman.mdl",
+        "world": "models/snowwars/v110/weapons/w_snowman.mdl"
+      }
+    },
+    "hotdrink": {
+      "models": {
+        "view": "models/snowwars/v110/weapons/v_hotdrink.mdl",
+        "player": "models/snowwars/v110/weapons/p_hotdrink.mdl",
+        "world": "models/snowwars/v110/weapons/w_hotdrink.mdl"
+      },
+      "sounds": {
+        "drink": "snowwars/v110/hotdrink_drink.wav"
+      }
+    },
+    "shield": {
+      "models": {
+        "view": "models/snowwars/v110/weapons/v_shield.mdl",
+        "player": "models/snowwars/v110/weapons/p_shield.mdl",
+        "world": "models/snowwars/v110/weapons/w_shield.mdl"
+      },
+      "sounds": {
+        "impact": "snowwars/v110/shield_hit.wav"
+      }
+    },
+    "fireplace": {
+      "models": {
+        "view": "models/snowwars/v110/weapons/v_fireplace.mdl",
+        "player": "models/snowwars/v110/weapons/p_fireplace.mdl",
+        "world": "models/snowwars/v110/weapons/w_fireplace.mdl"
+      }
+    }
+  }
 }

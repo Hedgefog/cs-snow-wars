@@ -16,17 +16,18 @@
     ]
   },
   "input": {
-    "scripts": "./src/scripts",
+    "scripts": { "dir": "./src/scripts", "dest": "snowwars" },
     "include": "./src/include",
     "assets": "./assets"
   },
   "output": {
-    "plugins": "./dist/build/addons/amxmodx/plugins",
-    "scripts": "./dist/build/addons/amxmodx/scripting",
-    "include": "./dist/build/addons/amxmodx/scripting/include",
-    "assets": "./dist/build"
+    "base": "./dist",
+    "plugins": "./addons/amxmodx/plugins",
+    "scripts": "./addons/amxmodx/scripting",
+    "include": "./addons/amxmodx/scripting/include",
+    "assets": "."
   },
   "rules": {
-    "flatCompilation": true
+    "flatCompilation": false
   }
 }
