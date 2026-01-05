@@ -107,7 +107,7 @@
       "models": {
         "view": "models/snowwars/v110/weapons/v_snowman.mdl",
         "player": "models/snowwars/v110/weapons/p_snowman.mdl",
-        "world": "models/snowwars/v110/weapons/w_snowman.mdl"
+        "world": "models/snowwars/v100/weapons/w_snowman.mdl"
       }
     },
     "hotdrink": {
