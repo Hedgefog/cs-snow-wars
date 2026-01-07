@@ -31,6 +31,7 @@ public plugin_destroy() {
 public plugin_natives() {
   register_library("snowwars_artifacts");
   register_native("SW_PlayerArtifact_Register", "Native_RegisterArtifact");
+  register_native("SW_PlayerArtifact_IsRegistered", "Native_IsRegistered");
   register_native("SW_PlayerArtifact_GetHandle", "Native_GetHandle");
   register_native("SW_PlayerArtifact_Give", "Native_GiveArtifact");
   register_native("SW_PlayerArtifact_Take", "Native_TakeArtifact");
@@ -61,6 +62,12 @@ public Native_RegisterArtifact(const iPluginId, const iArgc) {
   new Function:fnDeactivate = get_func_pointer(szDeactivateFunc, iPluginId);
 
   return Artifact_Register(szId, fnActivate, fnDeactivate);
+}
+
+public bool:Native_IsRegistered(const iPluginId, const iArgc) {
+  static szId[16]; get_string(1, szId, charsmax(szId));
+
+  return Artifact_GetId(szId) != -1;
 }
 
 public Native_GetHandle(const iPluginid, const iArgc) {

@@ -6,6 +6,7 @@
 #pragma reqlib snowwars_artifacts
 
 native SW_PlayerArtifact_Register(const szId[],const szActivateFunc[],const szDeactivateFunc[]);
+native bool:SW_PlayerArtifact_IsRegistered(const szId[]);
 
 native SW_PlayerArtifact_GetHandle(const szId[]);
 
