@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 #include <amxmodx>
 #include <engine>
 #include <fakemeta>
@@ -9,14 +11,11 @@
 
 #include <entity_fire_const>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define IS_PLAYER(%1) (%1 > 0 && %1 <= MaxClients)
-
-#define ENTITY_NAME SW_Entity_Fireplace
-
-new const CanTakeDamage[] = "CanTakeDamage";
-new const GetRelationship[] = "GetRelationship";
+#define ENTITY_NAME ENTITY(Fireplace)
+#define MEMBER(%1) ENTITY_MEMBER<Fireplace>(%1)
+#define METHOD(%1) ENTITY_METHOD<Fireplace>(%1)
 
 new g_szModel[MAX_RESOURCE_PATH_LENGTH];
 
@@ -33,12 +32,12 @@ public plugin_precache() {
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Think, "@Entity_Think");
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_TakeDamage, "@Entity_TakeDamage");
 
-  CE_RegisterClassMethod(ENTITY_NAME, CanTakeDamage, "@Entity_CanTakeDamage", CE_Type_Cell, CE_Type_Cell);
-  CE_RegisterClassMethod(ENTITY_NAME, GetRelationship, "@Entity_GetRelationship", CE_Type_Cell);
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(CanTakeDamage), "@Entity_CanTakeDamage", CE_Type_Cell, CE_Type_Cell);
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(GetRelationship), "@Entity_GetRelationship", CE_Type_Cell);
 }
 
 public plugin_init() {
-  register_plugin("[Entity] Fireplace", SW_VERSION, "Hedgehog Fog");
+  register_plugin(ENTITY_PLUGIN(Fireplace), SW_VERSION, "Hedgehog Fog");
 
   new Float:vecAbsMin[3]; pev(0, pev_absmin, vecAbsMin);
   new Float:vecAbsMax[3]; pev(0, pev_absmax, vecAbsMax);
@@ -52,16 +51,16 @@ public plugin_init() {
   CE_SetMemberVec(this, CE_Member_vecMins, Float:{-16.0, -16.0, 0.0});
   CE_SetMemberVec(this, CE_Member_vecMaxs, Float:{16.0, 16.0, 16.0});
 
-  CE_SetMember(this, SW_Entity_Fireplace_Member_flHealRate, 0.1);
-  CE_SetMember(this, SW_Entity_Fireplace_Member_flHealAmount, 3.0);
-  CE_SetMember(this, SW_Entity_Fireplace_Member_flHealRange, 128.0);
-  CE_SetMember(this, SW_Entity_Fireplace_Member_pFire, FM_NULLENT);
+  CE_SetMember(this, MEMBER(flHealRate), 0.1);
+  CE_SetMember(this, MEMBER(flHealAmount), 3.0);
+  CE_SetMember(this, MEMBER(flHealRange), 128.0);
+  CE_SetMember(this, MEMBER(pFire), FM_NULLENT);
 }
 
 @Entity_Spawn(const this) {
   CE_CallBaseMethod();
 
-  new pFire = CE_GetMember(this, SW_Entity_Fireplace_Member_pFire);
+  new pFire = CE_GetMember(this, MEMBER(pFire));
 
   if (pFire == FM_NULLENT) {
     pFire = CE_Create(ENTITY_FIRE);
@@ -86,10 +85,10 @@ public plugin_init() {
 @Entity_Killed(const this, const pKiller, iShouldGib) {
   CE_CallBaseMethod(pKiller, iShouldGib);
 
-  new pFire = CE_GetMember(this, SW_Entity_Fireplace_Member_pFire);
+  new pFire = CE_GetMember(this, MEMBER(pFire));
   if (pFire != FM_NULLENT) {
     ExecuteHamB(Ham_Killed, pFire, pKiller, iShouldGib);
-    CE_SetMember(this, SW_Entity_Fireplace_Member_pFire, FM_NULLENT);
+    CE_SetMember(this, MEMBER(pFire), FM_NULLENT);
   }
 }
 
@@ -106,9 +105,9 @@ public plugin_init() {
   static Float:flGameTime; flGameTime = get_gametime();
 
   static Float:flLTime; pev(this, pev_ltime, flLTime);
-  static Float:flHealAmount; flHealAmount = CE_GetMember(this, SW_Entity_Fireplace_Member_flHealAmount);
-  static Float:flHealRate; flHealRate = CE_GetMember(this, SW_Entity_Fireplace_Member_flHealRate);
-  static Float:flHealRange; flHealRange = CE_GetMember(this, SW_Entity_Fireplace_Member_flHealRange);
+  static Float:flHealAmount; flHealAmount = CE_GetMember(this, MEMBER(flHealAmount));
+  static Float:flHealRate; flHealRate = CE_GetMember(this, MEMBER(flHealRate));
+  static Float:flHealRange; flHealRange = CE_GetMember(this, MEMBER(flHealRange));
   static Float:flEffectiveHealRange; flEffectiveHealRange = flHealRange * 0.5;
   static Float:flTimeDelta; flTimeDelta = flLTime ? flGameTime - flLTime : flHealRate;
 
@@ -141,7 +140,7 @@ public plugin_init() {
 }
 
 @Entity_TakeDamage(const this, const pInflictor, const pAttacker, Float:flDamage, iDamageBits) {
-  if (!CE_CallMethod(this, CanTakeDamage, pInflictor, pAttacker)) return;
+  if (!CE_CallMethod(this, METHOD(CanTakeDamage), pInflictor, pAttacker)) return;
 
   CE_CallBaseMethod(pInflictor, pAttacker, flDamage, iDamageBits);
 }
@@ -155,24 +154,24 @@ bool:@Entity_CanTakeDamage(const this, const pInflictor, const pAttacker) {
   return true;
 }
 
-SW_Entity_Relationship:@Entity_GetRelationship(const this, const pEntity) {
-  if (!IS_PLAYER(pEntity)) return SW_Entity_Relationship_None;
-  if (pev(this, pev_deadflag) != DEAD_NO) return SW_Entity_Relationship_None;
+SW_EntityRelationship:@Entity_GetRelationship(const this, const pEntity) {
+  if (!IS_PLAYER(pEntity)) return SW_EntityRelationship_None;
+  if (pev(this, pev_deadflag) != DEAD_NO) return SW_EntityRelationship_None;
 
   static pOwner; pOwner = pev(this, pev_owner);
   if (IS_PLAYER(pOwner)) {
-    if (pOwner != pEntity) return SW_Entity_Relationship_None;
+    if (pOwner != pEntity) return SW_EntityRelationship_None;
 
-    return SW_Entity_Relationship_Owner;
+    return SW_EntityRelationship_Owner;
   }
 
   static iTeam; iTeam = pev(this, pev_team);
   if (iTeam) {
     static iPlayerTeam; iPlayerTeam = get_ent_data(pEntity, "CBasePlayer", "m_iTeam");
-    if (iPlayerTeam != iTeam) return SW_Entity_Relationship_None;
+    if (iPlayerTeam != iTeam) return SW_EntityRelationship_None;
 
-    return SW_Entity_Relationship_Team;
+    return SW_EntityRelationship_Team;
   }
 
-  return SW_Entity_Relationship_Shared;
+  return SW_EntityRelationship_Shared;
 }

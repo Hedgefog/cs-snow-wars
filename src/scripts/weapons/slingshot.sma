@@ -12,20 +12,15 @@
 #include <api_custom_entities>
 #include <weapon_base_throwable_const>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define PLUGIN "[Snow Wars] Weapon Slingshot"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
+#define WEAPON_NAME WEAPON(Slingshot)
+#define MEMBER(%1) WEAPON_MEMBER<Slingshot>(%1)
+#define METHOD(%1) WEAPON_METHOD<Slingshot>(%1)
 
 #define MISFIRE_DELAY 10.0
 #define MISFIRE_MAX_SHAKING 0.25
 #define MISFIRE_MAX_ERROR 0.125
-
-new const m_flChargeTime[] = "flChargeTime";
-
-new const GetPower[] = "GetPower";
-new const GetChargeDuration[] = "GetChargeDuration";
 
 new g_szVModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szPModel[MAX_RESOURCE_PATH_LENGTH];
@@ -39,25 +34,25 @@ public plugin_precache() {
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Sound_Snap);
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Sound_Stretch);
 
-  CW_RegisterClass(SW_Weapon_Slingshot, WEAPON_BASE_THROWABLE);
+  CW_RegisterClass(WEAPON_NAME, WEAPON_BASE_THROWABLE);
 
-  CW_ImplementClassMethod(SW_Weapon_Slingshot, CW_Method_Create, "@Weapon_Create");
-  CW_ImplementClassMethod(SW_Weapon_Slingshot, CW_Method_Idle, "@Weapon_Idle");
-  CW_ImplementClassMethod(SW_Weapon_Slingshot, CW_Method_Deploy, "@Weapon_Deploy");
-  CW_ImplementClassMethod(SW_Weapon_Slingshot, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
-  CW_ImplementClassMethod(SW_Weapon_Slingshot, CW_Method_CanDrop, "@Weapon_CanDrop");
-  CW_ImplementClassMethod(SW_Weapon_Slingshot, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
-  CW_ImplementClassMethod(SW_Weapon_Slingshot, CW_Method_GetMaxSpeed, "@Weapon_GetMaxSpeed");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Create, "@Weapon_Create");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Idle, "@Weapon_Idle");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Deploy, "@Weapon_Deploy");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_CanDrop, "@Weapon_CanDrop");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_GetMaxSpeed, "@Weapon_GetMaxSpeed");
 
-  CW_RegisterClassMethod(SW_Weapon_Slingshot, Weapon_BaseThrowable_Method_Throw, "@Weapon_Throw");
-  CW_RegisterClassMethod(SW_Weapon_Slingshot, Weapon_BaseThrowable_Method_SpawnProjectile, "@Weapon_SpawnProjectile");
+  CW_RegisterClassMethod(WEAPON_NAME, Weapon_BaseThrowable_Method_Throw, "@Weapon_Throw");
+  CW_RegisterClassMethod(WEAPON_NAME, Weapon_BaseThrowable_Method_SpawnProjectile, "@Weapon_SpawnProjectile");
 
-  CW_RegisterClassMethod(SW_Weapon_Slingshot, GetPower, "@Weapon_GetPower");
-  CW_RegisterClassMethod(SW_Weapon_Slingshot, GetChargeDuration, "@Weapon_GetChargeDuration");
+  CW_RegisterClassMethod(WEAPON_NAME, METHOD(GetPower), "@Weapon_GetPower");
+  CW_RegisterClassMethod(WEAPON_NAME, METHOD(GetChargeDuration), "@Weapon_GetChargeDuration");
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(WEAPON_PLUGIN(Slingshot), SW_VERSION, "Hedgehog Fog");
 }
 
 @Weapon_Create(const this) {
@@ -68,17 +63,16 @@ public plugin_init() {
   CW_SetMember(this, CW_Member_iPosition, 1);
 
   CW_SetMember(this, Weapon_BaseThrowable_Member_flThrowForce, 2048.0);
-  CW_SetMember(this, m_flChargeTime, 1.0);
+  CW_SetMember(this, MEMBER(flChargeTime), 1.0);
 }
 
 @Weapon_Idle(const this) {
-  static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
   static bool:bRedeploy; bRedeploy = CW_GetMember(this, Weapon_BaseThrowable_Member_bRedeploy);
   static Float:flStartThrow; flStartThrow = CW_GetMember(this, Weapon_BaseThrowable_Member_flStartThrow);
   static Float:flReleaseThrow; flReleaseThrow = CW_GetMember(this, Weapon_BaseThrowable_Member_flReleaseThrow);
 
   if (flStartThrow && !flReleaseThrow) {
-    static Float:flPower; flPower = CW_CallMethod(this, GetPower);
+    static Float:flPower; flPower = CW_CallMethod(this, METHOD(GetPower));
 
     if (flPower < 0.2) {
       CW_SetMember(this, Weapon_BaseThrowable_Member_flStartThrow, 0.0);
@@ -108,8 +102,8 @@ public plugin_init() {
 @Weapon_PrimaryAttack(const this) {
   static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
 
-  static Float:flChargeTime; flChargeTime = CW_GetMember(this, m_flChargeTime);
-  static Float:flChargeDuration; flChargeDuration = CW_CallMethod(this, GetChargeDuration);
+  static Float:flChargeTime; flChargeTime = CW_GetMember(this, MEMBER(flChargeTime));
+  static Float:flChargeDuration; flChargeDuration = CW_CallMethod(this, METHOD(GetChargeDuration));
 
   if (flChargeDuration > MISFIRE_DELAY) {
     @Player_AnglesShake(pPlayer);
@@ -133,9 +127,9 @@ public plugin_init() {
 }
 
 @Weapon_Throw(const this) {
-  new Float:flChargeDuration = CW_CallMethod(this, GetChargeDuration);
+  new Float:flChargeDuration = CW_CallMethod(this, METHOD(GetChargeDuration));
   new bool:bMissfire = flChargeDuration > MISFIRE_DELAY;
-  new Float:flPower = CW_CallMethod(this, GetPower);
+  new Float:flPower = CW_CallMethod(this, METHOD(GetPower));
 
   static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
 
@@ -189,7 +183,7 @@ public plugin_init() {
 
   xs_vec_add_scaled(vecSrc, vecForward, 16.0, vecSrc);
 
-  new pProjectile = CE_Create(SW_Entity_Snowball, vecSrc);
+  new pProjectile = CE_Create(ENTITY(Snowball), vecSrc);
   if (pProjectile == FM_NULLENT) return FM_NULLENT;
 
   set_pev(pProjectile, pev_owner, pPlayer);
@@ -207,8 +201,8 @@ Float:@Weapon_GetMaxSpeed(const this) {
 }
 
 Float:@Weapon_GetPower(const this) {
-  static Float:flChargeTime; flChargeTime = CW_GetMember(this, m_flChargeTime);
-  static Float:flChargeDuration; flChargeDuration = CW_CallMethod(this, GetChargeDuration);
+  static Float:flChargeTime; flChargeTime = CW_GetMember(this, MEMBER(flChargeTime));
+  static Float:flChargeDuration; flChargeDuration = CW_CallMethod(this, METHOD(GetChargeDuration));
 
   return floatclamp(flChargeDuration / flChargeTime, 0.0, 1.0);
 }

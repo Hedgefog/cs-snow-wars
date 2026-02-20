@@ -6,7 +6,8 @@
 
 #include <api_assets>
 #include <api_custom_entities>
-#include <snowwars_const>
+
+#include <snowwars_internal>
 
 #define ENTITY_NAME "sw_firework_effect"
 
@@ -22,6 +23,10 @@ public plugin_precache() {
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Think, "@Entity_Think");
 
   CE_RegisterClassMethod(ENTITY_NAME, "Play", "@Entity_Play");
+}
+
+public plugin_init() {
+  register_plugin(ENTITY_PLUGIN(FireworkEffect), SW_VERSION, "Hedgehog Fog");
 }
 
 @Entity_Create(const this) {

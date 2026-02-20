@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 #include <amxmodx>
 #include <fakemeta>
 #include <hamsandwich>
@@ -5,16 +7,12 @@
 
 #include <api_custom_entities>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
 new Float:g_vecBombOrigin[3];
 
-#define PLUGIN "[Snow Wars] Bomb"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
-
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(PLUGIN_NAME("Bomb"), SW_VERSION, "Hedgehog Fog");
 
   RegisterHookChain(RG_CGrenade_ExplodeBomb, "HC_Grenade_ExplodeBomb", .post = 0);
 }
@@ -39,7 +37,7 @@ public HC_Grenade_ExplodeBomb(const pGrenade) {
 }
 
 SpawnRocket(const Float:vecOrigin[3]) {
-  new pRocket = CE_Create(SW_Entity_FireworkRocket, vecOrigin);
+  new pRocket = CE_Create(ENTITY(FireworkRocket), vecOrigin);
   if (pRocket == FM_NULLENT) return FM_NULLENT;
 
   static Float:vecAngles[3];

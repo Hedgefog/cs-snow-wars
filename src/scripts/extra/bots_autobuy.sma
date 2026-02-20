@@ -7,14 +7,10 @@
 #include <api_custom_weapons>
 
 #include <snowwars_player_artifacts>
-#include <snowwars_const>
-
-#define PLUGIN "[Snow Wars] Bots Autobuy"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
+#include <snowwars_internal>
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(PLUGIN_NAME("Bots Autobuy"), SW_VERSION, "Hedgehog Fog");
 
   RegisterHamPlayer(Ham_Spawn, "HamHook_Player_Spawn_Post", .Post = 1);
 }
@@ -38,25 +34,25 @@ public Task_PlayerAutoBuy(iTaskId) {
 @Player_AutoBuy(this) {
   if (
     random(100) < 80 &&
-    !SW_PlayerArtifact_Has(this, SW_Artifact_Downjacket) &&
-    Shop_Player_GetBalance(this, SW_SHOP) >= Shop_GetItemPrice(SW_SHOP, SW_SHOP_ITEM_DOWNJACKET)
+    !SW_PlayerArtifact_Has(this, ARTIFACT(Downjacket)) &&
+    Shop_Player_GetBalance(this, SW_Shop) >= Shop_GetItemPrice(SW_Shop, SHOP_ITEM(DownJacket))
   ) {
-    Shop_Player_PurchaseItem(this, SW_SHOP, SW_SHOP_ITEM_DOWNJACKET);
+    Shop_Player_PurchaseItem(this, SW_Shop, SHOP_ITEM(DownJacket));
   }
 
   if (
     random(100) < 50 &&
-    !CW_PlayerHasWeapon(this, SW_Weapon_Slingshot) &&
-    Shop_Player_GetBalance(this, SW_SHOP) >= Shop_GetItemPrice(SW_SHOP, SW_SHOP_ITEM_SLINGSHOT)
+    !CW_PlayerHasWeapon(this, WEAPON(Slingshot)) &&
+    Shop_Player_GetBalance(this, SW_Shop) >= Shop_GetItemPrice(SW_Shop, SHOP_ITEM(Slingshot))
   ) {
-    Shop_Player_PurchaseItem(this, SW_SHOP, SW_SHOP_ITEM_SLINGSHOT);
+    Shop_Player_PurchaseItem(this, SW_Shop, SHOP_ITEM(Slingshot));
   }
 
   if (
     random(100) < 30 &&
-    !SW_PlayerArtifact_Has(this, SW_Artifact_LemonJuice) &&
-    Shop_Player_GetBalance(this, SW_SHOP) >= Shop_GetItemPrice(SW_SHOP, SW_SHOP_ITEM_LEMONJUICE)
+    !SW_PlayerArtifact_Has(this, ARTIFACT(LemonJuice)) &&
+    Shop_Player_GetBalance(this, SW_Shop) >= Shop_GetItemPrice(SW_Shop, SHOP_ITEM(LemonJuice))
   ) {
-    Shop_Player_PurchaseItem(this, SW_SHOP, SW_SHOP_ITEM_LEMONJUICE);
+    Shop_Player_PurchaseItem(this, SW_Shop, SHOP_ITEM(LemonJuice));
   }
 }

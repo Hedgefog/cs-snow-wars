@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 #include <amxmodx>
 #include <fakemeta>
 #include <hamsandwich>
@@ -8,7 +10,10 @@
 #include <api_custom_entities>
 #include <api_custom_weapons>
 
-#include <snowwars_const>
+#include <snowwars_internal>
+
+#define WEAPON_NAME WEAPON(HotDrink)
+#define METHOD(%1) WEAPON_METHOD<HotDrink>(%1)
 
 new g_szVModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szPModel[MAX_RESOURCE_PATH_LENGTH];
@@ -20,22 +25,22 @@ public plugin_precache() {
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_HotDrink_Model_World, g_szWModel, charsmax(g_szWModel));
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_HotDrink_Sound_Drink);
 
-  CW_RegisterClass(SW_Weapon_HotDrink);
+  CW_RegisterClass(WEAPON_NAME);
 
-  CW_ImplementClassMethod(SW_Weapon_HotDrink, CW_Method_Create, "@Weapon_Create");
-  CW_ImplementClassMethod(SW_Weapon_HotDrink, CW_Method_Deploy, "@Weapon_Deploy");
-  CW_ImplementClassMethod(SW_Weapon_HotDrink, CW_Method_Holster, "@Weapon_Holster");
-  CW_ImplementClassMethod(SW_Weapon_HotDrink, CW_Method_Idle, "@Weapon_Idle");
-  CW_ImplementClassMethod(SW_Weapon_HotDrink, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
-  CW_ImplementClassMethod(SW_Weapon_HotDrink, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
-  CW_ImplementClassMethod(SW_Weapon_HotDrink, CW_Method_GetMaxSpeed, "@Weapon_GetMaxSpeed");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Create, "@Weapon_Create");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Deploy, "@Weapon_Deploy");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Holster, "@Weapon_Holster");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Idle, "@Weapon_Idle");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_GetMaxSpeed, "@Weapon_GetMaxSpeed");
 
-  CW_RegisterClassMethod(SW_Weapon_HotDrink, "ReleaseDrink", "@Weapon_ReleaseDrink");
-  CW_RegisterClassMethod(SW_Weapon_HotDrink, "Interrupt", "@Weapon_Interrupt");
+  CW_RegisterClassMethod(WEAPON_NAME, METHOD(ReleaseDrink), "@Weapon_ReleaseDrink");
+  CW_RegisterClassMethod(WEAPON_NAME, METHOD(Interrupt), "@Weapon_Interrupt");
 }
 
 public plugin_init() {
-  register_plugin("[Snow Wars] (Weapon) Hot Drink", SW_VERSION, "Hedgehog Fog");
+  register_plugin(WEAPON_PLUGIN(HotDrink), SW_VERSION, "Hedgehog Fog");
 }
 
 @Weapon_Create(const this) {
@@ -66,7 +71,7 @@ public plugin_init() {
 @Weapon_Holster(const this) {
   if (!CW_CallBaseMethod()) return false;
 
-  CW_CallMethod(this, "Interrupt");
+  CW_CallMethod(this, METHOD(Interrupt));
 
   return true;
 }
@@ -74,7 +79,7 @@ public plugin_init() {
 @Weapon_Idle(const this) {
   if (!CW_CallBaseMethod()) return false;
 
-  CW_CallMethod(this, "Interrupt");
+  CW_CallMethod(this, METHOD(Interrupt));
 
   return true;
 }
@@ -89,7 +94,7 @@ public plugin_init() {
   static Float:flReleaseDrink; flReleaseDrink = CW_GetMember(this, "flReleaseDrink");
 
   if (flReleaseDrink && flReleaseDrink < get_gametime()) {
-    CW_CallMethod(this, "ReleaseDrink");
+    CW_CallMethod(this, METHOD(ReleaseDrink));
     return;
   }
 

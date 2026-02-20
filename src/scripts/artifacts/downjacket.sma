@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 #include <amxmodx>
 #include <hamsandwich>
 #include <fakemeta>
@@ -8,12 +10,9 @@
 
 #include <snowwars>
 #include <snowwars_player_artifacts>
+#include <snowwars_internal>
 
-#define PLUGIN "[Snow Wars] Down Jacket Artifact"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
-
-#define ARTIFACT_ID SW_Artifact_Downjacket
+#define ARTIFACT_ID ARTIFACT(Downjacket)
 
 new g_pPlayerJacket[MAX_PLAYERS + 1];
 
@@ -30,12 +29,12 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(ARTIFACT_PLUGIN(Downjacket), SW_VERSION, "Hedgehog Fog");
 
   register_event("ResetHUD", "Event_ResetHUD", "b");
   RegisterHamPlayer(Ham_Spawn, "HamHook_Player_Spawn", .Post = 1);
 
-  CE_RegisterClassNativeMethodHook(SW_Entity_ArtifactItem, CE_Method_Spawn, "CEHook_ArtifactItem_Spawn");
+  CE_RegisterClassNativeMethodHook(ENTITY(ArtifactItem), CE_Method_Spawn, "CEHook_ArtifactItem_Spawn");
 }
 
 public client_connect(pPlayer) {
@@ -44,6 +43,8 @@ public client_connect(pPlayer) {
 
 public HamHook_Player_Spawn(const pPlayer) {
   @Player_UpdateJacket(pPlayer);
+
+  return HAM_HANDLED;
 }
 
 public Event_ResetHUD(const pPlayer) {

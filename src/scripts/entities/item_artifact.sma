@@ -6,15 +6,10 @@
 #include <api_custom_entities>
 
 #include <snowwars_player_artifacts>
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define PLUGIN "[Entity] Item Artifact"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
-
-#define ENTITY_NAME SW_Entity_ArtifactItem
-
-new const m_szArtifactId[] = "szArtifactId";
+#define ENTITY_NAME ENTITY(ArtifactItem)
+#define MEMBER(%1) ENTITY_MEMBER<ArtifactItem>(%1)
 
 new g_szModel[MAX_RESOURCE_PATH_LENGTH];
 
@@ -27,11 +22,11 @@ public plugin_precache() {
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_CanPickup, "@Entity_CanPickup");
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Pickup, "@Entity_Pickup");
 
-  CE_RegisterClassKeyMemberBinding(ENTITY_NAME, "target", m_szArtifactId, CEMemberType_String);
+  CE_RegisterClassKeyMemberBinding(ENTITY_NAME, "target", MEMBER(szArtifactId), CEMemberType_String);
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(ENTITY_PLUGIN(ArtifactItem), SW_VERSION, "Hedgehog Fog");
 }
 
 @Entity_Create(const this) {
@@ -43,14 +38,14 @@ public plugin_init() {
 }
 
 bool:@Entity_CanPickup(const this, const pPlayer) {
-  static szId[16]; CE_GetMemberString(this, m_szArtifactId, szId, charsmax(szId));
+  static szId[16]; CE_GetMemberString(this, MEMBER(szArtifactId), szId, charsmax(szId));
   if (equal(szId, NULL_STRING)) return true;
 
   return !SW_PlayerArtifact_Has(pPlayer, szId);
 }
 
 @Entity_Pickup(const this, const pPlayer) {
-  static szId[16]; CE_GetMemberString(this, m_szArtifactId, szId, charsmax(szId));
+  static szId[16]; CE_GetMemberString(this, MEMBER(szArtifactId), szId, charsmax(szId));
   if (equal(szId, NULL_STRING)) return;
 
   SW_PlayerArtifact_Give(pPlayer, szId);

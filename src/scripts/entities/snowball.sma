@@ -10,21 +10,11 @@
 #include <api_custom_entities>
 #include <screenfade_util>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define PLUGIN "[Entity] sw_snowball"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
-
-#define IS_PLAYER(%1) (%1 > 0 && %1 <= MaxClients)
-
-#define ENTITY_NAME SW_Entity_Snowball
-
-new const m_flDamage[] = "flDamage";
-new const m_flAutoGuidanceRange[] = "flAutoGuidanceRange";
-new const m_flAutoGuidanceAngle[] = "flAutoGuidanceAngle";
-
-new const AutoGuidance[] = "AutoGuidance";
+#define ENTITY_NAME ENTITY(Snowball)
+#define MEMBER(%1) ENTITY_MEMBER<Snowball>(%1)
+#define METHOD(%1) ENTITY_METHOD<Snowball>(%1)
 
 new g_szModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szHitSound[MAX_RESOURCE_PATH_LENGTH];
@@ -32,8 +22,8 @@ new g_szShowSplashSprite[MAX_RESOURCE_PATH_LENGTH];
 
 new g_pTrace;
 
-new g_pCvarAutoGuidanceRange;
-new g_pCvarAutoGuidanceAngle;
+new Float:g_flAutoGuidanceRange;
+new Float:g_flAutoGuidanceAngle;
 
 public plugin_precache() {
   g_pTrace = create_tr2();
@@ -50,16 +40,16 @@ public plugin_precache() {
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Touch, "@Entity_Touch");
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Think, "@Entity_Think");
 
-  CE_RegisterClassMethod(ENTITY_NAME, AutoGuidance, "@Entity_AutoGuidance", CE_Type_Cell);
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(AutoGuidance), "@Entity_AutoGuidance", CE_Type_Cell);
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(ENTITY_PLUGIN(Snowball), SW_VERSION, "Hedgehog Fog");
 
   RegisterHamPlayer(Ham_TakeDamage, "HamHook_Player_TakeDamage_Post", .Post = 1);
 
-  g_pCvarAutoGuidanceRange = register_cvar("sw_snowball_autoguidance_range", "16.0");
-  g_pCvarAutoGuidanceAngle = register_cvar("sw_snowball_autoguidance_angle", "15.0");
+  bind_pcvar_float(create_cvar(CVAR("snowball_autoguidance_range"), "16.0"), g_flAutoGuidanceRange);
+  bind_pcvar_float(create_cvar(CVAR("snowball_autoguidance_angle"), "15.0"), g_flAutoGuidanceAngle);
 }
 
 public plugin_end() {
@@ -74,9 +64,9 @@ public plugin_end() {
   CE_SetMemberString(this, CE_Member_szModel, g_szModel);
   CE_SetMember(this, CE_Member_flLifeTime, 10.0);
 
-  CE_SetMember(this, m_flDamage, 50.0);
-  CE_SetMember(this, m_flAutoGuidanceRange, get_pcvar_float(g_pCvarAutoGuidanceRange));
-  CE_SetMember(this, m_flAutoGuidanceAngle, get_pcvar_float(g_pCvarAutoGuidanceAngle));
+  CE_SetMember(this, MEMBER(flDamage), 50.0);
+  CE_SetMember(this, MEMBER(flAutoGuidanceRange), g_flAutoGuidanceRange);
+  CE_SetMember(this, MEMBER(flAutoGuidanceAngle), g_flAutoGuidanceAngle);
 }
 
 @Entity_Spawn(const this) {
@@ -144,7 +134,7 @@ public plugin_end() {
 
   static pOwner; pOwner = pev(this, pev_owner);
   static Float:vecOrigin[3]; pev(this, pev_origin, vecOrigin);
-  static Float:flDamage; flDamage = CE_GetMember(this, m_flDamage);
+  static Float:flDamage; flDamage = CE_GetMember(this, MEMBER(flDamage));
 
   set_pev(this, pev_enemy, pTarget);
 
@@ -168,14 +158,14 @@ public plugin_end() {
     return;
   }
 
-  static Float:flAutoGuidanceRange; flAutoGuidanceRange = CE_GetMember(this, m_flAutoGuidanceRange);
+  static Float:flAutoGuidanceRange; flAutoGuidanceRange = CE_GetMember(this, MEMBER(flAutoGuidanceRange));
 
   if (flAutoGuidanceRange > 0.0) {
     static pOwner; pOwner = pev(this, pev_owner);
 
     static Float:vecOrigin[3]; pev(this, pev_origin, vecOrigin);
 
-    static pNearestPlayer; pNearestPlayer = -1;
+    static pNearestPlayer; pNearestPlayer = FM_NULLENT;
     static Float:flNearestPlayerDistance; flNearestPlayerDistance = 0.0;
 
     for (new pPlayer = 1; pPlayer <= MaxClients; ++pPlayer) {
@@ -190,14 +180,14 @@ public plugin_end() {
 
       if (!rg_is_player_can_takedamage(pPlayer, pOwner)) continue;
 
-      if (pNearestPlayer == -1 || flDistance < flNearestPlayerDistance) {
+      if (pNearestPlayer == FM_NULLENT || flDistance < flNearestPlayerDistance) {
         pNearestPlayer = pPlayer;
         flNearestPlayerDistance = flDistance;
       }
     }
 
-    if (pNearestPlayer != -1) {
-      CE_CallMethod(this, AutoGuidance, pNearestPlayer);
+    if (pNearestPlayer != FM_NULLENT) {
+      CE_CallMethod(this, METHOD(AutoGuidance), pNearestPlayer);
     }
   }
 
@@ -238,7 +228,7 @@ public HamHook_Player_TakeDamage_Post(pPlayer, pInflictor, pAttacker, Float:flDa
   static Float:vecVelocity[3]; pev(this, pev_velocity, vecVelocity);
   static Float:flSpeed; flSpeed = xs_vec_len_2d(vecVelocity);
 
-  static Float:flAutoGuidanceAngle; flAutoGuidanceAngle = Float:CE_GetMember(this, m_flAutoGuidanceAngle);
+  static Float:flAutoGuidanceAngle; flAutoGuidanceAngle = Float:CE_GetMember(this, MEMBER(flAutoGuidanceAngle));
   static Float:flAngle; flAngle = xs_rad2deg(xs_acos(xs_vec_dot(vecVelocity, vecDirection) / flSpeed, radian));
 
   if (flAngle > flAutoGuidanceAngle) return;

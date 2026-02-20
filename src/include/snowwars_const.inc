@@ -1,22 +1,39 @@
+#if defined _snowwars_const_included
+  #endinput
+#endif
+#define _snowwars_const_included
+
+/*--------------------------------[ Title ]--------------------------------*/
+
 stock const SW_TITLE[] = "Snow Wars";
 stock const SW_VERSION[] = "1.1.0";
 
+/*--------------------------------[ Asset Library ]--------------------------------*/
+
 stock const SW_AssetLibrary[] = "snowwars";
 
-stock const SW_SHOP[] = "snowwars";
+/*--------------------------------[ Shop ]--------------------------------*/
 
-stock const SW_SHOP_ITEM_SLINGSHOT[] = "sw-slingshot";
-stock const SW_SHOP_ITEM_LEMONJUICE[] = "sw-lemon-juice";
-stock const SW_SHOP_ITEM_DOWNJACKET[] = "sw-down-jacket";
-stock const SW_SHOP_ITEM_SNOWMAN[] = "sw-snowman";
-stock const SW_SHOP_ITEM_SURPRISEBOX[] = "sw-surprise-box";
-stock const SW_SHOP_ITEM_FIREPLACE[] = "sw-fireplace";
-stock const SW_SHOP_ITEM_SHIELD[] = "sw-shield";
-stock const SW_SHOP_ITEM_HOTDRINK[] = "sw-hotdrink";
+stock const SW_Shop[] = "snowwars";
+
+/*--------------------------------[ Shop Items ]--------------------------------*/
+
+stock const SW_Shop_Item_Slingshot[] = "sw-slingshot";
+stock const SW_Shop_Item_LemonJuice[] = "sw-lemon-juice";
+stock const SW_Shop_Item_DownJacket[] = "sw-down-jacket";
+stock const SW_Shop_Item_Snowman[] = "sw-snowman";
+stock const SW_Shop_Item_SurpriseBox[] = "sw-surprise-box";
+stock const SW_Shop_Item_Fireplace[] = "sw-fireplace";
+stock const SW_Shop_Item_Shield[] = "sw-shield";
+stock const SW_Shop_Item_HotDrink[] = "sw-hotdrink";
+
+/*--------------------------------[ Player Assets ]--------------------------------*/
 
 stock const SW_Asset_Player_Sound_Spawn[] = "player.sounds.spawn";
 stock const SW_Asset_Player_Sound_Return[] = "player.sounds.return";
 stock const SW_Asset_Player_Sound_Hit[] = "player.sounds.hit";
+
+/*--------------------------------[ Weapons Assets ]--------------------------------*/
 
 stock const SW_Asset_Weapon_Snowball_Model_View[] = "weapons.snowball.models.view";
 stock const SW_Asset_Weapon_Snowball_Model_Player[] = "weapons.snowball.models.player";
@@ -46,6 +63,8 @@ stock const SW_Asset_Weapon_Slingshot_Sound_Snap[] = "weapons.slingshot.sounds.s
 stock const SW_Asset_Weapon_Slingshot_Sound_Throw[] = "weapons.slingshot.sounds.throw";
 stock const SW_Asset_Weapon_Slingshot_Sound_Stretch[] = "weapons.slingshot.sounds.stretch";
 
+/*--------------------------------[ Entities Assets ]--------------------------------*/
+
 stock const SW_Asset_Entity_Snowman_Model[] = "entities.snowman.model";
 stock const SW_Asset_Entity_Snowman_Sound_Spawn[] = "entities.snowman.sounds.spawn";
 stock const SW_Asset_Entity_Fireplace_Model[] = "entities.fireplace.model";
@@ -61,6 +80,8 @@ stock const SW_Asset_Entity_FireworkRocket_Model[] = "entities.firework-rocket.m
 stock const SW_Asset_Entity_FireworksBox_Sound_Music[] = "entities.fireworksbox.sounds.music";
 stock const SW_Asset_Entity_FireworksBox_Model[] = "entities.fireworksbox.model";
 
+/*--------------------------------[ Artifacts Assets ]--------------------------------*/
+
 stock const SW_Asset_Artifact_DownJacket_Sound_Equip[] = "artifacts.downjacket.sounds.equip";
 stock const SW_Asset_Artifact_DownJacket_Model_Player[] = "artifacts.downjacket.models.player";
 stock const SW_Asset_Artifact_DownJacket_Model_World[] = "artifacts.downjacket.models.world";
@@ -69,6 +90,8 @@ stock const SW_Asset_Artifact_LemonJuice_Sound_Hit[] = "artifacts.lemonjuice.sou
 stock const SW_Asset_Artifact_LemonJuice_Model_World[] = "artifacts.lemonjuice.models.world";
 stock const SW_Asset_Artifact_LemonJuice_Model_Snowball[] = "artifacts.lemonjuice.models.snowball";
 stock const SW_Asset_Artifact_LemonJuice_Sprite_Splash[] = "artifacts.lemonjuice.sprites.splash";
+
+/*--------------------------------[ Weapons ]--------------------------------*/
 
 stock const SW_Weapon_Snowball[] = "snowwars/v110/weapon_snowball";
 stock const SW_Weapon_Slingshot[] = "snowwars/v110/weapon_slingshot";
@@ -79,15 +102,27 @@ stock const SW_Weapon_HotDrink[] = "snowwars/v110/weapon_hotdrink";
 stock const SW_Weapon_Fireplace[] = "snowwars/v110/weapon_fireplace";
 stock const SW_Weapon_BaseBlueprint[] = "snowwars/v110/weapon_base_blueprint";
 
+/*--------------------------------[ Weapons Members ]--------------------------------*/
+
+stock const SW_Weapon_Slingshot_Member_flChargeTime[] = "flChargeTime";
 stock const SW_Weapon_BaseBlueprint_Member_flHeightStep[] = "flHeightStep";
 stock const SW_Weapon_BaseBlueprint_Member_flDeployDistance[] = "flDeployDistance";
 stock const SW_Weapon_BaseBlueprint_Member_vecInstallationMins[] = "vecInstallationMins";
 stock const SW_Weapon_BaseBlueprint_Member_vecInstallationMaxs[] = "vecInstallationMaxs";
-// stock const SW_Weapon_BaseBlueprint_Member_szInstallationModel[] = "szInstallationModel";
 stock const SW_Weapon_BaseBlueprint_Member_iInstallationModelIndex[] = "iInstallationModelIndex";
+
+/*--------------------------------[ Weapons Methods ]--------------------------------*/
+
+stock const SW_Weapon_Slingshot_Method_GetPower[] = "GetPower";
+stock const SW_Weapon_Slingshot_Method_GetChargeDuration[] = "GetChargeDuration";
+stock const SW_Weapon_HotDrink_Method_ReleaseDrink[] = "ReleaseDrink";
+stock const SW_Weapon_HotDrink_Method_Interrupt[] = "Interrupt";
+stock const SW_Weapon_Shield_Method_HitFeedback[] = "HitFeedback";
 stock const SW_Weapon_BaseBlueprint_Method_Build[] = "Build";
 stock const SW_Weapon_BaseBlueprint_Method_CreateInstallation[] = "CreateInstallation";
 stock const SW_Weapon_BaseBlueprint_Method_InitInstallationVars[] = "InitInstallationVars";
+
+/*--------------------------------[ Entities ]--------------------------------*/
 
 stock const SW_Entity_ArtifactItem[] = "sw_item_artifact";
 stock const SW_Entity_Snowman[] = "sw_snowman";
@@ -96,24 +131,52 @@ stock const SW_Entity_Snowball[] = "sw_snowball";
 stock const SW_Entity_FireworksBox[] = "sw_fireworksbox";
 stock const SW_Entity_Fireplace[] = "sw_fireplace";
 
+/*--------------------------------[ Entities Members ]--------------------------------*/
+
+stock const SW_Entity_ArtifactItem_Member_szArtifactId[] = "szArtifactId";
+stock const SW_Entity_Snowball_Member_flDamage[] = "flDamage";
+stock const SW_Entity_Snowball_Member_flAutoGuidanceRange[] = "flAutoGuidanceRange";
+stock const SW_Entity_Snowball_Member_flAutoGuidanceAngle[] = "flAutoGuidanceAngle";
+stock const SW_Entity_Snowball_Member_bLemonJuice[] = "bLemonJuice";
+stock const SW_Entity_FireworkRocket_Member_flSpeed[] = "flSpeed";
+stock const SW_Entity_FireworksBox_Member_iMaxRocketsNum[] = "iMaxRocketsNum";
+stock const SW_Entity_FireworksBox_Member_iRocketsNum[] = "iRocketsNum";
 stock const SW_Entity_Fireplace_Member_flHealRate[] = "flHealRate";
 stock const SW_Entity_Fireplace_Member_flHealAmount[] = "flHealAmount";
 stock const SW_Entity_Fireplace_Member_flHealRange[] = "flHealRange";
 stock const SW_Entity_Fireplace_Member_pFire[] = "pFire";
 
+/*--------------------------------[ Entities Methods ]--------------------------------*/
+
+stock const SW_Entity_Snowball_Method_AutoGuidance[] = "AutoGuidance";
+stock const SW_Entity_Snowman_Method_RespawnPlayer[] = "RespawnPlayer";
+stock const SW_Entity_Snowman_Method_Effect[] = "Effect";
+stock const SW_Entity_Snowman_Method_CanTakeDamage[] = "CanTakeDamage";
+stock const SW_Entity_Snowman_Method_GetRelationship[] = "GetRelationship";
+stock const SW_Entity_Snowman_Method_ShouldRespawnPlayer[] = "ShouldRespawnPlayer";
+stock const SW_Entity_Snowman_Method_UnassignOwner[] = "UnassignOwner";
+stock const SW_Entity_FireworkRocket_Method_ExplosionEffect[] = "ExplosionEffect";
+stock const SW_Entity_FireworksBox_Method_SpawnRocket[] = "SpawnRocket";
+stock const SW_Entity_Fireplace_Method_CanTakeDamage[] = "CanTakeDamage";
+stock const SW_Entity_Fireplace_Method_GetRelationship[] = "GetRelationship";
+
+/*--------------------------------[ Artifacts ]--------------------------------*/
+
 stock const SW_Artifact_Downjacket[] = "downjacket";
 stock const SW_Artifact_LemonJuice[] = "lemonjuice";
 
+/*--------------------------------[ Enums ]--------------------------------*/
+
 enum SW_PlayerAttribute {
-    SW_PlayerAttribute_Resistance = 0,
-    SW_PlayerAttribute_Power
+  SW_PlayerAttribute_Resistance = 0,
+  SW_PlayerAttribute_Power
 };
 
-enum SW_Entity_Relationship {
-  SW_Entity_Relationship_None = 0,
-  SW_Entity_Relationship_Shared,
-  SW_Entity_Relationship_Team,
-  SW_Entity_Relationship_Owner
+enum SW_EntityRelationship {
+  SW_EntityRelationship_None = 0,
+  SW_EntityRelationship_Shared,
+  SW_EntityRelationship_Team,
+  SW_EntityRelationship_Owner
 };
 
 enum {

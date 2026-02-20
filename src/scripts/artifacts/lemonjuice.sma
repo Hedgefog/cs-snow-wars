@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 #include <amxmodx>
 #include <hamsandwich>
 #include <fakemeta>
@@ -8,22 +10,15 @@
 #include <combat_util>
 
 #include <snowwars_player_artifacts>
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define PLUGIN "[Snow Wars] Lemon Juice Artifact"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
-
-#define ARTIFACT_ID SW_Artifact_LemonJuice
+#define ARTIFACT_ID ARTIFACT(LemonJuice)
 #define SPLASH_DAMAGE 22.0
 #define SPLASH_RANGE 80.0
 #define ARTIFACT_STATUS_ICON "d_skull"
 
-new const m_bLemonJuice[] = "bLemonJuice";
-
 new g_szSnowballModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szItemModel[MAX_RESOURCE_PATH_LENGTH];
-new g_szHitSound[MAX_RESOURCE_PATH_LENGTH];
 new g_szShowSplashSprite[MAX_RESOURCE_PATH_LENGTH];
 
 new g_pTrace;
@@ -40,13 +35,13 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(ARTIFACT_PLUGIN(LemonJuice), SW_VERSION, "Hedgehog Fog");
 
   RegisterHamPlayer(Ham_TakeDamage, "HamHook_Player_TakeDamage_Post", .Post = 1);
 
-  CE_RegisterClassNativeMethodHook(SW_Entity_ArtifactItem, CE_Method_Spawn, "CEHook_ArtifactItem_Spawn");
-  CE_RegisterClassNativeMethodHook(SW_Entity_Snowball, CE_Method_Spawn, "CEHook_Snowball_Spawn_Post");
-  CE_RegisterClassNativeMethodHook(SW_Entity_Snowball, CE_Method_Killed, "CEHook_Snowball_Killed");
+  CE_RegisterClassNativeMethodHook(ENTITY(ArtifactItem), CE_Method_Spawn, "CEHook_ArtifactItem_Spawn");
+  CE_RegisterClassNativeMethodHook(ENTITY(Snowball), CE_Method_Spawn, "CEHook_Snowball_Spawn_Post");
+  CE_RegisterClassNativeMethodHook(ENTITY(Snowball), CE_Method_Killed, "CEHook_Snowball_Killed");
 
   register_event("ResetHUD", "Event_ResetHUD", "b");
 }
@@ -60,8 +55,8 @@ public Event_ResetHUD(const pPlayer) {
 }
 
 public HamHook_Player_TakeDamage_Post(const pPlayer, const pInflictor, const pAttacker, Float:flDamage, iDamageBits) {
-  if (!CE_IsInstanceOf(pInflictor, SW_Entity_Snowball)) return HAM_IGNORED;
-  if (!CE_GetMember(pInflictor, m_bLemonJuice)) return HAM_IGNORED;
+  if (!CE_IsInstanceOf(pInflictor, ENTITY(Snowball))) return HAM_IGNORED;
+  if (!CE_GetMember(pInflictor, SW_Entity_Snowball_Member_bLemonJuice)) return HAM_IGNORED;
 
   new Float:flRatio = flDamage / 100.0;
 
@@ -76,7 +71,7 @@ public HamHook_Player_TakeDamage_Post(const pPlayer, const pInflictor, const pAt
 }
 
 public CEHook_ArtifactItem_Spawn(const pEntity) {
-  static szId[16]; CE_GetMemberString(pEntity, "szArtifactId", szId, charsmax(szId));
+  static szId[16]; CE_GetMemberString(pEntity, SW_Entity_ArtifactItem_Member_szArtifactId, szId, charsmax(szId));
   if (!equal(szId, ARTIFACT_ID)) return;
 
   engfunc(EngFunc_SetModel, pEntity, g_szItemModel);
@@ -99,13 +94,13 @@ public CEHook_Snowball_Spawn_Post(const this) {
   if (!SW_PlayerArtifact_Has(pOwner, ARTIFACT_ID)) return;
 
   engfunc(EngFunc_SetModel, this, g_szSnowballModel);
-  CE_SetMember(this, m_bLemonJuice, true);
+  CE_SetMember(this, SW_Entity_Snowball_Member_bLemonJuice, true);
 
-  CE_SetMember(this, "flDamage", Float:CE_GetMember(this, "flDamage") + SPLASH_DAMAGE);
+  CE_SetMember(this, SW_Entity_Snowball_Member_flDamage, Float:CE_GetMember(this, SW_Entity_Snowball_Member_flDamage) + SPLASH_DAMAGE);
 }
 
 public CEHook_Snowball_Killed(const this) {
-  if (!CE_GetMember(this, m_bLemonJuice)) return;
+  if (!CE_GetMember(this, SW_Entity_Snowball_Member_bLemonJuice)) return;
 
   @Snowball_ExplosionEffect(this);
   @Snowball_SplashDamage(this);

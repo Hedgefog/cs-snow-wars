@@ -10,17 +10,11 @@
 
 #include <combat_util>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define PLUGIN "[Entity] Firework Rocket"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
-
-#define ENTITY_NAME SW_Entity_FireworkRocket
-
-new const m_flSpeed[] = "flSpeed";
-
-new const ExplosionEffect[] = "ExplosionEffect";
+#define ENTITY_NAME ENTITY(FireworkRocket)
+#define MEMBER(%1) ENTITY_MEMBER<FireworkRocket>(%1)
+#define METHOD(%1) ENTITY_METHOD<FireworkRocket>(%1)
 
 new g_szModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szTrailSprite[MAX_RESOURCE_PATH_LENGTH];
@@ -52,11 +46,11 @@ public plugin_precache() {
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Think, "@Entity_Think");
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Touch, "@Entity_Touch");
 
-  CE_RegisterClassMethod(ENTITY_NAME, ExplosionEffect, "@Entity_ExplosionEffect");
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(ExplosionEffect), "@Entity_ExplosionEffect");
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(ENTITY_PLUGIN(FireworkRocket), SW_VERSION, "Hedgehog Fog");
 }
 
 public plugin_end() {
@@ -71,7 +65,7 @@ public plugin_end() {
   CE_SetMemberString(this, CE_Member_szModel, g_szModel);
   CE_SetMember(this, CE_Member_flLifeTime, 1.5);  
   CE_SetMember(this, CE_Member_bForceVisible, true);
-  CE_SetMember(this, m_flSpeed, 1024.0);
+  CE_SetMember(this, MEMBER(flSpeed), 1024.0);
 }
 
 @Entity_Spawn(const this) {
@@ -112,7 +106,7 @@ public plugin_end() {
 
   UTIL_RadiusDamage(vecOrigin, this, pOwner, 500.0, 256.0, 0, DMG_GENERIC);
 
-  CE_CallMethod(this, ExplosionEffect);
+  CE_CallMethod(this, METHOD(ExplosionEffect));
 
   CE_CallBaseMethod(pKiller, iShouldGib);
 }
@@ -161,7 +155,7 @@ public plugin_end() {
   if (pev(this, pev_deadflag) != DEAD_NO) return;
 
   static Float:vecAngles[3]; pev(this, pev_angles, vecAngles);
-  static Float:flSpeed; flSpeed = CE_GetMember(this, m_flSpeed);
+  static Float:flSpeed; flSpeed = CE_GetMember(this, MEMBER(flSpeed));
 
   static Float:vecVelocity[3];
   angle_vector(vecAngles, ANGLEVECTOR_FORWARD, vecVelocity);

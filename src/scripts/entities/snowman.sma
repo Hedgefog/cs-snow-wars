@@ -8,23 +8,12 @@
 #include <api_assets>
 #include <api_custom_entities>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define PLUGIN "[Entity] Snowman"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
+#define ENTITY_NAME ENTITY(Snowman)
+#define METHOD(%1) ENTITY_METHOD<Snowman>(%1)
 
-#define ENTITY_NAME SW_Entity_Snowman
-
-#define IS_PLAYER(%1) (%1 > 0 && %1 <= MaxClients)
 #define RESPAWN_DELAY 5.0
-
-new const RespawnPlayer[] = "RespawnPlayer";
-new const Effect[] = "Effect";
-new const CanTakeDamage[] = "CanTakeDamage";
-new const GetRelationship[] = "GetRelationship";
-new const ShouldRespawnPlayer[] = "ShouldRespawnPlayer";
-new const UnassignOwner[] = "UnassignOwner";
 
 new Float:g_rgflPlayerDeathTime[MAX_PLAYERS + 1];
 new g_iPlayerDeadFlag[MAX_PLAYERS + 1];
@@ -32,13 +21,14 @@ new g_iPlayerDeadFlag[MAX_PLAYERS + 1];
 new g_szModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szSnowballHitSound[MAX_RESOURCE_PATH_LENGTH];
 new g_szReturnSound[MAX_RESOURCE_PATH_LENGTH];
-
-new g_iBloodModelIndex;
+new g_szBloodSprite[] = "sprites/blood.spr";
 
 public plugin_precache() {
   Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_Snowman_Model, g_szModel, charsmax(g_szModel));
   Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_Snowman_Sound_Spawn, g_szSnowballHitSound, charsmax(g_szSnowballHitSound));
   Asset_Precache(SW_AssetLibrary, SW_Asset_Player_Sound_Return, g_szReturnSound, charsmax(g_szReturnSound));
+
+  precache_model(g_szBloodSprite);
 
   CE_RegisterClass(ENTITY_NAME, CE_Class_BaseProp);
 
@@ -48,18 +38,16 @@ public plugin_precache() {
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_TakeDamage, "@Entity_TakeDamage");
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Killed, "@Entity_Killed");
 
-  CE_RegisterClassMethod(ENTITY_NAME, RespawnPlayer, "@Entity_RespawnPlayer", CE_Type_Cell);
-  CE_RegisterClassMethod(ENTITY_NAME, Effect, "@Entity_Effect");
-  CE_RegisterClassMethod(ENTITY_NAME, CanTakeDamage, "@Entity_CanTakeDamage", CE_Type_Cell, CE_Type_Cell);
-  CE_RegisterClassMethod(ENTITY_NAME, GetRelationship, "@Entity_GetRelationship", CE_Type_Cell);
-  CE_RegisterClassMethod(ENTITY_NAME, ShouldRespawnPlayer, "@Entity_ShouldRespawnPlayer", CE_Type_Cell);
-  CE_RegisterClassMethod(ENTITY_NAME, UnassignOwner, "@Entity_UnassignOwner");
-
-  g_iBloodModelIndex = precache_model("sprites/blood.spr");
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(RespawnPlayer), "@Entity_RespawnPlayer", CE_Type_Cell);
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(Effect), "@Entity_Effect");
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(CanTakeDamage), "@Entity_CanTakeDamage", CE_Type_Cell, CE_Type_Cell);
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(GetRelationship), "@Entity_GetRelationship", CE_Type_Cell);
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(ShouldRespawnPlayer), "@Entity_ShouldRespawnPlayer", CE_Type_Cell);
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(UnassignOwner), "@Entity_UnassignOwner");
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(ENTITY_PLUGIN(Snowman), SW_VERSION, "Hedgehog Fog");
 
   RegisterHamPlayer(Ham_Killed, "HamHook_Player_Killed_Post", .Post = 1);
 
@@ -104,6 +92,8 @@ public HC_CheckWinConditions_Post() {
 
 public HamHook_Player_Killed_Post(const pPlayer) {
   g_rgflPlayerDeathTime[pPlayer] = get_gametime();
+
+  return HAM_HANDLED;
 }
 
 @Entity_Create(const this) {
@@ -120,14 +110,14 @@ public HamHook_Player_Killed_Post(const pPlayer) {
   set_pev(this, pev_health, 200.0);
   set_pev(this, pev_takedamage, DAMAGE_AIM);
 
-  CE_CallMethod(this, Effect);
+  CE_CallMethod(this, METHOD(Effect));
 
   set_pev(this, pev_nextthink, get_gametime() + 0.1);
 }
 
 @Entity_Killed(const this, const pKiller, iShouldGib) {
   CE_CallBaseMethod(pKiller, iShouldGib);
-  CE_CallMethod(this, Effect);
+  CE_CallMethod(this, METHOD(Effect));
   rg_check_win_conditions();
 }
 
@@ -146,20 +136,20 @@ public HamHook_Player_Killed_Post(const pPlayer) {
 
     if (!is_user_alive(pOwner)) {
       if (!iTeam || iTeam == iOwnerTeam) {
-        if (CE_CallMethod(this, ShouldRespawnPlayer, pOwner)) {
-          CE_CallMethod(this, RespawnPlayer, pOwner);
+        if (CE_CallMethod(this, METHOD(ShouldRespawnPlayer), pOwner)) {
+          CE_CallMethod(this, METHOD(RespawnPlayer), pOwner);
         }
       } else {
         // Owner changed the team, unassign
-        CE_CallMethod(this, UnassignOwner);
+        CE_CallMethod(this, METHOD(UnassignOwner));
       }
     } else {
       set_pev(this, pev_team, iTeam = iOwnerTeam);
     }
   } else {
     new pPlayer = FindOldestDiedPlayer(iTeam);
-    if (pPlayer != FM_NULLENT && CE_CallMethod(this, ShouldRespawnPlayer, pPlayer)) {
-      CE_CallMethod(this, RespawnPlayer, pPlayer);
+    if (pPlayer != FM_NULLENT && CE_CallMethod(this, METHOD(ShouldRespawnPlayer), pPlayer)) {
+      CE_CallMethod(this, METHOD(RespawnPlayer), pPlayer);
     }
   }
 
@@ -170,12 +160,17 @@ public HamHook_Player_Killed_Post(const pPlayer) {
 }
 
 @Entity_TakeDamage(const this, const pInflictor, const pAttacker, Float:flDamage, iDamageBits) {
-  if (!CE_CallMethod(this, CanTakeDamage, pInflictor, pAttacker)) return;
+  if (!CE_CallMethod(this, METHOD(CanTakeDamage), pInflictor, pAttacker)) return;
 
   CE_CallBaseMethod(pInflictor, pAttacker, flDamage, iDamageBits);
 }
 
 @Entity_Effect(const this) {
+  static iBloodModelIndex = 0;
+  if (!iBloodModelIndex) {
+    iBloodModelIndex = engfunc(EngFunc_ModelIndex, g_szBloodSprite);
+  }
+
   static Float:vecOrigin[3]; pev(this, pev_origin, vecOrigin);
 
   engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, vecOrigin, 0);
@@ -183,8 +178,8 @@ public HamHook_Player_Killed_Post(const pPlayer) {
   engfunc(EngFunc_WriteCoord, vecOrigin[0]);
   engfunc(EngFunc_WriteCoord, vecOrigin[1]);
   engfunc(EngFunc_WriteCoord, vecOrigin[2]);
-  write_short(g_iBloodModelIndex);
-  write_short(g_iBloodModelIndex);
+  write_short(iBloodModelIndex);
+  write_short(iBloodModelIndex);
   write_byte(12);
   write_byte(8);
   message_end();
@@ -220,26 +215,26 @@ bool:@Entity_CanTakeDamage(const this, const pInflictor, const pAttacker) {
   ExecuteHamB(Ham_Killed, this, 0, 0);
 }
 
-SW_Entity_Relationship:@Entity_GetRelationship(const this, const pEntity) {
-  if (!IS_PLAYER(pEntity)) return SW_Entity_Relationship_None;
-  if (pev(this, pev_deadflag) != DEAD_NO) return SW_Entity_Relationship_None;
+SW_EntityRelationship:@Entity_GetRelationship(const this, const pEntity) {
+  if (!IS_PLAYER(pEntity)) return SW_EntityRelationship_None;
+  if (pev(this, pev_deadflag) != DEAD_NO) return SW_EntityRelationship_None;
 
   static pOwner; pOwner = pev(this, pev_owner);
   if (IS_PLAYER(pOwner)) {
-    if (pOwner != pEntity) return SW_Entity_Relationship_None;
+    if (pOwner != pEntity) return SW_EntityRelationship_None;
 
-    return SW_Entity_Relationship_Owner;
+    return SW_EntityRelationship_Owner;
   }
 
   static iTeam; iTeam = pev(this, pev_team);
   if (iTeam) {
     static iPlayerTeam; iPlayerTeam = get_ent_data(pEntity, "CBasePlayer", "m_iTeam");
-    if (iPlayerTeam != iTeam) return SW_Entity_Relationship_None;
+    if (iPlayerTeam != iTeam) return SW_EntityRelationship_None;
 
-    return SW_Entity_Relationship_Team;
+    return SW_EntityRelationship_Team;
   }
 
-  return SW_Entity_Relationship_Shared;
+  return SW_EntityRelationship_Shared;
 }
 
 bool:@Entity_ShouldRespawnPlayer(const this, const pPlayer) {
@@ -250,8 +245,8 @@ bool:@Entity_ShouldRespawnPlayer(const this, const pPlayer) {
   static Float:flGameTime; flGameTime = get_gametime();
   if (flGameTime - g_rgflPlayerDeathTime[pPlayer] < RESPAWN_DELAY) return false;
 
-  static SW_Entity_Relationship:iRelationship; iRelationship = CE_CallMethod(this, GetRelationship, pPlayer);
-  if (iRelationship == SW_Entity_Relationship_None) return false;
+  static SW_EntityRelationship:iRelationship; iRelationship = CE_CallMethod(this, METHOD(GetRelationship), pPlayer);
+  if (iRelationship == SW_EntityRelationship_None) return false;
 
   return true;
 }
@@ -296,7 +291,7 @@ UnassignPlayerSnowmans(const &pPlayer) {
 bool:PlayerHasSnowman(const &pPlayer) {
   new pSnowman = FM_NULLENT;
   while ((pSnowman = CE_Find(ENTITY_NAME, pSnowman)) != FM_NULLENT) {
-    if (CE_CallMethod(pSnowman, GetRelationship, pPlayer) != SW_Entity_Relationship_None) return true;
+    if (CE_CallMethod(pSnowman, METHOD(GetRelationship), pPlayer) != SW_EntityRelationship_None) return true;
   }
 
   return false;

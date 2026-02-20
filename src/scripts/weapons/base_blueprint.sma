@@ -11,9 +11,11 @@
 #include <api_custom_weapons>
 #include <api_custom_entities>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define BIT(%1) (1 << (%1 & 31))
+#define WEAPON_NAME WEAPON(BaseBlueprint)
+#define MEMBER(%1) WEAPON_MEMBER<BaseBlueprint>(%1)
+#define METHOD(%1) WEAPON_METHOD<BaseBlueprint>(%1)
 
 #define MAX_DEPLOY_HEIGHT 16.0
 
@@ -45,24 +47,24 @@ new g_iPlayerPreviewVisibilityBits = 0;
 public plugin_precache() {
   g_pTrace = create_tr2();
 
-  CW_RegisterClass(SW_Weapon_BaseBlueprint, _, true);
+  CW_RegisterClass(WEAPON_NAME, _, true);
 
-  CW_ImplementClassMethod(SW_Weapon_BaseBlueprint, CW_Method_Create, "@Weapon_Create");
-  CW_ImplementClassMethod(SW_Weapon_BaseBlueprint, CW_Method_Deploy, "@Weapon_Deploy");
-  CW_ImplementClassMethod(SW_Weapon_BaseBlueprint, CW_Method_Idle, "@Weapon_Idle");
-  CW_ImplementClassMethod(SW_Weapon_BaseBlueprint, CW_Method_Holster, "@Weapon_Holster");
-  CW_ImplementClassMethod(SW_Weapon_BaseBlueprint, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
-  CW_ImplementClassMethod(SW_Weapon_BaseBlueprint, CW_Method_GetMaxSpeed, "@Weapon_GetMaxSpeed");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Create, "@Weapon_Create");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Deploy, "@Weapon_Deploy");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Idle, "@Weapon_Idle");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Holster, "@Weapon_Holster");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_GetMaxSpeed, "@Weapon_GetMaxSpeed");
 
-  CW_RegisterClassVirtualMethod(SW_Weapon_BaseBlueprint, SW_Weapon_BaseBlueprint_Method_Build, "@Weapon_Build");
-  CW_RegisterClassVirtualMethod(SW_Weapon_BaseBlueprint, SW_Weapon_BaseBlueprint_Method_CreateInstallation, "@Weapon_CreateInstallation");
-  CW_RegisterClassMethod(SW_Weapon_BaseBlueprint, SW_Weapon_BaseBlueprint_Method_InitInstallationVars, "@Weapon_InitInstallationVars");
+  CW_RegisterClassVirtualMethod(WEAPON_NAME, METHOD(Build), "@Weapon_Build");
+  CW_RegisterClassVirtualMethod(WEAPON_NAME, METHOD(CreateInstallation), "@Weapon_CreateInstallation");
+  CW_RegisterClassMethod(WEAPON_NAME, METHOD(InitInstallationVars), "@Weapon_InitInstallationVars");
 
   g_pInstallationPreview = CreateInstallationPreview();
 }
 
 public plugin_init() {
-  register_plugin("[Weapon] (Snow Wars) Base Blueprint", SW_VERSION, "Hedgehog Fog");
+  register_plugin(WEAPON_PLUGIN(BaseBlueprint), SW_VERSION, "Hedgehog Fog");
 
   RegisterHamPlayer(Ham_Killed, "HamHook_Player_Killed_Post", .Post = 1);
 }
@@ -88,6 +90,8 @@ public FMHook_UpdateClientData(const pPlayer) {
       g_rgflPlayerNextUpdate[pPlayer] = flGameTime + 0.1;
     }
   }
+
+  return FMRES_HANDLED;
 }
 
 public FMHook_CheckVisibility(const pEntity) {
@@ -99,7 +103,7 @@ public FMHook_CheckVisibility(const pEntity) {
   return FMRES_IGNORED;
 }
 
-public FMForward_AddToFullPack_Post(const es, const e, const pEntity, const pHost, iHostFlags, iPlayer, pSet) {
+public FMHook_AddToFullPack_Post(const es, const e, const pEntity, const pHost, iHostFlags, iPlayer, pSet) {
   if (pEntity != g_pInstallationPreview) return FMRES_IGNORED;
 
   if (~g_iPlayerPreviewVisibilityBits & BIT(pHost & 31)) return FMRES_SUPERCEDE;
@@ -122,6 +126,8 @@ public FMForward_AddToFullPack_Post(const es, const e, const pEntity, const pHos
 
 public HamHook_Player_Killed_Post(const pPlayer) {
   @Player_SetPreviewVisibility(pPlayer, false);
+
+  return HAM_HANDLED;
 }
 
 /*--------------------------------[ Weapon Methods ]--------------------------------*/
@@ -134,10 +140,10 @@ public HamHook_Player_Killed_Post(const pPlayer) {
   CW_SetMember(this, CW_Member_iDefaultAmmo, 1);
   CW_SetMember(this, CW_Member_bExhaustible, true);
 
-  CW_SetMember(this, SW_Weapon_BaseBlueprint_Member_flHeightStep, 32.0);
-  CW_SetMember(this, SW_Weapon_BaseBlueprint_Member_flDeployDistance, 64.0);
+  CW_SetMember(this, MEMBER(flHeightStep), 32.0);
+  CW_SetMember(this, MEMBER(flDeployDistance), 64.0);
 
-  CW_CallMethod(this, SW_Weapon_BaseBlueprint_Method_InitInstallationVars);
+  CW_CallMethod(this, METHOD(InitInstallationVars));
 }
 
 @Weapon_Deploy(const this) {
@@ -146,11 +152,11 @@ public HamHook_Player_Killed_Post(const pPlayer) {
   static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
   g_rgbPlayerCanDeploy[pPlayer] = false;
 
-  CW_GetMemberVec(this, SW_Weapon_BaseBlueprint_Member_vecInstallationMins, g_rgvecPlayerDeployMins[pPlayer]);
-  CW_GetMemberVec(this, SW_Weapon_BaseBlueprint_Member_vecInstallationMaxs, g_rgvecPlayerDeployMaxs[pPlayer]);
-  g_rgflPlayerDeployHeightSteps[pPlayer] = CW_GetMember(this, SW_Weapon_BaseBlueprint_Member_flHeightStep);
-  g_rgflPlayerDeployDistances[pPlayer] = CW_GetMember(this, SW_Weapon_BaseBlueprint_Member_flDeployDistance);
-  g_rgiPlayerInstallationModelIndex[pPlayer] = CW_GetMember(this, SW_Weapon_BaseBlueprint_Member_iInstallationModelIndex);
+  CW_GetMemberVec(this, MEMBER(vecInstallationMins), g_rgvecPlayerDeployMins[pPlayer]);
+  CW_GetMemberVec(this, MEMBER(vecInstallationMaxs), g_rgvecPlayerDeployMaxs[pPlayer]);
+  g_rgflPlayerDeployHeightSteps[pPlayer] = CW_GetMember(this, MEMBER(flHeightStep));
+  g_rgflPlayerDeployDistances[pPlayer] = CW_GetMember(this, MEMBER(flDeployDistance));
+  g_rgiPlayerInstallationModelIndex[pPlayer] = CW_GetMember(this, MEMBER(iInstallationModelIndex));
 
   CW_CallNativeMethod(this, CW_Method_PlayAnimation, 1, 0.5);
   rg_set_animation(pPlayer, PLAYER_IDLE);
@@ -197,7 +203,7 @@ public HamHook_Player_Killed_Post(const pPlayer) {
 
   static Float:flGameTime; flGameTime = get_gametime();
 
-  if (CW_CallMethod(this, SW_Weapon_BaseBlueprint_Method_Build)) {
+  if (CW_CallMethod(this, METHOD(Build))) {
     set_ent_data(pPlayer, "CBasePlayer", "m_rgAmmo", --iAmmo, iPrimaryAmmoType);
     CW_SetMember(this, CW_Member_iShotsFired, ++iShotsFired);
     rg_set_animation(pPlayer, PLAYER_ATTACK1);
@@ -218,32 +224,32 @@ Float:@Weapon_GetMaxSpeed(const this) {
 }
 
 @Weapon_InitInstallationVars(const this) {
-  new pTestInstallation = CW_CallMethod(this, SW_Weapon_BaseBlueprint_Method_CreateInstallation);
+  new pTestInstallation = CW_CallMethod(this, METHOD(CreateInstallation));
 
   if (pTestInstallation != FM_NULLENT) {
     static Float:vecMins[3]; CE_GetMemberVec(pTestInstallation, CE_Member_vecMins, vecMins);
     static Float:vecMaxs[3]; CE_GetMemberVec(pTestInstallation, CE_Member_vecMaxs, vecMaxs);
     static szModel[MAX_RESOURCE_PATH_LENGTH]; CE_GetMemberString(pTestInstallation, CE_Member_szModel, szModel, charsmax(szModel));
     
-    CW_SetMemberVec(this, SW_Weapon_BaseBlueprint_Member_vecInstallationMins, vecMins);
-    CW_SetMemberVec(this, SW_Weapon_BaseBlueprint_Member_vecInstallationMaxs, vecMaxs);
+    CW_SetMemberVec(this, MEMBER(vecInstallationMins), vecMins);
+    CW_SetMemberVec(this, MEMBER(vecInstallationMaxs), vecMaxs);
 
     if (!equal(szModel, NULL_STRING)) {
-      CW_SetMember(this, SW_Weapon_BaseBlueprint_Member_iInstallationModelIndex, engfunc(EngFunc_ModelIndex, szModel));
+      CW_SetMember(this, MEMBER(iInstallationModelIndex), engfunc(EngFunc_ModelIndex, szModel));
     }
 
     engfunc(EngFunc_RemoveEntity, pTestInstallation);
   } else {
-    CW_SetMemberVec(this, SW_Weapon_BaseBlueprint_Member_vecInstallationMins, Float:{-16.0, -16.0, 0.0});
-    CW_SetMemberVec(this, SW_Weapon_BaseBlueprint_Member_vecInstallationMaxs, Float:{16.0, 16.0, 72.0});
-    CW_SetMember(this, SW_Weapon_BaseBlueprint_Member_iInstallationModelIndex, 0);
+    CW_SetMemberVec(this, MEMBER(vecInstallationMins), Float:{-16.0, -16.0, 0.0});
+    CW_SetMemberVec(this, MEMBER(vecInstallationMaxs), Float:{16.0, 16.0, 72.0});
+    CW_SetMember(this, MEMBER(iInstallationModelIndex), 0);
   }
 }
 
 bool:@Weapon_Build(const this) {
   static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
 
-  new pInstallation = CW_CallMethod(this, SW_Weapon_BaseBlueprint_Method_CreateInstallation);
+  new pInstallation = CW_CallMethod(this, METHOD(CreateInstallation));
   if (pInstallation == FM_NULLENT) return false;
 
   CE_SetMemberVec(pInstallation, CE_Member_vecOrigin, g_rgvecPlayerDeployOrigin[pPlayer]);
@@ -331,7 +337,7 @@ bool:@Player_FindDeploymentPos(const &this, Float:vecTarget[3]) {
     if (g_iPlayerPreviewVisibilityBits) {
       g_fwUpdateClientData = register_forward(FM_UpdateClientData, "FMHook_UpdateClientData", 1);
       g_fwCheckVisibility = register_forward(FM_CheckVisibility, "FMHook_CheckVisibility", 0);
-      g_fwAddToFullPackPost = register_forward(FM_AddToFullPack, "FMForward_AddToFullPack_Post", 1);
+      g_fwAddToFullPackPost = register_forward(FM_AddToFullPack, "FMHook_AddToFullPack_Post", 1);
       set_pev(g_pInstallationPreview, pev_effects, 0);
     } else {
       unregister_forward(FM_UpdateClientData, g_fwUpdateClientData, 1);

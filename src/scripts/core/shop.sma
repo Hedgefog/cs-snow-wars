@@ -9,80 +9,81 @@
 
 #include <snowwars>
 #include <snowwars_player_artifacts>
+#include <snowwars_internal>
 
 public plugin_init() {
-  register_plugin("[Shop] Snow Wars", SW_VERSION, "Hedgehog Fog");
+  register_plugin(PLUGIN_NAME("Shop"), SW_VERSION, "Hedgehog Fog");
 
   register_clcmd("client_buy_open", "Command_ClientBuyOpen");
   register_clcmd("shop", "Command_Buy");
   register_clcmd("buy", "Command_Buy");
   register_clcmd("buyequip", "Command_Buy");
 
-  Shop_Register(SW_SHOP);
-  Shop_SetGuardCallback(SW_SHOP, "Callback_Shop_Guard");
+  Shop_Register(SW_Shop);
+  Shop_SetGuardCallback(SW_Shop, "Callback_Shop_Guard");
 
-  if (CW_IsClassRegistered(SW_Weapon_Slingshot)) {
-    Shop_Item_Register(SW_SHOP_ITEM_SLINGSHOT);
-    Shop_Item_SetTitle(SW_SHOP_ITEM_SLINGSHOT, "Slingshot");
-    Shop_Item_SetPurchaseCallback(SW_SHOP_ITEM_SLINGSHOT, "Callback_Shop_Item_Purchase_Slingshot");
-    Shop_Item_SetGuardCallback(SW_SHOP_ITEM_SLINGSHOT, "Callback_Shop_Item_Guard_Slingshot");
-    Shop_AddItem(SW_SHOP, SW_SHOP_ITEM_SLINGSHOT, 4500);
+  if (CW_IsClassRegistered(WEAPON(Slingshot))) {
+    Shop_Item_Register(SHOP_ITEM(Slingshot));
+    Shop_Item_SetTitle(SHOP_ITEM(Slingshot), "Slingshot");
+    Shop_Item_SetPurchaseCallback(SHOP_ITEM(Slingshot), "Callback_Shop_Item_Purchase_Slingshot");
+    Shop_Item_SetGuardCallback(SHOP_ITEM(Slingshot), "Callback_Shop_Item_Guard_Slingshot");
+    Shop_AddItem(SW_Shop, SHOP_ITEM(Slingshot), 4500);
   }
 
-  if (CW_IsClassRegistered(SW_Weapon_HotDrink)) {
-    Shop_Item_Register(SW_SHOP_ITEM_HOTDRINK);
-    Shop_Item_SetTitle(SW_SHOP_ITEM_HOTDRINK, "Hot Drink");
-    Shop_Item_SetPurchaseCallback(SW_SHOP_ITEM_HOTDRINK, "Callback_Shop_Item_Purchase_HotDrink");
-    Shop_Item_SetGuardCallback(SW_SHOP_ITEM_HOTDRINK, "Callback_Shop_Item_Guard_HotDrink");
-    Shop_AddItem(SW_SHOP, SW_SHOP_ITEM_HOTDRINK, 3500);
+  if (CW_IsClassRegistered(WEAPON(HotDrink))) {
+    Shop_Item_Register(SHOP_ITEM(HotDrink));
+    Shop_Item_SetTitle(SHOP_ITEM(HotDrink), "Hot Drink");
+    Shop_Item_SetPurchaseCallback(SHOP_ITEM(HotDrink), "Callback_Shop_Item_Purchase_HotDrink");
+    Shop_Item_SetGuardCallback(SHOP_ITEM(HotDrink), "Callback_Shop_Item_Guard_HotDrink");
+    Shop_AddItem(SW_Shop, SHOP_ITEM(HotDrink), 3500);
   }
 
-  if (SW_PlayerArtifact_IsRegistered(SW_Artifact_LemonJuice)) {
-    Shop_Item_Register(SW_SHOP_ITEM_LEMONJUICE);
-    Shop_Item_SetTitle(SW_SHOP_ITEM_LEMONJUICE, "Lemon Juice");
-    Shop_Item_SetPurchaseCallback(SW_SHOP_ITEM_LEMONJUICE, "Callback_Shop_Item_Purchase_LemonJuice");
-    Shop_Item_SetGuardCallback(SW_SHOP_ITEM_LEMONJUICE, "Callback_Shop_Item_Guard_LemonJuice");
-    Shop_AddItem(SW_SHOP, SW_SHOP_ITEM_LEMONJUICE, 2500);
+  if (SW_PlayerArtifact_IsRegistered(ARTIFACT(LemonJuice))) {
+    Shop_Item_Register(SHOP_ITEM(LemonJuice));
+    Shop_Item_SetTitle(SHOP_ITEM(LemonJuice), "Lemon Juice");
+    Shop_Item_SetPurchaseCallback(SHOP_ITEM(LemonJuice), "Callback_Shop_Item_Purchase_LemonJuice");
+    Shop_Item_SetGuardCallback(SHOP_ITEM(LemonJuice), "Callback_Shop_Item_Guard_LemonJuice");
+    Shop_AddItem(SW_Shop, SHOP_ITEM(LemonJuice), 2500);
   }
 
-  if (SW_PlayerArtifact_IsRegistered(SW_Artifact_Downjacket)) {
-    Shop_Item_Register(SW_SHOP_ITEM_DOWNJACKET);
-    Shop_Item_SetTitle(SW_SHOP_ITEM_DOWNJACKET, "Down Jacket");
-    Shop_Item_SetPurchaseCallback(SW_SHOP_ITEM_DOWNJACKET, "Callback_Shop_Item_Purchase_DownJacket");
-    Shop_Item_SetGuardCallback(SW_SHOP_ITEM_DOWNJACKET, "Callback_Shop_Item_Guard_DownJacket");
-    Shop_AddItem(SW_SHOP, SW_SHOP_ITEM_DOWNJACKET, 3100);
+  if (SW_PlayerArtifact_IsRegistered(ARTIFACT(Downjacket))) {
+    Shop_Item_Register(SHOP_ITEM(DownJacket));
+    Shop_Item_SetTitle(SHOP_ITEM(DownJacket), "Down Jacket");
+    Shop_Item_SetPurchaseCallback(SHOP_ITEM(DownJacket), "Callback_Shop_Item_Purchase_DownJacket");
+    Shop_Item_SetGuardCallback(SHOP_ITEM(DownJacket), "Callback_Shop_Item_Guard_DownJacket");
+    Shop_AddItem(SW_Shop, SHOP_ITEM(DownJacket), 3100);
   }
 
-  if (CW_IsClassRegistered(SW_Weapon_Shield)) {
-    Shop_Item_Register(SW_SHOP_ITEM_SHIELD);
-    Shop_Item_SetTitle(SW_SHOP_ITEM_SHIELD, "Shield");
-    Shop_Item_SetPurchaseCallback(SW_SHOP_ITEM_SHIELD, "Callback_Shop_Item_Purchase_Shield");
-    Shop_Item_SetGuardCallback(SW_SHOP_ITEM_SHIELD, "Callback_Shop_Item_Guard_Shield");
-    Shop_AddItem(SW_SHOP, SW_SHOP_ITEM_SHIELD, 5000);
+  if (CW_IsClassRegistered(WEAPON(Shield))) {
+    Shop_Item_Register(SHOP_ITEM(Shield));
+    Shop_Item_SetTitle(SHOP_ITEM(Shield), "Shield");
+    Shop_Item_SetPurchaseCallback(SHOP_ITEM(Shield), "Callback_Shop_Item_Purchase_Shield");
+    Shop_Item_SetGuardCallback(SHOP_ITEM(Shield), "Callback_Shop_Item_Guard_Shield");
+    Shop_AddItem(SW_Shop, SHOP_ITEM(Shield), 5000);
   }
 
-  if (CW_IsClassRegistered(SW_Weapon_Snowman)) {
-    Shop_Item_Register(SW_SHOP_ITEM_SNOWMAN);
-    Shop_Item_SetTitle(SW_SHOP_ITEM_SNOWMAN, "Snowman");
-    Shop_Item_SetPurchaseCallback(SW_SHOP_ITEM_SNOWMAN, "Callback_Shop_Item_Purchase_Snowman");
-    Shop_Item_SetGuardCallback(SW_SHOP_ITEM_SNOWMAN, "Callback_Shop_Item_Guard_Snowman");
-    Shop_AddItem(SW_SHOP, SW_SHOP_ITEM_SNOWMAN, 5000);
+  if (CW_IsClassRegistered(WEAPON(Snowman))) {
+    Shop_Item_Register(SHOP_ITEM(Snowman));
+    Shop_Item_SetTitle(SHOP_ITEM(Snowman), "Snowman");
+    Shop_Item_SetPurchaseCallback(SHOP_ITEM(Snowman), "Callback_Shop_Item_Purchase_Snowman");
+    Shop_Item_SetGuardCallback(SHOP_ITEM(Snowman), "Callback_Shop_Item_Guard_Snowman");
+    Shop_AddItem(SW_Shop, SHOP_ITEM(Snowman), 5000);
   }
 
-  if (CW_IsClassRegistered(SW_Weapon_Fireplace)) {
-    Shop_Item_Register(SW_SHOP_ITEM_FIREPLACE);
-    Shop_Item_SetTitle(SW_SHOP_ITEM_FIREPLACE, "Fireplace");
-    Shop_Item_SetPurchaseCallback(SW_SHOP_ITEM_FIREPLACE, "Callback_Shop_Item_Purchase_Fireplace");
-    Shop_Item_SetGuardCallback(SW_SHOP_ITEM_FIREPLACE, "Callback_Shop_Item_Guard_Fireplace");
-    Shop_AddItem(SW_SHOP, SW_SHOP_ITEM_FIREPLACE, 6000);
+  if (CW_IsClassRegistered(WEAPON(Fireplace))) {
+    Shop_Item_Register(SHOP_ITEM(Fireplace));
+    Shop_Item_SetTitle(SHOP_ITEM(Fireplace), "Fireplace");
+    Shop_Item_SetPurchaseCallback(SHOP_ITEM(Fireplace), "Callback_Shop_Item_Purchase_Fireplace");
+    Shop_Item_SetGuardCallback(SHOP_ITEM(Fireplace), "Callback_Shop_Item_Guard_Fireplace");
+    Shop_AddItem(SW_Shop, SHOP_ITEM(Fireplace), 6000);
   }
 
-  if (CW_IsClassRegistered(SW_Weapon_FireworksBox)) {
-    Shop_Item_Register(SW_SHOP_ITEM_SURPRISEBOX);
-    Shop_Item_SetTitle(SW_SHOP_ITEM_SURPRISEBOX, "Surprise Box");
-    Shop_Item_SetPurchaseCallback(SW_SHOP_ITEM_SURPRISEBOX, "Callback_Shop_Item_Purchase_SurpriseBox");
-    Shop_Item_SetGuardCallback(SW_SHOP_ITEM_SURPRISEBOX, "Callback_Shop_Item_Guard_SurpriseBox");
-    Shop_AddItem(SW_SHOP, SW_SHOP_ITEM_SURPRISEBOX, 8500);
+  if (CW_IsClassRegistered(WEAPON(FireworksBox))) {
+    Shop_Item_Register(SHOP_ITEM(SurpriseBox));
+    Shop_Item_SetTitle(SHOP_ITEM(SurpriseBox), "Surprise Box");
+    Shop_Item_SetPurchaseCallback(SHOP_ITEM(SurpriseBox), "Callback_Shop_Item_Purchase_SurpriseBox");
+    Shop_Item_SetGuardCallback(SHOP_ITEM(SurpriseBox), "Callback_Shop_Item_Guard_SurpriseBox");
+    Shop_AddItem(SW_Shop, SHOP_ITEM(SurpriseBox), 8500);
   }
 }
 
@@ -106,7 +107,7 @@ public Command_ClientBuyOpen(pPlayer) {
 }
 
 @Player_OpenBuyMenu(const &this) {
-  Shop_Player_OpenShop(this, SW_SHOP);
+  Shop_Player_OpenShop(this, SW_Shop);
 }
 
 public Callback_Shop_Guard(const pPlayer) {
@@ -117,73 +118,73 @@ public Callback_Shop_Guard(const pPlayer) {
 }
 
 public Callback_Shop_Item_Purchase_Slingshot(const pPlayer) {
-  CW_Give(pPlayer, SW_Weapon_Slingshot);
+  CW_Give(pPlayer, WEAPON(Slingshot));
   return true;
 }
 
 public Callback_Shop_Item_Guard_Slingshot(const pPlayer) {
-  return !CW_PlayerHasWeapon(pPlayer, SW_Weapon_Slingshot);
+  return !CW_PlayerHasWeapon(pPlayer, WEAPON(Slingshot));
 }
 
 public Callback_Shop_Item_Purchase_LemonJuice(const pPlayer) {
-  SW_PlayerArtifact_Give(pPlayer, SW_Artifact_LemonJuice);
+  SW_PlayerArtifact_Give(pPlayer, ARTIFACT(LemonJuice));
   return true;
 }
 
 public Callback_Shop_Item_Purchase_DownJacket(const pPlayer) {
-  SW_PlayerArtifact_Give(pPlayer, SW_Artifact_Downjacket);
+  SW_PlayerArtifact_Give(pPlayer, ARTIFACT(Downjacket));
   return true;
 }
 
 public Callback_Shop_Item_Purchase_Snowman(const pPlayer) {
-  CW_Give(pPlayer, SW_Weapon_Snowman);
+  CW_Give(pPlayer, WEAPON(Snowman));
   return true;
 }
 
 public Callback_Shop_Item_Guard_Snowman(const pPlayer) {
-  return !CW_PlayerHasWeapon(pPlayer, SW_Weapon_Snowman);
+  return !CW_PlayerHasWeapon(pPlayer, WEAPON(Snowman));
 }
 
 public Callback_Shop_Item_Purchase_SurpriseBox(const pPlayer) {
-  CW_Give(pPlayer, SW_Weapon_FireworksBox);
+  CW_Give(pPlayer, WEAPON(FireworksBox));
   return true;
 }
 
 public Callback_Shop_Item_Guard_SurpriseBox(const pPlayer) {
-  return !CW_PlayerHasWeapon(pPlayer, SW_Weapon_FireworksBox);
+  return !CW_PlayerHasWeapon(pPlayer, WEAPON(FireworksBox));
 }
 
 public Callback_Shop_Item_Guard_LemonJuice(const pPlayer) {
-  return !SW_PlayerArtifact_Has(pPlayer, SW_Artifact_LemonJuice);
+  return !SW_PlayerArtifact_Has(pPlayer, ARTIFACT(LemonJuice));
 }
 
 public Callback_Shop_Item_Guard_DownJacket(const pPlayer) {
-  return !SW_PlayerArtifact_Has(pPlayer, SW_Artifact_Downjacket);
+  return !SW_PlayerArtifact_Has(pPlayer, ARTIFACT(Downjacket));
 }
 
 public Callback_Shop_Item_Purchase_Fireplace(const pPlayer) {
-  CW_Give(pPlayer, SW_Weapon_Fireplace);
+  CW_Give(pPlayer, WEAPON(Fireplace));
   return true;
 }
 
 public Callback_Shop_Item_Guard_Fireplace(const pPlayer) {
-  return !CW_PlayerHasWeapon(pPlayer, SW_Weapon_Fireplace);
+  return !CW_PlayerHasWeapon(pPlayer, WEAPON(Fireplace));
 }
 
 public Callback_Shop_Item_Purchase_Shield(const pPlayer) {
-  CW_Give(pPlayer, SW_Weapon_Shield);
+  CW_Give(pPlayer, WEAPON(Shield));
   return true;
 }
 
 public Callback_Shop_Item_Guard_Shield(const pPlayer) {
-  return !CW_PlayerHasWeapon(pPlayer, SW_Weapon_Shield);
+  return !CW_PlayerHasWeapon(pPlayer, WEAPON(Shield));
 }
 
 public Callback_Shop_Item_Purchase_HotDrink(const pPlayer) {
-  CW_Give(pPlayer, SW_Weapon_HotDrink);
+  CW_Give(pPlayer, WEAPON(HotDrink));
   return true;
 }
 
 public Callback_Shop_Item_Guard_HotDrink(const pPlayer) {
-  return !CW_PlayerHasWeapon(pPlayer, SW_Weapon_HotDrink);
+  return !CW_PlayerHasWeapon(pPlayer, WEAPON(HotDrink));
 }

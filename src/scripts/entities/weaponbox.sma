@@ -8,11 +8,7 @@
 #include <api_custom_entities>
 #include <api_custom_weapons>
 
-#include <snowwars_const>
-
-/*--------------------------------[ Helpers ]--------------------------------*/
-
-#define IS_PLAYER(%1) (%1 >= 1 && %1 <= MaxClients)
+#include <snowwars_internal>
 
 /*--------------------------------[ Constants ]--------------------------------*/
 
@@ -34,7 +30,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-  register_plugin("Entity Extension: WeaponBox", SW_VERSION, "Hedgehog Fog");
+  register_plugin(ENTITY_PLUGIN(WeaponBox), SW_VERSION, "Hedgehog Fog");
 }
 
 public plugin_end() {

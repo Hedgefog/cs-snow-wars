@@ -7,7 +7,9 @@
 #include <api_custom_weapons>
 #include <api_custom_entities>
 
-#include <snowwars_const>
+#include <snowwars_internal>
+
+#define WEAPON_NAME WEAPON(Fireplace)
 
 new g_szVModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szPModel[MAX_RESOURCE_PATH_LENGTH];
@@ -18,17 +20,17 @@ public plugin_precache() {
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Fireplace_Model_Player, g_szPModel, charsmax(g_szPModel));
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Fireplace_Model_World, g_szWModel, charsmax(g_szWModel));
 
-  CW_RegisterClass(SW_Weapon_Fireplace, SW_Weapon_BaseBlueprint);
+  CW_RegisterClass(WEAPON_NAME, SW_Weapon_BaseBlueprint);
 
-  CW_ImplementClassMethod(SW_Weapon_Fireplace, CW_Method_Create, "@Weapon_Create");
-  CW_ImplementClassMethod(SW_Weapon_Fireplace, CW_Method_Deploy, "@Weapon_Deploy");
-  CW_ImplementClassMethod(SW_Weapon_Fireplace, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Create, "@Weapon_Create");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Deploy, "@Weapon_Deploy");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
 
-  CW_RegisterClassMethod(SW_Weapon_Fireplace, SW_Weapon_BaseBlueprint_Method_CreateInstallation, "@Weapon_CreateInstallation");
+  CW_RegisterClassMethod(WEAPON_NAME, SW_Weapon_BaseBlueprint_Method_CreateInstallation, "@Weapon_CreateInstallation");
 }
 
 public plugin_init() {
-  register_plugin("[Entity] (Snow Wars) Fireplace", SW_VERSION, "Hedgehog Fog");
+  register_plugin(WEAPON_PLUGIN(Fireplace), SW_VERSION, "Hedgehog Fog");
 }
 
 @Weapon_Create(const this) {
@@ -53,5 +55,5 @@ public plugin_init() {
 }
 
 @Weapon_CreateInstallation(const this) {
-  return CE_Create(SW_Entity_Fireplace);
+  return CE_Create(ENTITY(Fireplace));
 }

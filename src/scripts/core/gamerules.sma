@@ -10,17 +10,14 @@
 
 #include <snowwars>
 #include <snowwars_player_artifacts>
-
-#define PLUGIN "[Snow Wars] Gamemode"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
+#include <snowwars_internal>
 
 public plugin_precache() {
   CE_RegisterNullClass("armoury_entity");
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(PLUGIN_NAME("Game Rules"), SW_VERSION, "Hedgehog Fog");
 
   RegisterHamPlayer(Ham_Killed, "HamHook_Player_Killed", .Post = 0);
   RegisterHamPlayer(Ham_Killed, "HamHook_Player_Killed_Post", .Post = 1);
@@ -39,14 +36,18 @@ public client_disconnected(pPlayer) {
 public HamHook_Player_Killed(pPlayer) {
   set_ent_data(pPlayer, "CBasePlayer", "m_bHasDefuser", false);
   @Player_DropItems(pPlayer);
+
+  return HAM_HANDLED;
 }
 
 public HamHook_Player_Killed_Post(pPlayer) {
   @Player_DropArtifacts(pPlayer);
+
+  return HAM_HANDLED;
 }
 
 public HC_Player_SpawnEquip(const pPlayer) {
-  CW_Give(pPlayer, SW_Weapon_Snowball);
+  CW_Give(pPlayer, WEAPON(Snowball));
 
   if (get_ent_data(pPlayer, "CBasePlayer", "m_iTeam") == 2) {
     set_ent_data(pPlayer, "CBasePlayer", "m_bHasDefuser", true);
@@ -79,7 +80,7 @@ public HC_GameRules_RestartRound() {
   while ((iSlot = SW_PlayerArtifact_Find(this, iSlot, szId, charsmax(szId))) != -1) {
     SW_PlayerArtifact_TakeBySlot(this, iSlot);
 
-    static pArtifactItem; pArtifactItem = CE_Create(SW_Entity_ArtifactItem, vecOrigin);
+    static pArtifactItem; pArtifactItem = CE_Create(ENTITY(ArtifactItem), vecOrigin);
     if (pArtifactItem == FM_NULLENT) continue;
 
     CE_SetMemberString(pArtifactItem, "szArtifactId", szId);
@@ -105,7 +106,7 @@ public HC_GameRules_RestartRound() {
   for (new iSlot = 0; iSlot < 6; ++iSlot) {
     static pItem; pItem = get_ent_data_entity(this, "CBasePlayer", "m_rgpPlayerItems", iSlot);
 
-    while (pItem != -1) {
+    while (pItem != FM_NULLENT) {
       static pNextItem; pNextItem = get_ent_data_entity(pItem, "CBasePlayerItem", "m_pNext");
 
       if (ExecuteHamB(Ham_CS_Item_CanDrop, pItem)) {

@@ -8,7 +8,7 @@
 
 #include <api_custom_entities>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
 new Float:g_vecAbsMins[3] = {8192.0, 8192.0, 8192.0};
 new Float:g_vecAbsMax[3] = {-8192.0, -8192.0, -8192.0};
@@ -28,7 +28,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-  register_plugin("[Snow Wars Feature] Fireworks", SW_VERSION, "Hedgehog Fog");
+  register_plugin(FEATURE_PLUGIN(Fireworks), SW_VERSION, "Hedgehog Fog");
 
   bind_pcvar_num(create_cvar("sw_fireworks_launch_rate", "60"), g_iLaunchRate);
   bind_pcvar_num(create_cvar("sw_fireworks_rockets_num", "6"), g_iRocketsNum);
@@ -54,7 +54,7 @@ public Command_LaunchFireworks(const pPlayer, iLevel, iCId) {
 }
 
 public FMHook_Spawn_Post(const pEntity) {
-  if (!pev_valid(pEntity)) return;
+  if (!pev_valid(pEntity)) return FMRES_IGNORED;
 
   static Float:vecAbsMin[3]; pev(pEntity, pev_absmin, vecAbsMin);
   static Float:vecAbsMax[3]; pev(pEntity, pev_absmax, vecAbsMax);
@@ -63,6 +63,8 @@ public FMHook_Spawn_Post(const pEntity) {
     g_vecAbsMins[i] = floatmin(g_vecAbsMins[i], vecAbsMin[i]);
     g_vecAbsMax[i] = floatmax(g_vecAbsMax[i], vecAbsMax[i]);
   }
+
+  return FMRES_HANDLED;
 }
 
 LaunchFireworks(iRocketsNum = 0) {
@@ -76,7 +78,7 @@ LaunchFireworks(iRocketsNum = 0) {
   get_tr2(g_pTrace, TR_vecEndPos, vecOrigin);
 
   for (new i = 0; i < iRocketsNum; ++i) {
-    new pRocket = CE_Create(SW_Entity_FireworkRocket, vecOrigin);
+    new pRocket = CE_Create(ENTITY(FireworkRocket), vecOrigin);
     if (pRocket == FM_NULLENT) continue;
 
     static Float:vecAngles[3]; xs_vec_set(vecAngles, random_float(-75.0, -105.0), random_float(-180.0, 180.0), 0.0);

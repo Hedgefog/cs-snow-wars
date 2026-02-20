@@ -8,18 +8,11 @@
 #include <api_assets>
 #include <api_custom_entities>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define PLUGIN "[Entity] Fireworks Box"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
-
-#define ENTITY_NAME SW_Entity_FireworksBox
-
-new const m_iMaxRocketsNum[] = "iMaxRocketsNum";
-new const m_iRocketsNum[] = "iRocketsNum";
-
-new const SpawnRocket[] = "SpawnRocket";
+#define ENTITY_NAME ENTITY(FireworksBox)
+#define MEMBER(%1) ENTITY_MEMBER<FireworksBox>(%1)
+#define METHOD(%1) ENTITY_METHOD<FireworksBox>(%1)
 
 new g_szMusicSound[MAX_RESOURCE_PATH_LENGTH];
 new g_szModel[MAX_RESOURCE_PATH_LENGTH];
@@ -36,11 +29,11 @@ public plugin_precache() {
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_InitPhysics, "@Entity_InitPhysics");
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Think, "@Entity_Think");
 
-  CE_RegisterClassMethod(ENTITY_NAME, SpawnRocket, "@Entity_SpawnRocket");
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(SpawnRocket), "@Entity_SpawnRocket");
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(ENTITY_PLUGIN(FireworksBox), SW_VERSION, "Hedgehog Fog");
 }
 
 @Entity_Create(const this) {
@@ -50,7 +43,7 @@ public plugin_init() {
   CE_SetMemberVec(this, CE_Member_vecMaxs, Float:{8.0, 8.0, 8.0});
   CE_SetMemberString(this, CE_Member_szModel, g_szModel);
 
-  CE_SetMember(this, m_iMaxRocketsNum, 8);
+  CE_SetMember(this, MEMBER(iMaxRocketsNum), 8);
 }
 
 @Entity_InitPhysics(const this) {
@@ -61,7 +54,7 @@ public plugin_init() {
 @Entity_Spawn(const this) {
   CE_CallBaseMethod();
 
-  CE_SetMember(this, m_iRocketsNum, CE_GetMember(this, m_iMaxRocketsNum));
+  CE_SetMember(this, MEMBER(iRocketsNum), CE_GetMember(this, MEMBER(iMaxRocketsNum)));
 
   emit_sound(this, CHAN_BODY, g_szMusicSound, VOL_NORM * 0.375, ATTN_IDLE, 0, PITCH_NORM);
   
@@ -77,22 +70,22 @@ public plugin_init() {
 @Entity_Think(const this) {
   CE_CallBaseMethod();
 
-  static iRocketCount; iRocketCount = CE_GetMember(this, m_iRocketsNum);
+  static iRocketCount; iRocketCount = CE_GetMember(this, MEMBER(iRocketsNum));
   
   if (iRocketCount <= 0) {
     ExecuteHamB(Ham_Killed, this, 0, 0);
     return;
   }
   
-  new pRocket = CE_CallMethod(this, SpawnRocket);
+  new pRocket = CE_CallMethod(this, METHOD(SpawnRocket));
 
   // Detonate first rocket instantly
-  if (iRocketCount == CE_GetMember(this, m_iMaxRocketsNum)) {
+  if (iRocketCount == CE_GetMember(this, MEMBER(iMaxRocketsNum))) {
     ExecuteHamB(Ham_Killed, pRocket, 0, 0);
     set_pev(this, pev_effects, EF_NODRAW);
   }
 
-  CE_SetMember(this, m_iRocketsNum, iRocketCount -= 1);
+  CE_SetMember(this, MEMBER(iRocketsNum), iRocketCount -= 1);
 
   set_pev(this, pev_nextthink, get_gametime() + 0.125);
 }
@@ -100,7 +93,7 @@ public plugin_init() {
 @Entity_SpawnRocket(const this) {
   static Float:vecOrigin[3]; pev(this, pev_origin, vecOrigin);
 
-  new pRocket = CE_Create(SW_Entity_FireworkRocket, vecOrigin);
+  new pRocket = CE_Create(ENTITY(FireworkRocket), vecOrigin);
   if (pRocket == FM_NULLENT) return FM_NULLENT;
 
   set_pev(pRocket, pev_owner, pev(this, pev_owner));

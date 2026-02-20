@@ -7,30 +7,23 @@
 #include <api_assets>
 #include <api_player_model>
 
-#include <snowwars_const>
-
-#define PLUGIN "Snow Wars"
-#define AUTHOR "Hedgehog Fog"
+#include <snowwars_internal>
 
 new g_fwConfigLoaded;
-
-new g_pCvarVersion;
 
 public plugin_precache() {
   Asset_Library_Load(SW_AssetLibrary);
   PlayerModel_PrecacheAnimation("snowwars/v110/player.mdl");
 
-  g_pCvarVersion = register_cvar("snowwars_version", SW_VERSION, FCVAR_SERVER);
-
-  hook_cvar_change(g_pCvarVersion, "CvarHook_Version");
+  hook_cvar_change(create_cvar(CVAR("version"), SW_VERSION, FCVAR_SERVER), "CvarHook_Version");
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, SW_VERSION, AUTHOR);
+  register_plugin(SW_TITLE, SW_VERSION, "Hedgehog Fog");
 
-  g_fwConfigLoaded = CreateMultiForward("SW_Fw_ConfigLoaded", ET_IGNORE);
+  g_fwConfigLoaded = CreateMultiForward("SW_OnConfigLoaded", ET_IGNORE);
 
-  register_forward(FM_GetGameDescription, "FMForward_GetGameDescription");
+  register_forward(FM_GetGameDescription, "FMHook_GetGameDescription");
 }
 
 public plugin_cfg() {
@@ -43,11 +36,11 @@ public plugin_natives() {
 
 /*--------------------------------[ Hooks ]--------------------------------*/
 
-public CvarHook_Version() {
-  set_pcvar_string(g_pCvarVersion, SW_VERSION);
+public CvarHook_Version(const pCvar) {
+  set_pcvar_string(pCvar, SW_VERSION);
 }
 
-public FMForward_GetGameDescription() {
+public FMHook_GetGameDescription() {
   static szGameName[32];
   format(szGameName, charsmax(szGameName), "%s %s", SW_TITLE, SW_VERSION);
   forward_return(FMV_STRING, szGameName);

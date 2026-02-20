@@ -8,12 +8,7 @@
 #include <api_assets>
 
 #include <snowwars>
-
-#define IS_PLAYER(%1) (%1 > 0 && %1 <= MaxClients)
-
-#define PLUGIN "[Snow Wars] Player"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
+#include <snowwars_internal>
 
 new g_rgiPlayerAttributes[MAX_PLAYERS + 1][SW_PlayerAttribute];
 
@@ -23,7 +18,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(PLUGIN_NAME("Player"), SW_VERSION, "Hedgehog Fog");
 
   RegisterHamPlayer(Ham_Spawn, "HamHook_Player_Spawn_Post", .Post = 1);
   RegisterHamPlayer(Ham_TakeDamage, "HamHook_Player_TakeDamage", .Post = 0);
@@ -90,6 +85,8 @@ public HamHook_Player_Killed_Post(const pPlayer) {
   message_end();
 
   Asset_EmitSound(pPlayer, CHAN_VOICE, SW_AssetLibrary, SW_Asset_Player_Sound_Hit);
+
+  return HAM_HANDLED;
 }
 
 public HamHook_Player_TakeDamage_Post(const pPlayer, const pInflictor, const pAttacker, Float:flDamage, iDamageBits) {

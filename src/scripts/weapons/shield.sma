@@ -11,13 +11,10 @@
 #include <api_custom_weapons>
 #include <api_custom_entities>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define IS_PLAYER(%1) (%1 >= 1 && %1 <= MaxClients)
-
-#define PLUGIN "[Snow Wars] Weapon Snowman"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
+#define WEAPON_NAME WEAPON(Shield)
+#define METHOD(%1) WEAPON_METHOD<Shield>(%1)
 
 #define DEPLOY_HEIGHT_STEP 32.0
 #define DEPLOY_DISTANCE 64.0
@@ -36,22 +33,22 @@ public plugin_precache() {
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Shield_Model_World, g_szWModel, charsmax(g_szWModel));
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Shield_Sound_Impact);
 
-  CW_RegisterClass(SW_Weapon_Shield);
+  CW_RegisterClass(WEAPON_NAME);
 
-  CW_ImplementClassMethod(SW_Weapon_Shield, CW_Method_Create, "@Weapon_Create");
-  CW_ImplementClassMethod(SW_Weapon_Shield, CW_Method_Idle, "@Weapon_Idle");
-  CW_ImplementClassMethod(SW_Weapon_Shield, CW_Method_Deploy, "@Weapon_Deploy");
-  CW_ImplementClassMethod(SW_Weapon_Shield, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
-  CW_ImplementClassMethod(SW_Weapon_Shield, CW_Method_GetMaxSpeed, "@Weapon_GetMaxSpeed");
-  CW_ImplementClassMethod(SW_Weapon_Shield, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Create, "@Weapon_Create");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Idle, "@Weapon_Idle");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Deploy, "@Weapon_Deploy");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_GetMaxSpeed, "@Weapon_GetMaxSpeed");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
 
-  CW_RegisterClassMethod(SW_Weapon_Shield, "HitFeedback", "@Weapon_HitFeedback", CW_Type_Cell, CW_Type_Cell, CW_Type_Cell, CW_Type_Cell);
+  CW_RegisterClassMethod(WEAPON_NAME, METHOD(HitFeedback), "@Weapon_HitFeedback", CW_Type_Cell, CW_Type_Cell, CW_Type_Cell, CW_Type_Cell);
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(WEAPON_PLUGIN(Shield), SW_VERSION, "Hedgehog Fog");
 
-  CE_RegisterClassNativeMethodHook(SW_Entity_Snowball, CE_Method_Touch, "CEHook_Snowball_Touch");
+  CE_RegisterClassNativeMethodHook(ENTITY(Snowball), CE_Method_Touch, "CEHook_Snowball_Touch");
 }
 
 public plugin_end() {
@@ -63,11 +60,11 @@ public CEHook_Snowball_Touch(const pSnowball, const pToucher) {
 
   new pActiveItem = get_ent_data_entity(pToucher, "CBasePlayer", "m_pActiveItem");
 
-  if (pActiveItem != FM_NULLENT && CW_IsInstanceOf(pActiveItem, SW_Weapon_Shield)) {
+  if (pActiveItem != FM_NULLENT && CW_IsInstanceOf(pActiveItem, WEAPON_NAME)) {
     static Float:vecOrigin[3]; pev(pToucher, pev_origin, vecOrigin);
     static Float:vecProjectileOrigin[3]; pev(pSnowball, pev_origin, vecProjectileOrigin);
     if (IsBlockedByShield(pToucher, pSnowball)) {
-      CW_CallMethod(pActiveItem, "HitFeedback", pSnowball, pev(pSnowball, pev_owner), 0.0, 0);
+      CW_CallMethod(pActiveItem, METHOD(HitFeedback), pSnowball, pev(pSnowball, pev_owner), 0.0, 0);
       ExecuteHamB(Ham_Killed, pSnowball, pToucher, 0);
 
       return CE_SUPERCEDE;

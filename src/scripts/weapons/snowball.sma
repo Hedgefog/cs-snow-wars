@@ -11,11 +11,9 @@
 #include <api_custom_entities>
 #include <weapon_base_throwable_const>
 
-#include <snowwars_const>
+#include <snowwars_internal>
 
-#define PLUGIN "[Snow Wars] Weapon Snowball"
-#define VERSION SW_VERSION
-#define AUTHOR "Hedgehog Fog"
+#define WEAPON_NAME WEAPON(Snowball)
 
 new g_szVModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szPModel[MAX_RESOURCE_PATH_LENGTH];
@@ -28,20 +26,20 @@ public plugin_precache() {
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowball_Model_World, g_szWModel, charsmax(g_szWModel));
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowball_Sound_Throw, g_szThrowSound, charsmax(g_szThrowSound));
 
-  CW_RegisterClass(SW_Weapon_Snowball, WEAPON_BASE_THROWABLE);
+  CW_RegisterClass(WEAPON_NAME, WEAPON_BASE_THROWABLE);
 
-  CW_ImplementClassMethod(SW_Weapon_Snowball, CW_Method_Create, "@Weapon_Create");
-  CW_ImplementClassMethod(SW_Weapon_Snowball, CW_Method_Idle, "@Weapon_Idle");
-  CW_ImplementClassMethod(SW_Weapon_Snowball, CW_Method_Deploy, "@Weapon_Deploy");
-  CW_ImplementClassMethod(SW_Weapon_Snowball, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
-  CW_ImplementClassMethod(SW_Weapon_Snowball, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Create, "@Weapon_Create");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Idle, "@Weapon_Idle");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Deploy, "@Weapon_Deploy");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_PrimaryAttack, "@Weapon_PrimaryAttack");
+  CW_ImplementClassMethod(WEAPON_NAME, CW_Method_UpdateWeaponBoxModel, "@Weapon_UpdateWeaponBoxModel");
 
-  CW_RegisterClassMethod(SW_Weapon_Snowball, Weapon_BaseThrowable_Method_Throw, "@Weapon_Throw");
-  CW_RegisterClassMethod(SW_Weapon_Snowball, Weapon_BaseThrowable_Method_SpawnProjectile, "@Weapon_SpawnProjectile");
+  CW_RegisterClassMethod(WEAPON_NAME, Weapon_BaseThrowable_Method_Throw, "@Weapon_Throw");
+  CW_RegisterClassMethod(WEAPON_NAME, Weapon_BaseThrowable_Method_SpawnProjectile, "@Weapon_SpawnProjectile");
 }
 
 public plugin_init() {
-  register_plugin(PLUGIN, VERSION, AUTHOR);
+  register_plugin(WEAPON_PLUGIN(Snowball), SW_VERSION, "Hedgehog Fog");
 }
 
 @Weapon_Create(const this) {
@@ -115,7 +113,7 @@ public plugin_init() {
 
   xs_vec_add_scaled(vecSrc, vecForward, 16.0, vecSrc);
 
-  new pProjectile = CE_Create(SW_Entity_Snowball, vecSrc);
+  new pProjectile = CE_Create(ENTITY(Snowball), vecSrc);
   if (pProjectile == FM_NULLENT) return FM_NULLENT;
 
   set_pev(pProjectile, pev_owner, pPlayer);

@@ -43,3 +43,5 @@
 
 native any:SW_Player_GetAttribute(pPlayer, SW_PlayerAttribute:iAttrib);
 native SW_Player_SetAttribute(pPlayer, SW_PlayerAttribute:iAttrib, any:value);
+
+forward SW_OnConfigLoaded();

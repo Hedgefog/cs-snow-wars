@@ -1,10 +1,12 @@
+#pragma semicolon 1
+
 #include <amxmodx>
 #include <hamsandwich>
 
 #include <function_pointer>
 
-#include <snowwars_const>
 #include <snowwars_player_artifacts>
+#include <snowwars_internal>
 
 #define MAX_ARTIFACTS 32
 
@@ -21,7 +23,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-  register_plugin("[Snow Wars] Player Artifacts", SW_VERSION, "Hedgehog Fog");
+  register_plugin(PLUGIN_NAME("Player Artifacts"), SW_VERSION, "Hedgehog Fog");
 }
 
 public plugin_destroy() {
