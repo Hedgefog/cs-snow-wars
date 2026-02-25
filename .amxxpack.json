@@ -3,10 +3,6 @@
     "version": "1.9",
     "addons": ["cstrike"]
   },
-  "include": [
-    "./.compiler/include",
-    "./.thirdparty/reapi/addons/amxmodx/scripting/include"
-  ],
   "thirdparty": {
     "dependencies": [
       {
@@ -15,9 +11,24 @@
       }
     ]
   },
+  "include": [
+    "./.compiler/include",
+    "./.thirdparty/reapi/addons/amxmodx/scripting/include"
+  ],
   "input": {
-    "scripts": { "dir": "./src/scripts", "dest": "snowwars" },
-    "include": "./src/include",
+    "scripts": [
+      { "dir": "./src/scripts", "output": { "dir": "snowwars", "flat": false } },
+      { "dir": "./.thirdparty/amxx-modding-kit/api", "output": { "dir": "./amxx-modding-kit", "flat": true } },
+      { "dir": "./.thirdparty/amxx-modding-kit/entities", "output": { "dir": "./amxx-modding-kit", "flat": true } },
+      { "dir": "./.thirdparty/amxx-modding-kit/weapons", "output": { "dir": "./amxx-modding-kit", "flat": true } }
+    ],
+    "include": [
+      "./src/include",
+      "./.thirdparty/amxx-modding-kit/api",
+      "./.thirdparty/amxx-modding-kit/entities",
+      "./.thirdparty/amxx-modding-kit/weapons",
+      "./.thirdparty/amxx-modding-kit/util"
+    ],
     "assets": "./assets"
   },
   "output": {
@@ -29,5 +40,13 @@
   },
   "rules": {
     "flatCompilation": false
+  },
+  "cli": {
+    "templates": {
+      "context": {
+        "PLUGIN_VERSION": "1.0.0",
+        "PLUGIN_AUTHOR": "Hedgehog Fog"
+      }
+    }
   }
 }
