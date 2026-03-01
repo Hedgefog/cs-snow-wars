@@ -18,13 +18,12 @@
 new g_szVModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szPModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szWModel[MAX_RESOURCE_PATH_LENGTH];
-new g_szThrowSound[MAX_RESOURCE_PATH_LENGTH];
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowball_Model_View, g_szVModel, charsmax(g_szVModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowball_Model_Player, g_szPModel, charsmax(g_szPModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowball_Model_World, g_szWModel, charsmax(g_szWModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowball_Sound_Throw, g_szThrowSound, charsmax(g_szThrowSound));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Snowball_Model_View), g_szVModel, charsmax(g_szVModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Snowball_Model_Player), g_szPModel, charsmax(g_szPModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Snowball_Model_World), g_szWModel, charsmax(g_szWModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Snowball_Sound_Throw));
 
   CW_RegisterClass(WEAPON_NAME, Weapon_BaseThrowable);
 
@@ -102,7 +101,7 @@ public plugin_init() {
   CW_CallBaseMethod();
 
   new pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
-  emit_sound(pPlayer, CHAN_BODY, g_szThrowSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+  Asset_EmitSound(pPlayer, CHAN_BODY, ASSET_LIBRARY, ASSET(Weapon_Snowball_Sound_Throw));
   CW_CallNativeMethod(this, CW_Method_PlayAnimation, 2);
 }
 

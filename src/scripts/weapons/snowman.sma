@@ -16,9 +16,9 @@ new g_szPModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szWModel[MAX_RESOURCE_PATH_LENGTH];
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowman_Model_View, g_szVModel, charsmax(g_szVModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowman_Model_Player, g_szPModel, charsmax(g_szPModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowman_Model_World, g_szWModel, charsmax(g_szWModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Snowman_Model_View), g_szVModel, charsmax(g_szVModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Snowman_Model_Player), g_szPModel, charsmax(g_szPModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Snowman_Model_World), g_szWModel, charsmax(g_szWModel));
 
   CW_RegisterClass(WEAPON_NAME, SW_Weapon_BaseBlueprint);
 

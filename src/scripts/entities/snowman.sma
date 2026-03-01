@@ -19,14 +19,12 @@ new Float:g_rgflPlayerDeathTime[MAX_PLAYERS + 1];
 new g_iPlayerDeadFlag[MAX_PLAYERS + 1];
 
 new g_szModel[MAX_RESOURCE_PATH_LENGTH];
-new g_szSnowballHitSound[MAX_RESOURCE_PATH_LENGTH];
-new g_szReturnSound[MAX_RESOURCE_PATH_LENGTH];
 new g_szBloodSprite[] = "sprites/blood.spr";
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_Snowman_Model, g_szModel, charsmax(g_szModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_Snowman_Sound_Spawn, g_szSnowballHitSound, charsmax(g_szSnowballHitSound));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Player_Sound_Return, g_szReturnSound, charsmax(g_szReturnSound));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_Snowman_Model), g_szModel, charsmax(g_szModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_Snowman_Sound_Spawn));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Player_Sound_Return));
 
   precache_model(g_szBloodSprite);
 
@@ -184,7 +182,7 @@ public HamHook_Player_Killed_Post(const pPlayer) {
   write_byte(8);
   message_end();
 
-  emit_sound(this, CHAN_BODY, g_szSnowballHitSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+  Asset_EmitSound(this, CHAN_BODY, ASSET_LIBRARY, ASSET(Entity_Snowman_Sound_Spawn));
 }
 
 bool:@Entity_CanTakeDamage(const this, const pInflictor, const pAttacker) {
@@ -210,7 +208,7 @@ bool:@Entity_CanTakeDamage(const this, const pInflictor, const pAttacker) {
   set_pev(pPlayer, pev_v_angle, vecAngles);
   engfunc(EngFunc_SetOrigin, pPlayer, vecOrigin);
 
-  emit_sound(pPlayer, CHAN_STATIC, g_szReturnSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+  Asset_EmitSound(pPlayer, CHAN_STATIC, ASSET_LIBRARY, ASSET(Player_Sound_Return));
 
   ExecuteHamB(Ham_Killed, this, 0, 0);
 }

@@ -12,6 +12,7 @@
     "${workspaceRoot}/.thirdparty/amxx-modding-kit/api/player-model/include",
     "${workspaceRoot}/.thirdparty/amxx-modding-kit/api/player-cosmetics/include",
     "${workspaceRoot}/.thirdparty/amxx-modding-kit/api/shops/include",
-    "${workspaceRoot}/.thirdparty/amxx-modding-kit/weapons/include"
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/weapons/include",
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/entities/include"
   ]
 }

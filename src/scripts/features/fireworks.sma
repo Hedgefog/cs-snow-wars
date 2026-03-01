@@ -30,8 +30,8 @@ public plugin_precache() {
 public plugin_init() {
   register_plugin(FEATURE_PLUGIN(Fireworks), SW_VERSION, "Hedgehog Fog");
 
-  bind_pcvar_num(create_cvar("sw_fireworks_launch_rate", "60"), g_iLaunchRate);
-  bind_pcvar_num(create_cvar("sw_fireworks_rockets_num", "6"), g_iRocketsNum);
+  bind_pcvar_num(create_cvar(CVAR("fireworks_launch_rate"), "60"), g_iLaunchRate);
+  bind_pcvar_num(create_cvar(CVAR("fireworks_rockets_num"), "6"), g_iRocketsNum);
 
   RegisterHookChain(RG_RoundEnd, "HC_RoundEnd", .post = 0);
 

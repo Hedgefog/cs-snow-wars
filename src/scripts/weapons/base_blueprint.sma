@@ -5,13 +5,14 @@
 #include <fakemeta>
 #include <engine>
 #include <xs>
-#include <reapi>
 
 #include <api_assets>
 #include <api_custom_weapons>
 #include <api_custom_entities>
 
 #include <snowwars_internal>
+
+#define BIT(%1) (1 << (%1))
 
 #define WEAPON_NAME WEAPON(BaseBlueprint)
 #define MEMBER(%1) WEAPON_MEMBER<BaseBlueprint>(%1)
@@ -25,9 +26,9 @@ new g_pTrace;
 new g_pInstallationPreview = FM_NULLENT;
 new g_pCurrentPlayer = FM_NULLENT;
 
-new g_fwUpdateClientData;
-new g_fwCheckVisibility;
-new g_fwAddToFullPackPost;
+new g_pfwfmUpdateClientData = 0;
+new g_pfwfmCheckVisibility = 0;
+new g_pfwfmAddToFullPackPost = 0;
 
 /*--------------------------------[ Player State ]--------------------------------*/
 
@@ -159,7 +160,7 @@ public HamHook_Player_Killed_Post(const pPlayer) {
   g_rgiPlayerInstallationModelIndex[pPlayer] = CW_GetMember(this, MEMBER(iInstallationModelIndex));
 
   CW_CallNativeMethod(this, CW_Method_PlayAnimation, 1, 0.5);
-  rg_set_animation(pPlayer, PLAYER_IDLE);
+  CW_SetPlayerAnimation(pPlayer, PLAYER_IDLE);
 
   return true;
 }
@@ -206,7 +207,7 @@ public HamHook_Player_Killed_Post(const pPlayer) {
   if (CW_CallMethod(this, METHOD(Build))) {
     set_ent_data(pPlayer, "CBasePlayer", "m_rgAmmo", --iAmmo, iPrimaryAmmoType);
     CW_SetMember(this, CW_Member_iShotsFired, ++iShotsFired);
-    rg_set_animation(pPlayer, PLAYER_ATTACK1);
+    CW_SetPlayerAnimation(pPlayer, PLAYER_ATTACK1);
     CW_CallNativeMethod(this, CW_Method_PlayAnimation, 2, 0.5);
   }
 
@@ -335,14 +336,28 @@ bool:@Player_FindDeploymentPos(const &this, Float:vecTarget[3]) {
 
   if (!!iOldBits != !!g_iPlayerPreviewVisibilityBits) {
     if (g_iPlayerPreviewVisibilityBits) {
-      g_fwUpdateClientData = register_forward(FM_UpdateClientData, "FMHook_UpdateClientData", 1);
-      g_fwCheckVisibility = register_forward(FM_CheckVisibility, "FMHook_CheckVisibility", 0);
-      g_fwAddToFullPackPost = register_forward(FM_AddToFullPack, "FMHook_AddToFullPack_Post", 1);
+      if (!g_pfwfmUpdateClientData) {
+        g_pfwfmUpdateClientData = register_forward(FM_UpdateClientData, "FMHook_UpdateClientData", 1);
+      }
+
+      if (!g_pfwfmCheckVisibility) {
+        g_pfwfmCheckVisibility = register_forward(FM_CheckVisibility, "FMHook_CheckVisibility", 0);
+      }
+
+      if (!g_pfwfmAddToFullPackPost) {
+        g_pfwfmAddToFullPackPost = register_forward(FM_AddToFullPack, "FMHook_AddToFullPack_Post", 1);
+      }
       set_pev(g_pInstallationPreview, pev_effects, 0);
     } else {
-      unregister_forward(FM_UpdateClientData, g_fwUpdateClientData, 1);
-      unregister_forward(FM_CheckVisibility, g_fwCheckVisibility, 0);
-      unregister_forward(FM_AddToFullPack, g_fwAddToFullPackPost, 1);
+      unregister_forward(FM_UpdateClientData, g_pfwfmUpdateClientData, 1);
+      g_pfwfmUpdateClientData = 0;
+
+      unregister_forward(FM_CheckVisibility, g_pfwfmCheckVisibility, 0);
+      g_pfwfmCheckVisibility = 0;
+
+      unregister_forward(FM_AddToFullPack, g_pfwfmAddToFullPackPost, 1);
+      g_pfwfmAddToFullPackPost = 0;
+
       set_pev(g_pInstallationPreview, pev_effects, EF_NODRAW);
     }
   }

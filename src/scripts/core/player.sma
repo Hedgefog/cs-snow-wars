@@ -13,8 +13,8 @@
 new g_rgiPlayerAttributes[MAX_PLAYERS + 1][SW_PlayerAttribute];
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Player_Sound_Hit);
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Player_Sound_Spawn);
+  Asset_Precache(ASSET_LIBRARY, ASSET(Player_Sound_Hit));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Player_Sound_Spawn));
 }
 
 public plugin_init() {
@@ -55,7 +55,7 @@ public Native_SetAttribute(iPluginId, iArgc) {
 public HamHook_Player_Spawn_Post(const pPlayer) {
   if (!is_user_alive(pPlayer)) return HAM_IGNORED;
 
-  Asset_EmitSound(pPlayer, CHAN_BODY, SW_AssetLibrary, SW_Asset_Player_Sound_Spawn);
+  Asset_EmitSound(pPlayer, CHAN_BODY, ASSET_LIBRARY, ASSET(Player_Sound_Spawn));
 
   return HAM_HANDLED;
 }
@@ -65,7 +65,7 @@ public HamHook_Player_Killed_Post(const pPlayer) {
 
   static iSnowBallModelIndex = 0;
   if (!iSnowBallModelIndex) {
-    iSnowBallModelIndex = Asset_GetModelIndex(SW_AssetLibrary, SW_Asset_Entity_Snowball_Model);
+    iSnowBallModelIndex = Asset_GetModelIndex(ASSET_LIBRARY, ASSET(Entity_Snowball_Model));
   }
 
   message_begin(MSG_ALL, SVC_TEMPENTITY);
@@ -84,13 +84,13 @@ public HamHook_Player_Killed_Post(const pPlayer) {
   write_byte(1);
   message_end();
 
-  Asset_EmitSound(pPlayer, CHAN_VOICE, SW_AssetLibrary, SW_Asset_Player_Sound_Hit);
+  Asset_EmitSound(pPlayer, CHAN_VOICE, ASSET_LIBRARY, ASSET(Player_Sound_Hit));
 
   return HAM_HANDLED;
 }
 
 public HamHook_Player_TakeDamage_Post(const pPlayer, const pInflictor, const pAttacker, Float:flDamage, iDamageBits) {
-  Asset_EmitSound(pPlayer, CHAN_VOICE, SW_AssetLibrary, SW_Asset_Player_Sound_Hit);
+  Asset_EmitSound(pPlayer, CHAN_VOICE, ASSET_LIBRARY, ASSET(Player_Sound_Hit));
 
   return HAM_HANDLED;
 }

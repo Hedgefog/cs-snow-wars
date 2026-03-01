@@ -14,7 +14,7 @@
 new g_szModel[MAX_RESOURCE_PATH_LENGTH];
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_Artifact_Model, g_szModel, charsmax(g_szModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_Artifact_Model), g_szModel, charsmax(g_szModel));
 
   CE_RegisterClass(ENTITY_NAME, CE_Class_BaseItem);
 

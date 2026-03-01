@@ -105,6 +105,7 @@ stock const SW_Weapon_BaseBlueprint[] = "snowwars/v110/weapon_base_blueprint";
 /*--------------------------------[ Weapons Members ]--------------------------------*/
 
 stock const SW_Weapon_Slingshot_Member_flChargeTime[] = "flChargeTime";
+stock const SW_Weapon_HotDrink_Member_flReleaseDrink[] = "flReleaseDrink";
 stock const SW_Weapon_BaseBlueprint_Member_flHeightStep[] = "flHeightStep";
 stock const SW_Weapon_BaseBlueprint_Member_flDeployDistance[] = "flDeployDistance";
 stock const SW_Weapon_BaseBlueprint_Member_vecInstallationMins[] = "vecInstallationMins";
@@ -130,6 +131,7 @@ stock const SW_Entity_FireworkRocket[] = "sw_fireworkrocket";
 stock const SW_Entity_Snowball[] = "sw_snowball";
 stock const SW_Entity_FireworksBox[] = "sw_fireworksbox";
 stock const SW_Entity_Fireplace[] = "sw_fireplace";
+stock const SW_Entity_FireworkEffect[] = "sw_firework_effect";
 
 /*--------------------------------[ Entities Members ]--------------------------------*/
 
@@ -145,6 +147,7 @@ stock const SW_Entity_Fireplace_Member_flHealRate[] = "flHealRate";
 stock const SW_Entity_Fireplace_Member_flHealAmount[] = "flHealAmount";
 stock const SW_Entity_Fireplace_Member_flHealRange[] = "flHealRange";
 stock const SW_Entity_Fireplace_Member_pFire[] = "pFire";
+stock const SW_Entity_FireworkEffect_Member_iFramesNum[] = "iFramesNum";
 
 /*--------------------------------[ Entities Methods ]--------------------------------*/
 
@@ -159,6 +162,7 @@ stock const SW_Entity_FireworkRocket_Method_ExplosionEffect[] = "ExplosionEffect
 stock const SW_Entity_FireworksBox_Method_SpawnRocket[] = "SpawnRocket";
 stock const SW_Entity_Fireplace_Method_CanTakeDamage[] = "CanTakeDamage";
 stock const SW_Entity_Fireplace_Method_GetRelationship[] = "GetRelationship";
+stock const SW_Entity_FireworkEffect_Method_Play[] = "Play";
 
 /*--------------------------------[ Artifacts ]--------------------------------*/
 

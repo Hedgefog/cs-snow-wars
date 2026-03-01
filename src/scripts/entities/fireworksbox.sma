@@ -14,12 +14,11 @@
 #define MEMBER(%1) ENTITY_MEMBER<FireworksBox>(%1)
 #define METHOD(%1) ENTITY_METHOD<FireworksBox>(%1)
 
-new g_szMusicSound[MAX_RESOURCE_PATH_LENGTH];
 new g_szModel[MAX_RESOURCE_PATH_LENGTH];
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_FireworksBox_Sound_Music, g_szMusicSound, charsmax(g_szMusicSound));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_FireworksBox_Model, g_szModel, charsmax(g_szModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_FireworksBox_Sound_Music));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_FireworksBox_Model), g_szModel, charsmax(g_szModel));
 
   CE_RegisterClass(ENTITY_NAME);
 
@@ -56,7 +55,7 @@ public plugin_init() {
 
   CE_SetMember(this, MEMBER(iRocketsNum), CE_GetMember(this, MEMBER(iMaxRocketsNum)));
 
-  emit_sound(this, CHAN_BODY, g_szMusicSound, VOL_NORM * 0.375, ATTN_IDLE, 0, PITCH_NORM);
+  Asset_EmitSound(this, CHAN_BODY, ASSET_LIBRARY, ASSET(Entity_FireworksBox_Sound_Music), _, VOL_NORM * 0.375, ATTN_IDLE);
   
   set_pev(this, pev_nextthink, get_gametime() + 7.0);
 }

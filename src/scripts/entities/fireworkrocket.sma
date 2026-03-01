@@ -34,9 +34,9 @@ public plugin_precache() {
     g_rgrgflColors[i][(iPrimaryColor + 2) % 3] = random_float(0.0, 100.0);
   }
 
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_FireworkRocket_Sprites_Trail, g_szTrailSprite, charsmax(g_szTrailSprite));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_FireworkRocket_Model, g_szModel, charsmax(g_szModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_FireworkRocket_Sound_Whistle);
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_FireworkRocket_Sprites_Trail), g_szTrailSprite, charsmax(g_szTrailSprite));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_FireworkRocket_Model), g_szModel, charsmax(g_szModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_FireworkRocket_Sound_Whistle));
 
   CE_RegisterClass(ENTITY_NAME);
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Create, "@Entity_Create");
@@ -89,7 +89,7 @@ public plugin_end() {
 
   set_pev(this, pev_rendercolor, g_rgrgflColors[iColor]);
 
-  Asset_EmitSound(this, CHAN_BODY, SW_AssetLibrary, SW_Asset_Entity_FireworkRocket_Sound_Whistle, .iPitch = 90 + random(30), .flAttenuation = 0.5);
+  Asset_EmitSound(this, CHAN_BODY, ASSET_LIBRARY, ASSET(Entity_FireworkRocket_Sound_Whistle), .iPitch = 90 + random(30), .flAttenuation = 0.5);
 
   set_pev(this, pev_nextthink, get_gametime());
 }
@@ -191,7 +191,7 @@ public plugin_end() {
       vecTarget[i] = vecOrigin[i] + (vecForward[i] * -32.0) + (vecUp[i] * random_float(-64.0, 64.0)) + (vecRight[i] * random_float(-64.0, 64.0)) + (vecForward[i] * -random_float(0.0, 64.0));
     }
 
-    new pFireworkEffect = CE_Create("sw_firework_effect", vecTarget);
+    new pFireworkEffect = CE_Create(ENTITY(FireworkEffect), vecTarget);
     if (pFireworkEffect == FM_NULLENT) continue;
 
     set_pev(pFireworkEffect, pev_rendercolor, g_rgrgflColors[iColor]);

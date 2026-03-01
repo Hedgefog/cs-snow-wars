@@ -9,20 +9,22 @@
 
 #include <snowwars_internal>
 
-#define ENTITY_NAME "sw_firework_effect"
+#define ENTITY_NAME ENTITY(FireworkEffect)
+#define MEMBER(%1) ENTITY_MEMBER<FireworkEffect>(%1)
+#define METHOD(%1) ENTITY_METHOD<FireworkEffect>(%1)
 
 new g_szFireworkSprite[MAX_RESOURCE_PATH_LENGTH];
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_FireworkEffect_Model, g_szFireworkSprite, charsmax(g_szFireworkSprite));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_FireworkEffect_Sound_Explosion);
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_FireworkEffect_Model), g_szFireworkSprite, charsmax(g_szFireworkSprite));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_FireworkEffect_Sound_Explosion));
 
   CE_RegisterClass(ENTITY_NAME);
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Create, "@Entity_Create");
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Spawn, "@Entity_Spawn");
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Think, "@Entity_Think");
 
-  CE_RegisterClassMethod(ENTITY_NAME, "Play", "@Entity_Play");
+  CE_RegisterClassMethod(ENTITY_NAME, METHOD(Play), "@Entity_Play");
 }
 
 public plugin_init() {
@@ -39,7 +41,7 @@ public plugin_init() {
 @Entity_Spawn(const this) {
   CE_CallBaseMethod();
 
-  CE_SetThink(this, "Play");
+  CE_SetThink(this, METHOD(Play));
 
   set_pev(this, pev_nextthink, get_gametime()); 
 }
@@ -54,7 +56,7 @@ public plugin_init() {
   set_pev(this, pev_framerate, 16.0);
   set_pev(this, pev_frame, 0.0);
 
-  CE_SetMember(this, "iFramesNum", 16);
+  CE_SetMember(this, MEMBER(iFramesNum), 16);
 
   static Float:vecOrigin[3]; pev(this, pev_origin, vecOrigin);
 
@@ -71,7 +73,7 @@ public plugin_init() {
   write_byte(30);
   message_end();
 
-  Asset_EmitSound(this, CHAN_STATIC, SW_AssetLibrary, SW_Asset_Entity_FireworkEffect_Sound_Explosion, .iPitch = 90 + random(30), .flAttenuation = 0.25);
+  Asset_EmitSound(this, CHAN_STATIC, ASSET_LIBRARY, ASSET(Entity_FireworkEffect_Sound_Explosion), .iPitch = 90 + random(30), .flAttenuation = 0.25);
 
   CE_SetThink(this, NULL_STRING);
 
@@ -86,7 +88,7 @@ public plugin_init() {
   static Float:flDelta; flDelta = flLastThink ? get_gametime() - flLastThink : 0.0;
   static Float:flFrame; pev(this, pev_frame, flFrame);
   static Float:flFrameRate; pev(this, pev_framerate, flFrameRate);
-  static iFramesNum; iFramesNum = CE_GetMember(this, "iFramesNum");
+  static iFramesNum; iFramesNum = CE_GetMember(this, MEMBER(iFramesNum));
   static Float:flScale; pev(this, pev_scale, flScale);
 
   flFrame += flFrameRate * flDelta;

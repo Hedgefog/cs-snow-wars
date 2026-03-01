@@ -15,6 +15,10 @@ public plugin_init() {
   RegisterHamPlayer(Ham_Spawn, "HamHook_Player_Spawn_Post", .Post = 1);
 }
 
+public client_disconnected(pPlayer) {
+  remove_task(pPlayer);
+}
+
 public HamHook_Player_Spawn_Post(pPlayer) {
   if (!is_user_alive(pPlayer)) return HAM_IGNORED;
   if (!is_user_bot(pPlayer)) return HAM_IGNORED;

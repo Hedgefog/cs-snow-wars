@@ -12,10 +12,6 @@
 #include <snowwars_player_artifacts>
 #include <snowwars_internal>
 
-public plugin_precache() {
-  CE_RegisterNullClass("armoury_entity");
-}
-
 public plugin_init() {
   register_plugin(PLUGIN_NAME("Game Rules"), SW_VERSION, "Hedgehog Fog");
 
@@ -83,7 +79,7 @@ public HC_GameRules_RestartRound() {
     static pArtifactItem; pArtifactItem = CE_Create(ENTITY(ArtifactItem), vecOrigin);
     if (pArtifactItem == FM_NULLENT) continue;
 
-    CE_SetMemberString(pArtifactItem, "szArtifactId", szId);
+    CE_SetMemberString(pArtifactItem, SW_Entity_ArtifactItem_Member_szArtifactId, szId);
     dllfunc(DLLFunc_Spawn, pArtifactItem);
 
     static Float:vecVelocity[3];

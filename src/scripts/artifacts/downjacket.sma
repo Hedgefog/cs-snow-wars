@@ -12,18 +12,20 @@
 #include <snowwars_player_artifacts>
 #include <snowwars_internal>
 
+/*--------------------------------[ Helpers ]--------------------------------*/
+
 #define ARTIFACT_ID ARTIFACT(Downjacket)
+
+/*--------------------------------[ Player State State ]--------------------------------*/
 
 new g_pPlayerJacket[MAX_PLAYERS + 1];
 
-new g_szCosmeticModel[MAX_RESOURCE_PATH_LENGTH];
-new g_szItemModel[MAX_RESOURCE_PATH_LENGTH];
-new g_szEquipSound[MAX_RESOURCE_PATH_LENGTH];
+/*--------------------------------[ Plugin Initialization ]--------------------------------*/
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Artifact_DownJacket_Model_Player, g_szCosmeticModel, charsmax(g_szCosmeticModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Artifact_DownJacket_Model_World, g_szItemModel, charsmax(g_szItemModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Artifact_DownJacket_Sound_Equip, g_szEquipSound, charsmax(g_szEquipSound));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Artifact_DownJacket_Model_Player));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Artifact_DownJacket_Model_World));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Artifact_DownJacket_Sound_Equip));
 
   SW_PlayerArtifact_Register(ARTIFACT_ID, "Callback_Artifact_Activated", "Callback_Artifact_Deactivated");
 }
@@ -37,26 +39,13 @@ public plugin_init() {
   CE_RegisterClassNativeMethodHook(ENTITY(ArtifactItem), CE_Method_Spawn, "CEHook_ArtifactItem_Spawn");
 }
 
+/*--------------------------------[ Client Forwards ]--------------------------------*/
+
 public client_connect(pPlayer) {
   g_pPlayerJacket[pPlayer] = FM_NULLENT;
 }
 
-public HamHook_Player_Spawn(const pPlayer) {
-  @Player_UpdateJacket(pPlayer);
-
-  return HAM_HANDLED;
-}
-
-public Event_ResetHUD(const pPlayer) {
-  @Player_UpdateStatusIcon(pPlayer);
-}
-
-public CEHook_ArtifactItem_Spawn(const pEntity) {
-  static szId[16]; CE_GetMemberString(pEntity, "szArtifactId", szId, charsmax(szId));
-  if (!equal(szId, ARTIFACT_ID)) return;
-
-  engfunc(EngFunc_SetModel, pEntity, g_szItemModel);
-}
+/*--------------------------------[ Artifact Callbacks ]--------------------------------*/
 
 public Callback_Artifact_Activated(const pPlayer) {
   @Player_EquipJacket(pPlayer);
@@ -66,14 +55,35 @@ public Callback_Artifact_Deactivated(const pPlayer) {
   @Player_UnequipJacket(pPlayer);
 }
 
+/*--------------------------------[ Hooks ]--------------------------------*/
+
+public Event_ResetHUD(const pPlayer) {
+  @Player_UpdateStatusIcon(pPlayer);
+}
+
+public HamHook_Player_Spawn(const pPlayer) {
+  @Player_UpdateJacket(pPlayer);
+
+  return HAM_HANDLED;
+}
+
+public CEHook_ArtifactItem_Spawn(const pEntity) {
+  static szId[16]; CE_GetMemberString(pEntity, SW_Entity_ArtifactItem_Member_szArtifactId, szId, charsmax(szId));
+  if (!equal(szId, ARTIFACT_ID)) return;
+
+  Asset_SetModel(pEntity, ASSET_LIBRARY, ASSET(Artifact_DownJacket_Model_World));
+}
+
+/*--------------------------------[ Player Methods ]--------------------------------*/
+
 @Player_EquipJacket(const &this) {
   new Float:flResistance = SW_Player_GetAttribute(this, SW_PlayerAttribute_Resistance);
   SW_Player_SetAttribute(this, SW_PlayerAttribute_Resistance, flResistance + 0.5);
 
-  g_pPlayerJacket[this] = PlayerCosmetic_Equip(this, engfunc(EngFunc_ModelIndex, g_szCosmeticModel));
+  g_pPlayerJacket[this] = PlayerCosmetic_Equip(this, Asset_GetModelIndex(ASSET_LIBRARY, ASSET(Artifact_DownJacket_Model_Player)));
   @Player_UpdateJacket(this);
 
-  emit_sound(this, CHAN_ITEM, g_szEquipSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+  Asset_EmitSound(this, CHAN_ITEM, ASSET_LIBRARY, ASSET(Artifact_DownJacket_Sound_Equip));
 
   @Player_UpdateStatusIcon(this);
 }
@@ -83,7 +93,7 @@ public Callback_Artifact_Deactivated(const pPlayer) {
   SW_Player_SetAttribute(this, SW_PlayerAttribute_Resistance, flResistance - 0.5);
 
   if (g_pPlayerJacket[this] != FM_NULLENT) {
-    PlayerCosmetic_Unequip(this, engfunc(EngFunc_ModelIndex, g_szCosmeticModel));
+    PlayerCosmetic_Unequip(this, Asset_GetModelIndex(ASSET_LIBRARY, ASSET(Artifact_DownJacket_Model_Player)));
     g_pPlayerJacket[this] = FM_NULLENT;
   }
 

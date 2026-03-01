@@ -4,11 +4,17 @@
       Reworked mod using AMXX Modding Kit
 
     Additions and improvements:
-      Reduced snowball attack rate 
+      Added "Hot Drink" item
+      Added "Fireplace" item
+      Added "Shield" item
+      Added custom player animations
+      Added new sounds
+      Reworked fireworks effects
+      Increased snowman health
       Players can now have multiple snowmen and surprise boxes
       Firework rockets now explode randomly based on impact angle
-      Increased snowman health
       Auto-guidance for snowballs is now ignoring the Z axis
+      Reduced snowball attack rate
 
     Fixes:
       Fixed a bug where snow particles would get stuck in walls

@@ -17,7 +17,6 @@
 #define METHOD(%1) ENTITY_METHOD<Snowball>(%1)
 
 new g_szModel[MAX_RESOURCE_PATH_LENGTH];
-new g_szHitSound[MAX_RESOURCE_PATH_LENGTH];
 new g_szShowSplashSprite[MAX_RESOURCE_PATH_LENGTH];
 
 new g_pTrace;
@@ -28,9 +27,9 @@ new Float:g_flAutoGuidanceAngle;
 public plugin_precache() {
   g_pTrace = create_tr2();
 
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_Snowball_Model, g_szModel, charsmax(g_szModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_Snowball_Sound_Hit, g_szHitSound, charsmax(g_szHitSound));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_Snowball_Sprites_Splash, g_szShowSplashSprite, charsmax(g_szShowSplashSprite));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_Snowball_Model), g_szModel, charsmax(g_szModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_Snowball_Sound_Hit));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_Snowball_Sprites_Splash), g_szShowSplashSprite, charsmax(g_szShowSplashSprite));
 
   CE_RegisterClass(ENTITY_NAME);
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Create, "@Entity_Create");
@@ -110,7 +109,7 @@ public plugin_end() {
     write_byte(8);
     message_end();
 
-    emit_sound(this, CHAN_BODY, g_szHitSound, 0.5, ATTN_NORM, 0, PITCH_NORM);
+    Asset_EmitSound(this, CHAN_BODY, ASSET_LIBRARY, ASSET(Entity_Snowball_Sound_Hit), _, 0.5);
   }
 
   CE_CallBaseMethod(pKiller, iShouldGib);

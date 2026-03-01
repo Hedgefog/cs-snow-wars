@@ -22,7 +22,7 @@ new g_szModel[MAX_RESOURCE_PATH_LENGTH];
 new Float:g_rgflPlayerNextHeal[MAX_PLAYERS + 1];
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Entity_Fireplace_Model, g_szModel, charsmax(g_szModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Entity_Fireplace_Model), g_szModel, charsmax(g_szModel));
 
   CE_RegisterClass(ENTITY_NAME);
   CE_ImplementClassMethod(ENTITY_NAME, CE_Method_Create, "@Entity_Create");
@@ -38,10 +38,6 @@ public plugin_precache() {
 
 public plugin_init() {
   register_plugin(ENTITY_PLUGIN(Fireplace), SW_VERSION, "Hedgehog Fog");
-
-  new Float:vecAbsMin[3]; pev(0, pev_absmin, vecAbsMin);
-  new Float:vecAbsMax[3]; pev(0, pev_absmax, vecAbsMax);
-  dllfunc(DLLFunc_GetHullBounds, 0, vecAbsMin, vecAbsMax);
 }
 
 @Entity_Create(const this) {

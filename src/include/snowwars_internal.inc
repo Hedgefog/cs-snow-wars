@@ -44,6 +44,7 @@
 
 /*--------------------------------[ Assets Shortcuts ]--------------------------------*/
 
+#define ASSET_LIBRARY NAMESPACE(AssetLibrary)
 #define ASSET(%1) NAMESPACE_FIELD<Asset>(%1)
 
 /*--------------------------------[ Shops Shortcuts ]--------------------------------*/

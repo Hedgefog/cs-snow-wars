@@ -4,7 +4,6 @@
 #include <fakemeta>
 #include <hamsandwich>
 #include <xs>
-#include <reapi>
 
 #include <api_assets>
 #include <api_custom_entities>
@@ -13,6 +12,7 @@
 #include <snowwars_internal>
 
 #define WEAPON_NAME WEAPON(HotDrink)
+#define MEMBER(%1) WEAPON_MEMBER<HotDrink>(%1)
 #define METHOD(%1) WEAPON_METHOD<HotDrink>(%1)
 
 new g_szVModel[MAX_RESOURCE_PATH_LENGTH];
@@ -20,10 +20,10 @@ new g_szPModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szWModel[MAX_RESOURCE_PATH_LENGTH];
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_HotDrink_Model_View, g_szVModel, charsmax(g_szVModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_HotDrink_Model_Player, g_szPModel, charsmax(g_szPModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_HotDrink_Model_World, g_szWModel, charsmax(g_szWModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_HotDrink_Sound_Drink);
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_HotDrink_Model_View), g_szVModel, charsmax(g_szVModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_HotDrink_Model_Player), g_szPModel, charsmax(g_szPModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_HotDrink_Model_World), g_szWModel, charsmax(g_szWModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_HotDrink_Sound_Drink));
 
   CW_RegisterClass(WEAPON_NAME);
 
@@ -56,7 +56,7 @@ public plugin_init() {
   CW_SetMember(this, CW_Member_iDefaultAmmo, 100);
   CW_SetMember(this, CW_Member_bExhaustible, true);
 
-  CW_SetMember(this, "flReleaseDrink", 0.0);
+  CW_SetMember(this, MEMBER(flReleaseDrink), 0.0);
 }
 
 @Weapon_Deploy(const this) {
@@ -91,18 +91,18 @@ public plugin_init() {
   static iAmmo; iAmmo = get_ent_data(pPlayer, "CBasePlayer", "m_rgAmmo", iAmmoType);
   if (iAmmo <= 0) return;
 
-  static Float:flReleaseDrink; flReleaseDrink = CW_GetMember(this, "flReleaseDrink");
+  static Float:flReleaseDrink; flReleaseDrink = CW_GetMember(this, MEMBER(flReleaseDrink));
 
   if (flReleaseDrink && flReleaseDrink < get_gametime()) {
     CW_CallMethod(this, METHOD(ReleaseDrink));
     return;
   }
 
-  CW_SetMember(this, "flReleaseDrink", get_gametime());
+  CW_SetMember(this, MEMBER(flReleaseDrink), get_gametime());
 
-  Asset_EmitSound(pPlayer, CHAN_VOICE, SW_AssetLibrary, SW_Asset_Weapon_HotDrink_Sound_Drink, .iPitch = 80 + random(30));
+  Asset_EmitSound(pPlayer, CHAN_VOICE, ASSET_LIBRARY, ASSET(Weapon_HotDrink_Sound_Drink), .iPitch = 80 + random(30));
   CW_CallNativeMethod(this, CW_Method_PlayAnimation, 2, 0.1);
-  rg_set_animation(pPlayer, PLAYER_ATTACK1);
+  CW_SetPlayerAnimation(pPlayer, PLAYER_ATTACK1);
 
   CW_SetMember(this, CW_Member_flNextPrimaryAttack, get_gametime() + 1.5);
 }
@@ -131,7 +131,7 @@ public plugin_init() {
     }
   }
 
-  CW_SetMember(this, "flReleaseDrink", 0.0);
+  CW_SetMember(this, MEMBER(flReleaseDrink), 0.0);
   CW_SetMember(this, CW_Member_flNextPrimaryAttack, get_gametime() + 1.5);
   CW_SetMember(this, CW_Member_flTimeIdle, get_gametime() + 1.5);
 }
@@ -139,11 +139,11 @@ public plugin_init() {
 @Weapon_Interrupt(const this) {
   static pPlayer; pPlayer = get_ent_data_entity(this, "CBasePlayerItem", "m_pPlayer");
   
-  if (Float:CW_GetMember(this, "flReleaseDrink")) {
+  if (Float:CW_GetMember(this, MEMBER(flReleaseDrink))) {
     emit_sound(pPlayer, CHAN_VOICE, "common/null.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
-    CW_SetMember(this, "flReleaseDrink", 0.0);
+    CW_SetMember(this, MEMBER(flReleaseDrink), 0.0);
     CW_CallNativeMethod(this, CW_Method_PlayAnimation, 0, 0.1);
-    rg_set_animation(pPlayer, PLAYER_IDLE);
+    CW_SetPlayerAnimation(pPlayer, PLAYER_IDLE);
   }
 }
 

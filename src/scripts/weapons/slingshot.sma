@@ -5,7 +5,6 @@
 #include <fakemeta>
 #include <engine>
 #include <xs>
-#include <reapi>
 
 #include <api_assets>
 #include <api_custom_weapons>
@@ -27,12 +26,12 @@ new g_szPModel[MAX_RESOURCE_PATH_LENGTH];
 new g_szWModel[MAX_RESOURCE_PATH_LENGTH];
 
 public plugin_precache() {
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Model_View, g_szVModel, charsmax(g_szVModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Model_Player, g_szPModel, charsmax(g_szPModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Model_World, g_szWModel, charsmax(g_szWModel));
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Sound_Throw);
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Sound_Snap);
-  Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Sound_Stretch);
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Slingshot_Model_View), g_szVModel, charsmax(g_szVModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Slingshot_Model_Player), g_szPModel, charsmax(g_szPModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Slingshot_Model_World), g_szWModel, charsmax(g_szWModel));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Slingshot_Sound_Throw));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Slingshot_Sound_Snap));
+  Asset_Precache(ASSET_LIBRARY, ASSET(Weapon_Slingshot_Sound_Stretch));
 
   CW_RegisterClass(WEAPON_NAME, Weapon_BaseThrowable);
 
@@ -119,7 +118,7 @@ public plugin_init() {
   if (!CW_CallBaseMethod()) return;
 
   CW_CallNativeMethod(this, CW_Method_PlayAnimation, 1);
-  Asset_EmitSound(pPlayer, CHAN_ITEM, SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Sound_Stretch, .iPitch = 80 + random(30));
+  Asset_EmitSound(pPlayer, CHAN_ITEM, ASSET_LIBRARY, ASSET(Weapon_Slingshot_Sound_Stretch), .iPitch = 80 + random(30));
 }
 
 @Weapon_CanDrop(const this) {
@@ -165,10 +164,10 @@ public plugin_init() {
   }
 
   CW_CallNativeMethod(this, CW_Method_PlayAnimation, 2, 11.0 / 30.0);
-  rg_set_animation(pPlayer, PLAYER_ATTACK1);
+  CW_SetPlayerAnimation(pPlayer, PLAYER_ATTACK1);
 
-  Asset_EmitSound(pPlayer, CHAN_BODY, SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Sound_Throw);
-  Asset_EmitSound(pPlayer, CHAN_ITEM, SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Sound_Snap, .iPitch = 80 + random(30));
+  Asset_EmitSound(pPlayer, CHAN_BODY, ASSET_LIBRARY, ASSET(Weapon_Slingshot_Sound_Throw));
+  Asset_EmitSound(pPlayer, CHAN_ITEM, ASSET_LIBRARY, ASSET(Weapon_Slingshot_Sound_Snap), .iPitch = 80 + random(30));
 
   CW_SetMember(this, Weapon_BaseThrowable_Member_flStartThrow, 0.0);
   CW_SetMember(this, CW_Member_flNextPrimaryAttack, 1.0);
