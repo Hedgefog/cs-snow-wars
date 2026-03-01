@@ -35,7 +35,7 @@ public plugin_init() {
 
   RegisterHookChain(RG_RoundEnd, "HC_RoundEnd", .post = 0);
 
-  register_concmd("sw_fireworks_launch", "Command_LaunchFireworks", ADMIN_CVAR);
+  register_concmd(COMMAND("fireworks_launch"), "Command_LaunchFireworks", ADMIN_CVAR);
 
   set_task(1.0, "Task_Update", .flags = "b");
 }
