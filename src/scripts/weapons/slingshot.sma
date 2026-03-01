@@ -34,7 +34,7 @@ public plugin_precache() {
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Sound_Snap);
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Slingshot_Sound_Stretch);
 
-  CW_RegisterClass(WEAPON_NAME, WEAPON_BASE_THROWABLE);
+  CW_RegisterClass(WEAPON_NAME, Weapon_BaseThrowable);
 
   CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Create, "@Weapon_Create");
   CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Idle, "@Weapon_Idle");

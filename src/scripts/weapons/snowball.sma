@@ -26,7 +26,7 @@ public plugin_precache() {
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowball_Model_World, g_szWModel, charsmax(g_szWModel));
   Asset_Precache(SW_AssetLibrary, SW_Asset_Weapon_Snowball_Sound_Throw, g_szThrowSound, charsmax(g_szThrowSound));
 
-  CW_RegisterClass(WEAPON_NAME, WEAPON_BASE_THROWABLE);
+  CW_RegisterClass(WEAPON_NAME, Weapon_BaseThrowable);
 
   CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Create, "@Weapon_Create");
   CW_ImplementClassMethod(WEAPON_NAME, CW_Method_Idle, "@Weapon_Idle");
