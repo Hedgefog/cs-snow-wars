@@ -1,3 +1,5 @@
+![Snow Wars](images/demo.gif)
+
 ## ❄ Snow Wars 🇺🇦
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/hedgefog/cs-snow-wars)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/hedgefog/cs-snow-wars/build.yml?branch=release)
@@ -6,15 +8,7 @@
 
 ### 📄 About
 
-__Snow Wars__ is a __Counter-Strike__ server-side modification based on snowballs fights with original Counter-Strike modes.
-
-#### Weapons and Artifacts
-
-- Snowball - deals 50 damage on hit
-- Slingshot - allows you to shoot snowballs with extra controlled power
-- Lemon Juice - adds radius damage to your snowballs, it's yellow for a reason and enemies find it humiliating
-- Down Jacket - reduces taken damage
-- Surprise Box - SURPRISE, but in the box
+__Snow Wars__ is a __Counter-Strike__ server-side modification that brings snowball fights to classic Counter-Strike modes with atmospheric and fun gameplay.
 
 ### 🔽 Download latest:
 - [Releases](../../releases)
