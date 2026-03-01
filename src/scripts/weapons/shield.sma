@@ -99,7 +99,7 @@ public CEHook_Snowball_Touch(const pSnowball, const pToucher) {
 }
 
 @Weapon_Deploy(const this) {
-  CW_CallNativeMethod(this, CW_Method_DefaultDeploy, g_szVModel, g_szPModel, 0, "shield");
+  CW_CallNativeMethod(this, CW_Method_DefaultDeploy, g_szVModel, g_szPModel, 1, "shield");
   CW_SetMember(this, CW_Member_flTimeIdle, get_gametime() + 0.1);
 }
 
