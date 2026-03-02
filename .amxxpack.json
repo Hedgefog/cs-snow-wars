@@ -22,8 +22,6 @@
           "api/custom-weapons/**",
           "api/player-cosmetics/**",
           "api/player-model/**",
-          "api/custom-events/**",
-          "api/entity-force/**",
           "api/shops/**"
         ]
       }
@@ -37,8 +35,6 @@
     "./.thirdparty/amxx-modding-kit/api/custom-weapons/include",
     "./.thirdparty/amxx-modding-kit/api/player-cosmetics/include",
     "./.thirdparty/amxx-modding-kit/api/player-model/include",
-    "./.thirdparty/amxx-modding-kit/api/custom-events/include",
-    "./.thirdparty/amxx-modding-kit/api/entity-force/include",
     "./.thirdparty/amxx-modding-kit/api/shops/include",
     "./.thirdparty/amxx-modding-kit/entities/include",
     "./.thirdparty/amxx-modding-kit/weapons/include",
