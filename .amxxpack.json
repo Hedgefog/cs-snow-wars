@@ -16,7 +16,7 @@
         "filter": [
           "util/**",
           "weapons/**",
-          "entities/**",
+          "entities/**/entity_fire*",
           "api/assets/**",
           "api/custom-entities/**",
           "api/custom-weapons/**",
