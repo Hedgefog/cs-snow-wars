@@ -1,9 +1,18 @@
 {
-    "editor.tabSize": 4,
-    "editor.insertSpaces": true,
-    "amxxpawn.compiler.includePaths": [
-        "${workspaceRoot}/src/include",
-        "${workspaceRoot}/.compiler/include",
-        "${workspaceRoot}/.thirdparty/reapi/addons/amxmodx/scripting/include"
-    ]
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "amxxpawn.compiler.includePaths": [
+    "${workspaceRoot}/src/include",
+    "${workspaceRoot}/.compiler/include",
+    "${workspaceRoot}/.thirdparty/reapi/addons/amxmodx/scripting/include",
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/util",   
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/api/assets/include",
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/api/custom-entities/include",
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/api/custom-weapons/include",
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/api/player-model/include",
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/api/player-cosmetics/include",
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/api/shops/include",
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/weapons/include",
+    "${workspaceRoot}/.thirdparty/amxx-modding-kit/entities/include"
+  ]
 }
