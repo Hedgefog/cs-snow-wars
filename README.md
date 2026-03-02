@@ -6,6 +6,8 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/hedgefog/cs-snow-wars)
 ![GitHub all releases](https://img.shields.io/github/downloads/hedgefog/cs-snow-wars/total)
 
+*Built with [📦 AMXXPack](https://github.com/Hedgefog/node-amxxpack) and [🛠️ AMXX Modding Kit](https://github.com/Hedgefog/amxx-modding-kit)*
+
 ### 📄 About
 
 __Snow Wars__ is a __Counter-Strike__ server-side modification that brings snowball fights to classic Counter-Strike modes with atmospheric and fun gameplay.
