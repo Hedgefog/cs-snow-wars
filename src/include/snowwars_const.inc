@@ -6,7 +6,7 @@
 /*--------------------------------[ Title ]--------------------------------*/
 
 stock const SW_TITLE[] = "Snow Wars";
-stock const SW_VERSION[] = "1.1.1";
+stock const SW_VERSION[] = "1.1.2";
 
 /*--------------------------------[ Asset Library ]--------------------------------*/
 

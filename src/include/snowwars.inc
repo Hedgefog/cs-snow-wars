@@ -1,4 +1,13 @@
 /*
+
+  1.1.2
+    Fixes:
+      Fixed Amx Mod X 1.10 compatibility
+
+  1.1.1
+    Common:
+      Updated AMXX Modding Kit
+
   1.1.0
     General:
       Reworked mod using AMXX Modding Kit
